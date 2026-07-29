@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>MapLibre Advanced Controls</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <style>
+    body { margin: 0; }
+    #map { width: 100vw; height: 100vh; }
+
+    #panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 12px;
+      font-family: sans-serif;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 1;
+      width: 220px;
+    }
+
+    .group { margin-bottom: 10px; }
+    .layer { margin-left: 10px; }
+
+    .slider {
+      width: 100%;
+    }
+
+    #info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      font-family: monospace;
+      max-width: 300px;
+      max-height: 200px;
+      overflow: auto;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="panel">
+  <strong>Layergruppen</strong>
+
+  <div class="group">
+    <strong>Topo</strong><br>
+    <div class="layer">
+      <label><input type="checkbox" id="topo" checked> anzeigen</label>
+      Opacity:
+      <input type="range" min="0" max="1" step="0.1" value="0.6" id="topoOpacity" class="slider">
+    </div>
+  </div>
+
+  <div class="group">
+    <strong>WMS</strong><br>
+    <div class="layer">
+      <label><input type="checkbox" id="wms"> anzeigen</label>
+      Opacity:
+      <input type="range" min="0" max="1" step="0.1" value="0.7" id="wmsOpacity" class="slider">
+    </div>
+  </div>
+</div>
+
+<div id="info">Klick auf Karte für Feature-Info</div>
+
+<script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
+
+<script>
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://demotiles.maplibre.org/style.json',
+  center: [10, 51],
+  zoom: 5
+});
+
+map.on('load', () => {
+
+  // --- TOPO (XYZ) ---
+  map.addSource('topo-source', {
+    type: 'raster',
+    tiles: ['https://tile.opentopomap.org/{z}/{x}/{y}.png'],
+    tileSize: 256
+  });
+
+  map.addLayer({
+    id: 'topo-layer',
+    type: 'raster',
+    source: 'topo-source',
+    paint: { 'raster-opacity': 0.6 }
+  });
+
+  // --- WMS ---
+  map.addSource('wms-source', {
+    type: 'raster',
+    tiles: [
+      'https://ows.terrestris.de/osm/service?' +
+      'service=WMS&request=GetMap&version=1.1.1' +
+      '&layers=OSM-WMS&styles=' +
+      '&format=image/png&transparent=true' +
+      '&srs=EPSG:3857' +
+      '&bbox={bbox-epsg-3857}&width=256&height=256'
+    ],
+    tileSize: 256
+  });
+
+  map.addLayer({
+    id: 'wms-layer',
+    type: 'raster',
+    source: 'wms-source',
+    layout: { visibility: 'none' },
+    paint: { 'raster-opacity': 0.7 }
+  });
+
+});
+
+
+// --- CHECKBOXEN (Layer an/aus) ---
+document.getElementById('topo').onchange = e => {
+  map.setLayoutProperty('topo-layer', 'visibility',
+    e.target.checked ? 'visible' : 'none');
+};
+
+document.getElementById('wms').onchange = e => {
+  map.setLayoutProperty('wms-layer', 'visibility',
+    e.target.checked ? 'visible' : 'none');
+};
+
+
+// --- OPACITY SLIDER ---
+document.getElementById('topoOpacity').oninput = e => {
+  map.setPaintProperty('topo-layer', 'raster-opacity',
+    parseFloat(e.target.value));
+};
+
+document.getElementById('wmsOpacity').oninput = e => {
+  map.setPaintProperty('wms-layer', 'raster-opacity',
+    parseFloat(e.target.value));
+};
+
+
+// --- FEATURE INFO (WMS) ---
+map.on('click', (e) => {
+
+  // nur wenn WMS sichtbar
+  const visible = map.getLayoutProperty('wms-layer', 'visibility');
+  if (visible !== 'visible') return;
+
+  const bbox = map.getBounds().toArray().flat();
+  const size = map.getCanvas();
+
+  const url =
+    'https://ows.terrestris.de/osm/service?' +
+    'service=WMS&version=1.1.1&request=GetFeatureInfo' +
+    '&layers=OSM-WMS&query_layers=OSM-WMS' +
+    '&styles=&bbox=' + bbox.join(',') +
+    '&width=' + size.width +
+    '&height=' + size.height +
+    '&srs=EPSG:3857' +
+    '&format=image/png' +
+    '&info_format=application/json' +
+    '&x=' + Math.floor(e.point.x) +
+    '&y=' + Math.floor(e.point.y);
+
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('info').innerText =
+        JSON.stringify(data, null, 2);
+    })
+    .catch(err => {
+      document.getElementById('info').innerText =
+        'Keine Daten oder Fehler';
+    });
+
+});
+</script>
+
+</body>
+</html>

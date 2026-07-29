@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WebGIS</title>
+
+<link rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@5.8.0/dist/maplibre-gl.css">
+
+<link rel="stylesheet"
+      href="css/style.css">
+
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<div id="sidebar">
+
+    <h2>WebGIS</h2>
+
+    <div id="layerPanel">
+    </div>
+
+</div>
+
+<div id="statusbar">
+
+    Zoom:
+    <span id="zoom">-</span>
+
+    |
+
+    Maus:
+
+    <span id="coords">
+        -
+    </span>
+
+    |
+
+    POIs:
+
+    <span id="poiCount">
+        0
+    </span>
+
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.8.0/dist/maplibre-gl.js"></script>
+
+<script type="module"
+        src="js/app.js">
+</script>
+
+</body>
+
+</html>
