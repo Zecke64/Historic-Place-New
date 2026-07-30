@@ -1,87 +1,488 @@
-/**
- * Overpass POI Layer
- */
-
-
-import { getIcon } from "./icons.js";
-
 const OVERPASS_URL =
-    "https://overpass-api.de/api/interpreter";
-
-
-let sourceId = "osm-pois";
+    "https://overpass.maprva.org/api/interpreter";
+//    "https://overpass-api.de/api/interpreter";
 
 
 
-/**
- * Overpass-Abfrage erzeugen
- */
-function createQuery(bounds)
+const sourceId = "osm-pois";
+
+
+let currentRequest = null;
+
+
+
+export function initOverpassLayer(map)
 {
 
-    const south = bounds.getSouth();
-    const west  = bounds.getWest();
-    const north = bounds.getNorth();
-    const east  = bounds.getEast();
+    /*
+     * GeoJSON Source mit aktiviertem Clustering
+     */
+
+    map.addSource(
+        sourceId,
+        {
+            type: "geojson",
+
+            data:
+            {
+                type:"FeatureCollection",
+                features:[]
+            },
+
+            cluster:true,
+
+            clusterRadius:80,
+
+            clusterMaxZoom:16
+        }
+    );
 
 
-    return `
-[out:json][timeout:25];
 
-(
- node[image](${south},${west},${north},${east});
- node[wikipedia](${south},${west},${north},${east});
- node[wikidata](${south},${west},${north},${east});
+    /*
+     * Cluster-Kreise
+     */
 
- way[image](${south},${west},${north},${east});
- way[wikipedia](${south},${west},${north},${east});
- way[wikidata](${south},${west},${north},${east});
+    map.addLayer(
+        {
+            id:"poi-clusters",
 
- relation[image](${south},${west},${north},${east});
- relation[wikipedia](${south},${west},${north},${east});
- relation[wikidata](${south},${west},${north},${east});
-);
+            type:"circle",
 
-out center 200;
-`;
+            source:sourceId,
+
+            filter:
+            [
+                "has",
+                "point_count"
+            ],
+
+
+            paint:
+            {
+                "circle-radius":
+                [
+                    "step",
+                    [
+                        "get",
+                        "point_count"
+                    ],
+
+                    18,
+
+                    20,
+                    24,
+
+                    50,
+                    32,
+
+                    100,
+                    40
+                ],
+
+
+                "circle-stroke-width":2,
+
+
+                "circle-stroke-color":
+                    "#ffffff",
+
+
+                "circle-color":
+                    "#3388ff"
+            }
+        }
+    );
+
+
+
+    /*
+     * Cluster Anzahl
+     */
+
+    map.addLayer(
+        {
+            id:"poi-cluster-count",
+
+            type:"symbol",
+
+            source:sourceId,
+
+            filter:
+            [
+                "has",
+                "point_count"
+            ],
+
+
+            layout:
+            {
+                "text-field":
+                    "{point_count}",
+
+                "text-size":14
+            },
+
+
+            paint:
+            {
+                "text-color":
+                    "#ffffff"
+            }
+        }
+    );
+
+
+
+    /*
+     * Einzelne POIs
+     */
+
+    map.addLayer(
+        {
+            id:"osm-pois",
+
+            type:"symbol",
+
+            source:sourceId,
+
+
+            filter:
+            [
+                "!",
+                [
+                    "has",
+                    "point_count"
+                ]
+            ],
+
+
+            layout:
+            {
+                "icon-image":
+                [
+                    "get",
+                    "icon"
+                ],
+
+
+                "icon-size":0.8,
+
+
+                "icon-allow-overlap":true
+            }
+        }
+    );
+
+
+
+    /*
+     * Cluster anklicken
+     */
+
+    map.on(
+        "click",
+        "poi-clusters",
+        async e =>
+        {
+
+            const feature =
+                e.features[0];
+
+
+            const clusterId =
+                feature.properties.cluster_id;
+
+
+            const source =
+                map.getSource(sourceId);
+
+
+            try
+            {
+
+                const zoom =
+                    await source.getClusterExpansionZoom(
+                        clusterId
+                    );
+
+
+                map.easeTo(
+                {
+                    center:
+                        feature.geometry.coordinates,
+
+                    zoom: zoom
+                });
+
+            }
+
+            catch(error)
+            {
+                console.error(
+                    "Cluster Zoom Fehler:",
+                    error
+                );
+            }
+    
+        }
+    );
+
+
+    /*
+     * Cursor
+     */
+
+    map.on(
+        "mouseenter",
+        "poi-clusters",
+        () =>
+        {
+            map.getCanvas().style.cursor =
+                "pointer";
+        }
+    );
+
+
+    map.on(
+        "mouseleave",
+        "poi-clusters",
+        () =>
+        {
+            map.getCanvas().style.cursor =
+                "";
+        }
+    );
+
+
+
+    /*
+     * POIs laden
+     */
+
+    loadPOIs(map);
+
+
+
+    /*
+     * Nach Kartenbewegung neu laden
+     */
+
+    map.on(
+        "moveend",
+        () =>
+        {
+            loadPOIs(map);
+        }
+    );
+
 }
 
 
 
-/**
- * Overpass Ergebnis nach GeoJSON
- */
+
+
+async function loadPOIs(map)
+{
+
+    /*
+     * Keine Overpass-Abfrage bei kleinen Zoomstufen
+     */
+
+    if(map.getZoom() < 12)
+    {
+        clearSource(map);
+        return;
+    }
+
+
+
+    const bounds =
+        map.getBounds();
+
+
+
+    const query =
+        createQuery(bounds);
+
+
+
+    console.log(query);
+
+
+
+    /*
+     * laufende Anfrage abbrechen
+     */
+
+    if(currentRequest)
+    {
+        currentRequest.abort();
+    }
+
+
+    currentRequest =
+        new AbortController();
+
+
+
+    try
+    {
+
+        const response =
+            await fetch(
+                OVERPASS_URL,
+                {
+                    method:"POST",
+
+                    headers:
+                    {
+                        "Content-Type":
+                        "application/x-www-form-urlencoded"
+                    },
+
+
+                    body:
+                    "data=" +
+                    encodeURIComponent(query),
+
+
+                    signal:
+                    currentRequest.signal
+                }
+            );
+
+
+
+        const data =
+            await response.json();
+
+
+
+        console.log(
+            "Overpass Elemente:",
+            data.elements.length
+        );
+
+
+
+        const geojson =
+            convertToGeoJSON(data);
+
+
+
+        console.log(
+            "GeoJSON:",
+            geojson.features.length
+        );
+
+
+
+        map
+        .getSource(sourceId)
+        .setData(geojson);
+
+
+    }
+
+    catch(error)
+    {
+
+        if(error.name !== "AbortError")
+        {
+            console.error(
+                "Overpass Fehler",
+                error
+            );
+        }
+
+    }
+
+}
+
+
+
+
+
+function createQuery(bounds)
+{
+
+    const south =
+        bounds.getSouth();
+
+    const west =
+        bounds.getWest();
+
+    const north =
+        bounds.getNorth();
+
+    const east =
+        bounds.getEast();
+
+
+
+    return `
+[out:json][timeout:15];
+
+
+(
+ nwr["historic"](${south},${west},${north},${east});
+ nwr["heritage"](${south},${west},${north},${east});
+ nwr["wikipedia"](${south},${west},${north},${east});
+ nwr["wikidata"](${south},${west},${north},${east});
+);
+
+
+out center qt 200;
+`;
+
+}
+
+
+ //nwr["tourism"](${south},${west},${north},${east});
+ //nwr["man_made"](${south},${west},${north},${east});
+
+
+
 function convertToGeoJSON(data)
 {
 
-    const features=[];
+    const features = [];
 
 
-    data.elements.forEach(
-        e =>
+
+    for(const e of data.elements)
+    {
+
+        let lat;
+        let lon;
+
+
+
+        if(e.type === "node")
         {
+            lat=e.lat;
+            lon=e.lon;
+        }
 
-            let lon;
-            let lat;
-
-
-            if(e.type==="node")
-            {
-                lon=e.lon;
-                lat=e.lat;
-            }
-            else if(e.center)
-            {
-                lon=e.center.lon;
-                lat=e.center.lat;
-            }
-            else
-            {
-                return;
-            }
+        else if(e.center)
+        {
+            lat=e.center.lat;
+            lon=e.center.lon;
+        }
 
 
-            features.push(
+        if(!lat || !lon)
+            continue;
+
+
+
+        const tags =
+            e.tags || {};
+
+
+
+        features.push(
             {
                 type:"Feature",
 
@@ -96,20 +497,25 @@ function convertToGeoJSON(data)
                     ]
                 },
 
+
                 properties:
-		{
-		    ...(e.tags || {}),
-
-		    icon:
-			getIcon(
-			    e.tags || {}
-			)
-		}
-
-            });
+                {
+                    ...tags,
 
 
-        });
+                    icon:
+                        getIcon(tags)
+                }
+            }
+        );
+
+
+
+        if(features.length >= 200)
+            break;
+
+    }
+
 
 
     return {
@@ -124,134 +530,50 @@ function convertToGeoJSON(data)
 
 
 
-/**
- * POI Layer initialisieren
- */
-export function initOverpassLayer(map)
+
+
+function getIcon(tags)
 {
 
-    map.addSource(
-        sourceId,
-        {
-            type:"geojson",
-
-            data:
-            {
-                type:"FeatureCollection",
-                features:[]
-            }
-        }
-    );
-
-    map.addLayer(
-    {
-        id:sourceId,
-
-        type:"symbol",
-
-        source:sourceId,
-
-        layout:
-        {
-            "icon-image":
-            [
-                "get",
-                "icon"
-            ],
-
-            "icon-size":0.8,
-
-            "icon-allow-overlap":true
-        }
-
-    });
+    if(tags.tourism === "museum")
+        return "museum";
 
 
+    if(tags.historic === "castle")
+        return "castle";
 
-    loadPOIs(map);
+
+    if(tags.amenity === "place_of_worship")
+        return "church";
 
 
+    if(tags.man_made)
+        return "industrial";
 
-    map.on(
-        "moveend",
-        () =>
-        {
-            loadPOIs(map);
-        }
-    );
+
+    return "poi";
 
 }
 
 
 
-/**
- * Daten laden
- */
-async function loadPOIs(map)
+
+
+function clearSource(map)
 {
 
-    const bounds =
-        map.getBounds();
+    const source =
+        map.getSource(sourceId);
 
 
-    const query =
-        createQuery(bounds);
-
-
-    try
+    if(source)
     {
-
-        const response =
-            await fetch(
-                OVERPASS_URL,
-                {
-                    method:"POST",
-
-                    body:query
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        const geojson =
-            convertToGeoJSON(data);
-
-
-
-	console.log(
-            "Features:",
-	    geojson.features.length
-	);
-
-	console.log(
-	    geojson.features[0]
-	);
-
-        map.getSource(sourceId)
-           .setData(
-                geojson
-            );
-
-
-        document
-        .getElementById("poiCount")
-        .innerText =
-            geojson.features.length;
-
-
-    }
-
-    catch(error)
-    {
-
-        console.error(
-            "Overpass Fehler",
-            error
+        source.setData(
+            {
+                type:"FeatureCollection",
+                features:[]
+            }
         );
-
     }
 
 }

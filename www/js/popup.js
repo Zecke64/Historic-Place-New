@@ -1,7 +1,4 @@
-/**
- * Popup für OSM-POIs
- */
-
+import { loadWikidata } from "./wikidata.js";
 
 export function initPopup(map)
 {
@@ -9,49 +6,33 @@ export function initPopup(map)
     map.on(
         "click",
         "osm-pois",
-        event =>
+        e =>
         {
 
+            if (!e.features.length)
+                return;
+
             const feature =
-                event.features[0];
+                e.features[0];
 
 
-            const props =
-                feature.properties;
-
-
-            const html =
-                createPopupHTML(
-                    props
-                );
-
-
-            new maplibregl.Popup()
-
-                .setLngLat(
-                    event.lngLat
-                )
-
-                .setHTML(
-                    html
-                )
-
-                .addTo(map);
+            showPopup(
+                map,
+                feature
+            );
 
         }
     );
 
 
-    // Mauszeiger ändern
 
     map.on(
         "mouseenter",
         "osm-pois",
         () =>
         {
-            map.getCanvas()
-               .style.cursor =
-               "pointer";
+            map.getCanvas().style.cursor =
+                "pointer";
         }
     );
 
@@ -61,52 +42,49 @@ export function initPopup(map)
         "osm-pois",
         () =>
         {
-            map.getCanvas()
-               .style.cursor =
-               "";
+            map.getCanvas().style.cursor =
+                "";
         }
     );
 
 }
 
 
-
-/**
- * HTML erzeugen
- */
-function createPopupHTML(tags)
+async function showPopup(map, feature)
 {
+
+    const p =
+        feature.properties;
+
+
+    const coordinates =
+        feature.geometry.coordinates;
+
 
     let html =
     `
-    <div class="popup">
+    <div class="poi-popup">
 
     <h3>
-    ${tags.name || "Unbenanntes Objekt"}
+    ${escapeHTML(
+        p.name || "Unbekanntes Objekt"
+    )}
     </h3>
+
+    <div id="wikidata-content">
+        Lade Zusatzinformationen ...
+    </div>
+
     `;
 
 
-    if(tags.image)
+    if(p.wikipedia)
     {
         html +=
         `
         <p>
-        <a href="${tags.image}"
-           target="_blank">
-           Bild
-        </a>
-        </p>
-        `;
-    }
-
-
-    if(tags.wikipedia)
-    {
-        html +=
-        `
-        <p>
-        <a href="https://www.wikipedia.org/wiki/${encodeURIComponent(tags.wikipedia.replace(":", "/"))}"
+        📖
+        <a href="https://www.wikipedia.org/wiki/${encodeURIComponent(p.wikipedia.split(":").pop())}"
            target="_blank">
            Wikipedia
         </a>
@@ -115,14 +93,15 @@ function createPopupHTML(tags)
     }
 
 
-    if(tags.wikidata)
+    if(p.website)
     {
         html +=
         `
         <p>
-        <a href="https://www.wikidata.org/wiki/${tags.wikidata}"
+        🌐
+        <a href="${p.website}"
            target="_blank">
-           Wikidata
+           Webseite
         </a>
         </p>
         `;
@@ -130,40 +109,178 @@ function createPopupHTML(tags)
 
 
     html +=
-    "<hr>";
-
-
-
-    html +=
-    "<table>";
-
-
-
-    Object.keys(tags)
-    .forEach(
-        key =>
-        {
-
-            html +=
-            `
-            <tr>
-            <td><b>${key}</b></td>
-            <td>${tags[key]}</td>
-            </tr>
-            `;
-
-        }
-    );
-
-
-
-    html +=
     `
-    </table>
     </div>
     `;
 
 
-    return html;
+    const popup =
+        new maplibregl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(html)
+        .addTo(map);
+
+
+
+    /*
+     * Wikidata nachladen
+     */
+
+    if(p.wikidata)
+    {
+
+        const data =
+            await loadWikidata(
+                p.wikidata
+            );
+
+
+        const container =
+            document.getElementById(
+                "wikidata-content"
+            );
+
+
+        if(container && data)
+        {
+
+            let extra =
+            "";
+
+
+	    let image =
+    	        null;
+
+
+            /*
+             * Erst OSM image=* verwenden
+             */
+
+            if(p.image)
+            {
+                image =
+                    getImageUrl(
+                        p.image
+                    );
+            }
+
+
+            /*
+             * sonst Wikidata-Bild
+             */
+
+            if(!image && data)
+            {
+                image =
+                    data.image;
+            }
+
+
+            if(image)
+            {
+                extra +=
+                `
+                <img
+                  src="${image}"
+                  style="
+                    width:100%;
+                    max-height:220px;
+                    object-fit:cover;
+                    border-radius:4px;
+                  "
+                >
+                `;
+            }
+
+            if(data.description)
+            {
+                extra +=
+                `
+                <p>
+                ${escapeHTML(
+                    data.description
+                )}
+                </p>
+                `;
+            }
+
+
+            container.innerHTML =
+                extra;
+
+        }
+
+        else if(container)
+        {
+            container.innerHTML =
+                "";
+        }
+
+    }
+
+}
+
+
+function getImageUrl(image)
+{
+    if(!image)
+        return null;
+
+
+    /*
+     * Direktes URL-Bild
+     */
+
+    if(
+        image.startsWith("http://") ||
+        image.startsWith("https://")
+    )
+    {
+        return image;
+    }
+
+
+    /*
+     * Wikimedia Commons:
+     * File:Beispiel.jpg
+     */
+
+    let filename =
+        image;
+
+
+    if(
+        filename.startsWith("File:")
+    )
+    {
+        filename =
+            filename.substring(5);
+    }
+
+
+    if(
+        filename.startsWith("commons:")
+    )
+    {
+        filename =
+            filename.substring(8);
+    }
+
+
+    return (
+        "https://commons.wikimedia.org/wiki/Special:FilePath/" +
+        encodeURIComponent(filename)
+    );
+}
+
+
+function escapeHTML(text)
+{
+
+    return text
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
 
 }
