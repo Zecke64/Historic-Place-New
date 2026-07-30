@@ -1,16 +1,27 @@
 import { loadWikidata } from "./wikidata.js";
 
+
+let currentPopup = null;
+let popupSequence = 0;
+
+
+
 export function initPopup(map)
 {
+
+    /*
+     * Klick auf einzelne POIs
+     */
 
     map.on(
         "click",
         "osm-pois",
-        e =>
+        async e =>
         {
 
-            if (!e.features.length)
+            if(!e.features || !e.features.length)
                 return;
+
 
             const feature =
                 e.features[0];
@@ -25,6 +36,10 @@ export function initPopup(map)
     );
 
 
+
+    /*
+     * Mauszeiger über POIs
+     */
 
     map.on(
         "mouseenter",
@@ -50,185 +65,496 @@ export function initPopup(map)
 }
 
 
+
+
+
 async function showPopup(map, feature)
 {
 
-    const p =
+    const properties =
         feature.properties;
 
+    const thisPopupId = ++popupSequence;
 
     const coordinates =
         feature.geometry.coordinates;
 
 
-    let html =
+
+    /*
+     * Falls noch ein Popup offen ist,
+     * schließen
+     */
+
+    if(currentPopup)
+    {
+        currentPopup.remove();
+    }
+
+
+
+    /*
+     * Grund-Popup sofort anzeigen
+     */
+
+    const html =
     `
     <div class="poi-popup">
 
-    <h3>
-    ${escapeHTML(
-        p.name || "Unbekanntes Objekt"
-    )}
-    </h3>
-
-    <div id="wikidata-content">
-        Lade Zusatzinformationen ...
-    </div>
-
-    `;
+        ${createHeader(properties)}
 
 
-    if(p.wikipedia)
-    {
-        html +=
-        `
-        <p>
-        📖
-        <a href="https://www.wikipedia.org/wiki/${encodeURIComponent(p.wikipedia.split(":").pop())}"
-           target="_blank">
-           Wikipedia
-        </a>
-        </p>
-        `;
-    }
+        <div id="poi-loading">
+            Lade Zusatzinformationen ...
+        </div>
 
 
-    if(p.website)
-    {
-        html +=
-        `
-        <p>
-        🌐
-        <a href="${p.website}"
-           target="_blank">
-           Webseite
-        </a>
-        </p>
-        `;
-    }
+        <div id="poi-content">
+        </div>
 
 
-    html +=
-    `
+        <details class="poi-details">
+
+            <summary>
+                OSM-Tags
+            </summary>
+
+            ${createTagTable(properties)}
+
+        </details>
+
     </div>
     `;
 
 
-    const popup =
-        new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(html)
+
+    currentPopup =
+        new maplibregl.Popup(
+        {
+            maxWidth:"380px"
+        })
+        .setLngLat(
+            coordinates
+        )
+        .setHTML(
+            html
+        )
         .addTo(map);
 
 
 
     /*
-     * Wikidata nachladen
+     * Zusatzinformationen laden
      */
 
-    if(p.wikidata)
+    let wikidata =
+        null;
+
+
+    if(properties.wikidata)
     {
 
-        const data =
+        wikidata =
             await loadWikidata(
-                p.wikidata
+                properties.wikidata
             );
 
-
-        const container =
-            document.getElementById(
-                "wikidata-content"
-            );
+    }
 
 
-        if(container && data)
-        {
 
-            let extra =
-            "";
+    /*
+     * Bild bestimmen
+     */
 
-
-	    let image =
-    	        null;
-
-
-            /*
-             * Erst OSM image=* verwenden
-             */
-
-            if(p.image)
-            {
-                image =
-                    getImageUrl(
-                        p.image
-                    );
-            }
+    const image =
+        selectImage(
+            properties,
+            wikidata
+        );
 
 
-            /*
-             * sonst Wikidata-Bild
-             */
 
-            if(!image && data)
-            {
-                image =
-                    data.image;
-            }
+    /*
+     * Beschreibung bestimmen
+     */
 
-
-            if(image)
-            {
-                extra +=
-                `
-                <img
-                  src="${image}"
-                  style="
-                    width:100%;
-                    max-height:220px;
-                    object-fit:cover;
-                    border-radius:4px;
-                  "
-                >
-                `;
-            }
-
-            if(data.description)
-            {
-                extra +=
-                `
-                <p>
-                ${escapeHTML(
-                    data.description
-                )}
-                </p>
-                `;
-            }
+    const description =
+        selectDescription(
+            properties,
+            wikidata
+        );
 
 
-            container.innerHTML =
-                extra;
 
-        }
+    /*
+     * Dynamischen Inhalt erzeugen
+     */
 
-        else if(container)
-        {
-            container.innerHTML =
-                "";
-        }
+    const content =
+    `
 
+        ${createImage(image)}
+
+
+        ${createDescription(description)}
+
+
+        ${createLinks(properties, wikidata)}
+
+    `;
+
+
+
+    const popupElement =
+        currentPopup
+            .getElement();
+
+
+    const loading =
+        popupElement.querySelector(
+            "#poi-loading"
+        );
+
+
+    const container =
+        popupElement.querySelector(
+            "#poi-content"
+        );
+
+
+    if(loading)
+    {
+        loading.remove();
+    }
+
+
+    if(container && thisPopupId === popupSequence)
+    {
+        container.innerHTML =
+            content;
     }
 
 }
 
 
+function createHeader(properties)
+{
+
+    let subtitle = "";
+
+
+    if(properties.tourism)
+        subtitle = "Tourismus: " + properties.tourism;
+
+    else if(properties.historic)
+        subtitle = "Historisch: " + properties.historic;
+
+    else if(properties.man_made)
+        subtitle = "Bauwerk: " + properties.man_made;
+
+
+
+    return `
+    <h2 class="poi-title">
+
+        ${escapeHTML(
+            properties.name ||
+            "Unbekanntes Objekt"
+        )}
+
+    </h2>
+
+
+    ${
+        subtitle
+        ?
+        `
+        <div class="poi-subtitle">
+            ${escapeHTML(subtitle)}
+        </div>
+        `
+        :
+        ""
+    }
+    `;
+
+}
+
+
+
+
+
+function createImage(url)
+{
+
+    if(!url)
+        return "";
+
+
+    return `
+    <img
+        class="poi-image"
+        src="${url}"
+
+        onerror="
+            this.style.display='none';
+        "
+    >
+    `;
+
+}
+
+
+
+
+
+function createDescription(text)
+{
+
+    if(!text)
+        return "";
+
+
+    return `
+    <div class="poi-description">
+
+        ${escapeHTML(text)}
+
+    </div>
+    `;
+
+}
+
+
+
+
+
+function createLinks(properties, wikidata)
+{
+
+    let html = "";
+
+
+    html += createLink(
+        "Wikipedia",
+        wikidata?.wikipedia ||
+        createWikipediaUrl(
+            properties.wikipedia
+        )
+    );
+
+
+    html += createLink(
+        "Wikidata",
+        wikidata?.id
+        ?
+        "https://www.wikidata.org/wiki/" +
+        wikidata.id
+        :
+        null
+    );
+
+
+    html += createLink(
+        "Website",
+        wikidata?.website ||
+        properties.website
+    );
+
+
+    if(!html)
+        return "";
+
+
+    return
+    `
+    <div class="poi-links">
+
+        ${html}
+
+    </div>
+    `;
+
+}
+
+
+
+
+
+function createLink(title, url)
+{
+
+    if(!url)
+        return "";
+
+
+    return `
+    <a
+        class="poi-button"
+
+        href="${url}"
+
+        target="_blank"
+    >
+        ${title}
+    </a>
+    `;
+
+}
+
+
+
+
+
+function createTagTable(properties)
+{
+
+    const tags =
+    [
+        "tourism",
+        "historic",
+        "heritage",
+        "man_made",
+        "operator",
+        "architect",
+        "start_date",
+        "description",
+        "note"
+    ];
+
+
+
+    let rows = "";
+
+
+
+    for(const tag of tags)
+    {
+
+        if(properties[tag])
+        {
+
+            rows +=
+            `
+            <tr>
+
+                <td class="poi-tag">
+
+                    ${tag}
+
+                </td>
+
+
+                <td>
+
+                    ${escapeHTML(
+                        properties[tag]
+                    )}
+
+                </td>
+
+            </tr>
+            `;
+
+        }
+
+    }
+
+
+
+    if(!rows)
+        return "";
+
+
+
+    return `
+
+    <table class="poi-table">
+
+        ${rows}
+
+    </table>
+
+    `;
+
+}
+
+
+
+
+
+function selectImage(properties, wikidata)
+{
+
+    /*
+     * 1. OSM image
+     */
+
+    let image =
+        getImageUrl(
+            properties.image
+        );
+
+
+    if(image)
+        return image;
+
+
+
+    /*
+     * 2. Wikidata P18
+     */
+
+    if(wikidata && wikidata.image)
+        return wikidata.image;
+
+
+
+    return null;
+
+}
+
+
+
+
+
+function selectDescription(properties, wikidata)
+{
+
+    if(wikidata?.description)
+        return wikidata.description;
+
+
+    if(properties.description)
+        return properties.description;
+
+
+    if(properties.note)
+        return properties.note;
+
+
+    if(wikidata?.label)
+        return wikidata.label;
+
+
+    return null;
+}
+
+
+
+
+
 function getImageUrl(image)
 {
+
     if(!image)
         return null;
 
 
+
     /*
-     * Direktes URL-Bild
+     * Direkte URL
      */
 
     if(
@@ -240,47 +566,94 @@ function getImageUrl(image)
     }
 
 
+
     /*
-     * Wikimedia Commons:
-     * File:Beispiel.jpg
+     * Wikimedia Commons
      */
 
     let filename =
         image;
 
 
-    if(
-        filename.startsWith("File:")
-    )
+
+    if(filename.startsWith("File:"))
     {
         filename =
             filename.substring(5);
     }
 
 
-    if(
-        filename.startsWith("commons:")
-    )
+
+    if(filename.startsWith("commons:"))
     {
         filename =
             filename.substring(8);
     }
 
 
+
     return (
         "https://commons.wikimedia.org/wiki/Special:FilePath/" +
         encodeURIComponent(filename)
     );
+
 }
+
+
+
+
+
+function createWikipediaUrl(value)
+{
+
+    if(!value)
+        return null;
+
+
+
+    /*
+     * Format:
+     * de:Artikel
+     */
+
+    let parts =
+        value.split(":");
+
+
+
+    if(parts.length === 2)
+    {
+
+        return (
+            "https://" +
+            parts[0] +
+            ".wikipedia.org/wiki/" +
+            encodeURIComponent(parts[1])
+        );
+
+    }
+
+
+
+    return (
+        "https://www.wikipedia.org/wiki/" +
+        encodeURIComponent(value)
+    );
+
+}
+
+
+
 
 
 function escapeHTML(text)
 {
 
-    return text
+    return String(text)
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;");
 
 }
+
