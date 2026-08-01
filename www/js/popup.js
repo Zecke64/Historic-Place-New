@@ -71,6 +71,8 @@ export function initPopup(map)
 async function showPopup(map, feature)
 {
 
+    console.log("POI Properties:", feature.properties);
+
     const properties =
         feature.properties;
 
@@ -367,8 +369,7 @@ function createLinks(properties, wikidata)
         return "";
 
 
-    return
-    `
+    return `
     <div class="poi-links">
 
         ${html}
@@ -405,82 +406,48 @@ function createLink(title, url)
 
 
 
-
-
 function createTagTable(properties)
 {
-
-    const tags =
-    [
-        "tourism",
-        "historic",
-        "heritage",
-        "man_made",
-        "operator",
-        "architect",
-        "start_date",
-        "description",
-        "note"
-    ];
-
-
+    if (!properties)
+        return "";
 
     let rows = "";
 
+    const hidden = new Set([
+        "cluster",
+        "cluster_id",
+        "point_count",
+        "point_count_abbreviated"
+    ]);
 
-
-    for(const tag of tags)
+    for (const key of Object.keys(properties).sort())
     {
+        if (hidden.has(key))
+            continue;
 
-        if(properties[tag])
-        {
+	if (key.startsWith("_app_"))
+	    continue;
 
-            rows +=
-            `
-            <tr>
+        const value = properties[key];
 
-                <td class="poi-tag">
+        if (value === null || value === undefined || value === "")
+            continue;
 
-                    ${tag}
-
-                </td>
-
-
-                <td>
-
-                    ${escapeHTML(
-                        properties[tag]
-                    )}
-
-                </td>
-
-            </tr>
-            `;
-
-        }
-
+        rows += `
+        <tr>
+            <td class="poi-tag">${escapeHTML(key)}</td>
+            <td>${escapeHTML(String(value))}</td>
+        </tr>`;
     }
 
-
-
-    if(!rows)
-        return "";
-
-
+    if (!rows)
+        return "<div>Keine OSM-Tags vorhanden.</div>";
 
     return `
-
     <table class="poi-table">
-
         ${rows}
-
-    </table>
-
-    `;
-
+    </table>`;
 }
-
-
 
 
 

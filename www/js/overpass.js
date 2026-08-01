@@ -1,3 +1,6 @@
+import { prefetchWikidata }
+    from "./wikidata.js";
+
 const OVERPASS_URL =
 //    "https://overpass.maprva.org/api/interpreter";
 //    "https://overpass-api.de/api/interpreter";
@@ -23,7 +26,7 @@ export function initOverpassLayer(map)
                 features:[]
             },
             cluster:true,
-            clusterRadius:80,
+            clusterRadius:30,
             clusterMaxZoom:16
         }
     );
@@ -100,7 +103,7 @@ export function initOverpassLayer(map)
             ],
             layout:
             {
-                "icon-image": [ "get", "icon" ],
+                "icon-image": [ "get", "_app_icon" ],
                 "icon-size":0.8,
                 "icon-allow-overlap":true
             }
@@ -231,6 +234,12 @@ async function loadPOIs(map)
         const geojson = convertToGeoJSON(data);
         console.log( "GeoJSON:", geojson.features.length);
 
+	const ids = geojson.features
+                .map(f => f.properties.wikidata)
+                .filter(Boolean);
+
+        prefetchWikidata(ids);
+
         map
         .getSource(sourceId)
         .setData(geojson);
@@ -317,7 +326,7 @@ function convertToGeoJSON(data)
                 properties:
                 {
                     ...tags,
-                    icon: getIcon(tags)
+                    _app_icon: getIcon(tags)
                 }
             }
         );
