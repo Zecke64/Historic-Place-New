@@ -6,12 +6,18 @@
 
 import
 {
-    escapeHTML
+    escapeHTML,
+    cleanCommonsHTML,
+    stripHTML
 }
 from "./utils.js";
 
 
-async function getCommonsImageInfo(fileName)
+const commonsCache = new Map();
+const MAX_COMMONS_CACHE = 500;
+
+
+async function loadCommonsImageInfo(fileName)
 {
     const apiUrl =
         "https://commons.wikimedia.org/w/api.php?" +
@@ -24,7 +30,8 @@ async function getCommonsImageInfo(fileName)
             prop: "imageinfo",
             iiprop:
                 "url|size|extmetadata",
-            iiurlwidth: "500"
+            iiurlwidth:
+                "500"
         });
 
 
@@ -36,12 +43,10 @@ async function getCommonsImageInfo(fileName)
         await response.json();
 
 
-    const pages =
-        data.query.pages;
-
-
     const page =
-        Object.values(pages)[0];
+        Object.values(
+            data.query.pages
+        )[0];
 
 
     if(!page.imageinfo)
@@ -51,8 +56,8 @@ async function getCommonsImageInfo(fileName)
     const info =
         page.imageinfo[0];
 
-
     return {
+
         url:
             info.url,
 
@@ -65,18 +70,74 @@ async function getCommonsImageInfo(fileName)
         original:
             "File:" + fileName,
 
+        commonsUrl:
+            "https://commons.wikimedia.org/wiki/File:" +
+            encodeURIComponent(fileName),
+
         author:
             info.extmetadata?.Artist?.value ?? null,
 
         license:
-            info.extmetadata?.LicenseShortName?.value ?? null,
-
-	description:
-            info.extmetadata?.ImageDescription?.value ?? null
+            info.extmetadata?.LicenseShortName?.value ?? null
     };
+
 }
 
 
+
+async function getCommonsImageInfo(fileName)
+{
+    const cacheKey =
+        normalizeCacheKey(fileName);
+
+
+    /*
+     * 1. Cache prüfen
+     */
+
+    if(commonsCache.has(cacheKey))
+    {
+        console.log(
+            "Commons Cache:",
+            cacheKey
+        );
+
+        return commonsCache.get(cacheKey);
+    }
+
+
+    /*
+     * 2. Commons API laden
+     */
+
+    console.log(
+        "Commons API:",
+        cacheKey
+    );
+
+
+    const imageInfo =
+        await loadCommonsImageInfo(
+            fileName
+        );
+
+
+    /*
+     * 3. Ergebnis cachen
+     *
+     * Auch null speichern!
+     * Damit werden nicht vorhandene
+     * Dateien nicht immer erneut abgefragt.
+     */
+
+    addCommonsCache(
+        cacheKey,
+        imageInfo
+    );
+
+
+    return imageInfo;
+}
 
 
 export async function getImageInfo(properties, wikidata)
@@ -146,6 +207,12 @@ export async function getImageInfo(properties, wikidata)
     /*
      * 3. Wikidata P18
      */
+
+    console.log(
+        "Wikidata image:",
+        wikidata?.image
+    );
+
 
     if(wikidata?.image)
     {
@@ -224,6 +291,71 @@ export function createImage(image)
 }
 
 
+export function createImageCredit(image)
+{
+    if(!image)
+        return "";
+
+
+    let lines = [];
+
+
+    if(image.original)
+    {
+        lines.push(
+            "Bild: " +
+            escapeHTML(
+                image.original
+            )
+        );
+    }
+
+
+    if(image.author)
+    {
+        lines.push(
+            "Urheber: " +
+            cleanCommonsHTML(
+                image.author
+            )
+        );
+    }
+
+
+    if(image.license)
+    {
+        lines.push(
+            "Lizenz: " +
+            stripHTML(
+                image.license
+            )
+        );
+    }
+
+
+    if(image.commonsUrl)
+    {
+        lines.push(
+            `<a href="${escapeHTML(image.commonsUrl)}"
+                target="_blank">
+                Wikimedia Commons
+             </a>`
+        );
+    }
+
+
+    if(lines.length === 0)
+        return "";
+
+
+    return `
+<div class="poi-image-credit">
+${lines.join("<br>")}
+</div>
+`;
+}
+
+
 /*
  * Entfernt defekte Bilder
  */
@@ -261,48 +393,6 @@ function getImageSourceText(image)
     }
 }
 
-
-export function createImageCredit(image)
-{
-    if(!image)
-        return "";
-
-
-    let lines = [];
-
-
-    if(image.author)
-    {
-        lines.push(
-            "Urheber: " +
-            escapeHTML(
-                image.author
-            )
-        );
-    }
-
-
-    if(image.license)
-    {
-        lines.push(
-            "Lizenz: " +
-            escapeHTML(
-                image.license
-            )
-        );
-    }
-
-
-    if(lines.length === 0)
-        return "";
-
-
-    return `
-<div class="poi-image-credit">
-${lines.join("<br>")}
-</div>
-`;
-}
 
 
 function getCommonsFileName(value)
@@ -360,3 +450,36 @@ function getCommonsFileName(value)
     return null;
 }
 
+
+function normalizeCacheKey(fileName)
+{
+    return decodeURIComponent(
+        fileName
+            .trim()
+            .replaceAll("_", " ")
+    );
+}
+
+
+
+function addCommonsCache(
+    key,
+    value
+)
+{
+    if(commonsCache.size >= MAX_COMMONS_CACHE)
+    {
+        const firstKey =
+            commonsCache.keys().next().value;
+
+        commonsCache.delete(
+            firstKey
+        );
+    }
+
+
+    commonsCache.set(
+        key,
+        value
+    );
+}

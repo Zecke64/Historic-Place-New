@@ -42,7 +42,13 @@
 {
     margin-top: 5px;
     font-size: 0.75em;
+    line-height: 1.4;
     color: #666;
+}
+
+.poi-image-credit a
+{
+    text-decoration: none;
 }
 
 .poi-description
