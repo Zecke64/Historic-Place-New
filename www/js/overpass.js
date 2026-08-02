@@ -276,6 +276,8 @@ function createQuery(bounds)
  nwr["heritage"](${south},${west},${north},${east});
  nwr["wikipedia"](${south},${west},${north},${east});
  nwr["wikidata"](${south},${west},${north},${east});
+ //nwr["wikimedia_commons"](${south},${west},${north},${east});
+ //nwr["man_made"](${south},${west},${north},${east});
 );
 
 

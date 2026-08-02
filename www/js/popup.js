@@ -1,4 +1,17 @@
 import { loadWikidata } from "./wikidata.js";
+import
+    {
+        getImageUrl,
+        createImage,
+        installImageHandler
+    }
+    from "./images.js";
+
+import
+    {
+        escapeHTML
+    }
+    from "./utils.js";
 
 
 let currentPopup = null;
@@ -170,7 +183,7 @@ async function showPopup(map, feature)
      */
 
     const image =
-        selectImage(
+        getImageUrl(
             properties,
             wikidata
         );
@@ -235,6 +248,7 @@ async function showPopup(map, feature)
     {
         container.innerHTML =
             content;
+        installImageHandler(container);
     }
 
 }
@@ -283,29 +297,6 @@ function createHeader(properties)
 
 }
 
-
-
-
-
-function createImage(url)
-{
-
-    if(!url)
-        return "";
-
-
-    return `
-    <img
-        class="poi-image"
-        src="${url}"
-
-        onerror="
-            this.style.display='none';
-        "
-    >
-    `;
-
-}
 
 
 
@@ -451,39 +442,6 @@ function createTagTable(properties)
 
 
 
-function selectImage(properties, wikidata)
-{
-
-    /*
-     * 1. OSM image
-     */
-
-    let image =
-        getImageUrl(
-            properties.image
-        );
-
-
-    if(image)
-        return image;
-
-
-
-    /*
-     * 2. Wikidata P18
-     */
-
-    if(wikidata && wikidata.image)
-        return wikidata.image;
-
-
-
-    return null;
-
-}
-
-
-
 
 
 function selectDescription(properties, wikidata)
@@ -508,63 +466,6 @@ function selectDescription(properties, wikidata)
     return null;
 }
 
-
-
-
-
-function getImageUrl(image)
-{
-
-    if(!image)
-        return null;
-
-
-
-    /*
-     * Direkte URL
-     */
-
-    if(
-        image.startsWith("http://") ||
-        image.startsWith("https://")
-    )
-    {
-        return image;
-    }
-
-
-
-    /*
-     * Wikimedia Commons
-     */
-
-    let filename =
-        image;
-
-
-
-    if(filename.startsWith("File:"))
-    {
-        filename =
-            filename.substring(5);
-    }
-
-
-
-    if(filename.startsWith("commons:"))
-    {
-        filename =
-            filename.substring(8);
-    }
-
-
-
-    return (
-        "https://commons.wikimedia.org/wiki/Special:FilePath/" +
-        encodeURIComponent(filename)
-    );
-
-}
 
 
 
@@ -610,17 +511,4 @@ function createWikipediaUrl(value)
 }
 
 
-
-
-
-function escapeHTML(text)
-{
-
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;");
-
-}
 
