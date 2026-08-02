@@ -11,7 +11,6 @@
 {
     margin:0;
     margin-bottom:8px;
-
     font-size:18px;
 }
 
@@ -24,50 +23,50 @@
 .poi-image
 {
     width:100%;
-
     max-height:220px;
-
     object-fit:cover;
-
     border-radius:4px;
-
     border:1px solid #bbb;
-
     margin-bottom:10px;
+}
+
+.poi-image-source
+{
+    margin-top: 4px;
+    font-size: 0.8em;
+    color: #666;
+    text-align: center;
+}
+
+.poi-image-credit
+{
+    margin-top: 5px;
+    font-size: 0.75em;
+    color: #666;
 }
 
 .poi-description
 {
     margin-bottom:10px;
-
     line-height:1.4;
 }
 
 .poi-links
 {
     display:flex;
-
     flex-wrap:wrap;
-
     gap:6px;
-
     margin-bottom:10px;
 }
 
 .poi-button
 {
     display:inline-block;
-
     padding:4px 8px;
-
     border-radius:4px;
-
     background:#1976d2;
-
     color:white;
-
     text-decoration:none;
-
     font-size:13px;
 }
 
@@ -79,23 +78,19 @@
 .poi-table
 {
     width:100%;
-
     border-collapse:collapse;
 }
 
 .poi-table td
 {
     padding:3px;
-
     vertical-align:top;
-
     border-bottom:1px solid #eee;
 }
 
 .poi-tag
 {
     color:#666;
-
     width:120px;
 }
 
@@ -107,6 +102,5 @@
 .poi-details summary
 {
     cursor:pointer;
-
     font-weight:bold;
 }

@@ -1,8 +1,9 @@
 import { loadWikidata } from "./wikidata.js";
 import
     {
-        getImageUrl,
+        getImageInfo,
         createImage,
+        createImageCredit,
         installImageHandler
     }
     from "./images.js";
@@ -158,9 +159,7 @@ async function showPopup(map, feature)
 
 
 
-    /*
-     * Zusatzinformationen laden
-     */
+    // Zusatzinformationen laden
 
     let wikidata =
         null;
@@ -182,12 +181,13 @@ async function showPopup(map, feature)
      * Bild bestimmen
      */
 
-    const image =
-        getImageUrl(
+    const imageInfo =
+        await getImageInfo(
             properties,
             wikidata
         );
 
+    console.log("IMAGE INFO:", imageInfo);
 
 
     /*
@@ -209,12 +209,9 @@ async function showPopup(map, feature)
     const content =
     `
 
-        ${createImage(image)}
-
-
+        ${createImage(imageInfo)}
+        ${createImageCredit(imageInfo)}
         ${createDescription(description)}
-
-
         ${createLinks(properties, wikidata)}
 
     `;

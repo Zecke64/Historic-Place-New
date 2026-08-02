@@ -11,13 +11,82 @@ import
 from "./utils.js";
 
 
-
-/*
- * Ermittelt die Bild-URL
- */
-
-export function getImageUrl(properties, wikidata)
+async function getCommonsImageInfo(fileName)
 {
+    const apiUrl =
+        "https://commons.wikimedia.org/w/api.php?" +
+        new URLSearchParams(
+        {
+            action: "query",
+            format: "json",
+            origin: "*",
+            titles: "File:" + fileName,
+            prop: "imageinfo",
+            iiprop:
+                "url|size|extmetadata",
+            iiurlwidth: "500"
+        });
+
+
+    const response =
+        await fetch(apiUrl);
+
+
+    const data =
+        await response.json();
+
+
+    const pages =
+        data.query.pages;
+
+
+    const page =
+        Object.values(pages)[0];
+
+
+    if(!page.imageinfo)
+        return null;
+
+
+    const info =
+        page.imageinfo[0];
+
+
+    return {
+        url:
+            info.url,
+
+        thumbnail:
+            info.thumburl,
+
+        source:
+            "commons",
+
+        original:
+            "File:" + fileName,
+
+        author:
+            info.extmetadata?.Artist?.value ?? null,
+
+        license:
+            info.extmetadata?.LicenseShortName?.value ?? null,
+
+	description:
+            info.extmetadata?.ImageDescription?.value ?? null
+    };
+}
+
+
+
+
+export async function getImageInfo(properties, wikidata)
+{
+
+    console.log("getImageInfo input:", {
+        image: properties?.image,
+        wikimedia_commons: properties?.wikimedia_commons,
+        wikidataImage: wikidata?.image
+    });
 
     /*
      * 1. OSM image
@@ -25,13 +94,31 @@ export function getImageUrl(properties, wikidata)
 
     if(properties?.image)
     {
-        const image =
-            normalizeImageUrl(
+        const commonsFile =
+            getCommonsFileName(
                 properties.image
             );
 
-        if(image)
-            return image;
+
+        if(commonsFile)
+        {
+            return await getCommonsImageInfo(
+                commonsFile
+            );
+        }
+
+	const url =
+            normalizeImageUrl(
+            properties.image
+        );
+
+        return {
+            url,
+            thumbnail:url,
+            source:"osm-image",
+            original:properties.image
+	};
+ 	
     }
 
 
@@ -41,13 +128,18 @@ export function getImageUrl(properties, wikidata)
 
     if(properties?.wikimedia_commons)
     {
-        const image =
-            normalizeImageUrl(
+        const commonsFile =
+            getCommonsFileName(
                 properties.wikimedia_commons
             );
 
-        if(image)
-            return image;
+
+        if(commonsFile)
+        {
+            return await getCommonsImageInfo(
+                commonsFile
+            );
+        }
     }
 
 
@@ -57,13 +149,24 @@ export function getImageUrl(properties, wikidata)
 
     if(wikidata?.image)
     {
-        const image =
-            normalizeImageUrl(
+        const commonsFile =
+            getCommonsFileName(
                 wikidata.image
             );
 
-        if(image)
+
+        if(commonsFile)
+        {
+            const image =
+                await getCommonsImageInfo(
+                    commonsFile
+                );
+
+            if(image)
+                image.source = "wikidata";
+
             return image;
+        }
     }
 
 
@@ -71,67 +174,16 @@ export function getImageUrl(properties, wikidata)
 }
 
 
-/*
- * Wandelt Commons-Dateien in direkte Bild-URLs um
- */
+
+// Wandelt Commons-Dateien in direkte Bild-URLs um
 
 export function normalizeImageUrl(url)
 {
-    if (!url)
+    if(!url)
         return null;
 
 
     url = url.trim();
-
-    // Commons Category ist kein einzelnes Bild
-
-    if( url.startsWith("Category:") )
-    {
-        return null;
-    }
-
-    // Commons File:Name
-
-    if (url.startsWith("File:"))
-    {
-        return (
-            "https://commons.wikimedia.org/wiki/Special:FilePath/" +
-            encodeURIComponent(
-                url.substring(5)
-            )
-        );
-    }
-
-
-    /*
-     * Commons Wiki/File:Name
-     */
-
-    if (url.includes("/wiki/File:"))
-    {
-        const file =
-            url.split("/wiki/File:")[1];
-
-
-        return (
-            "https://commons.wikimedia.org/wiki/Special:FilePath/" +
-            encodeURIComponent(
-                decodeURIComponent(file)
-            )
-        );
-    }
-
-
-    /*
-     * Direkte Bilddateien
-     */
-
-    if(
-        /\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(url)
-    )
-    {
-        return url;
-    }
 
 
     return url;
@@ -142,27 +194,30 @@ export function normalizeImageUrl(url)
  * Erzeugt das HTML für das Vorschaubild
  */
 
-export function createImage(url)
+export function createImage(image)
 {
-    if (!url)
+    if (!image)
         return "";
-
 
     return `
 <div class="poi-image-container">
 
     <a
-        href="${escapeHTML(url)}"
+        href="${escapeHTML(image.url)}"
         target="_blank"
     >
 
         <img
             class="poi-image"
-            src="${escapeHTML(url)}"
+            src="${escapeHTML(image.thumbnail ?? image.url)}"
             loading="lazy"
         >
 
     </a>
+
+    <div class="poi-image-source">
+        ${getImageSourceText(image)}
+    </div>
 
 </div>
 `;
@@ -186,3 +241,122 @@ export function installImageHandler(container)
         };
     });
 }
+
+
+function getImageSourceText(image)
+{
+    switch(image.source)
+    {
+        case "osm-image":
+            return "Quelle: OSM image=*";
+
+        case "commons":
+            return "Quelle: Wikimedia Commons";
+
+        case "wikidata":
+            return "Quelle: Wikidata (P18)";
+
+        default:
+            return "";
+    }
+}
+
+
+export function createImageCredit(image)
+{
+    if(!image)
+        return "";
+
+
+    let lines = [];
+
+
+    if(image.author)
+    {
+        lines.push(
+            "Urheber: " +
+            escapeHTML(
+                image.author
+            )
+        );
+    }
+
+
+    if(image.license)
+    {
+        lines.push(
+            "Lizenz: " +
+            escapeHTML(
+                image.license
+            )
+        );
+    }
+
+
+    if(lines.length === 0)
+        return "";
+
+
+    return `
+<div class="poi-image-credit">
+${lines.join("<br>")}
+</div>
+`;
+}
+
+
+function getCommonsFileName(value)
+{
+    if (!value)
+        return null;
+
+
+    /*
+     * File:Name.jpg
+     */
+
+    if(value.startsWith("File:"))
+    {
+        return value.substring(5);
+    }
+
+
+    /*
+     * https://commons.wikimedia.org/wiki/File:Name.jpg
+     */
+
+    const fileMarker =
+        "/wiki/File:";
+
+
+    if(value.includes(fileMarker))
+    {
+        return decodeURIComponent(
+            value
+                .split(fileMarker)[1]
+                .split("?")[0]
+        );
+    }
+
+
+    /*
+     * https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
+     */
+
+    const pathMarker =
+        "/wiki/Special:FilePath/";
+
+
+    if(value.includes(pathMarker))
+    {
+        return decodeURIComponent(
+            value
+                .split(pathMarker)[1]
+                .split("?")[0]
+        );
+    }
+
+
+    return null;
+}
+
