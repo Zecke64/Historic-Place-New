@@ -2,39 +2,51 @@
  * Auswahl der POI-Symbole
  */
 
-
 export function getIcon(tags)
 {
+    if(tags.heritage === "1")
+        return "wke";
+
+    if(tags.cemetary === "war_cemetary" || tags.tomb === "war_grave")
+        return "war_cemetery";
+
+    if(tags.building === "bunker" || tags.military === "bunker")
+        return "bunker";
+
+    if(tags.historic === "boundary_stone" || tags.boundary === "marker")
+            return "historic_boundary_stone";
+
+    if(tags.historic === "tower" || tags.building === "tower" || tags.man_made === "tower")
+            return "turm";
+
+    if(tags.man_made === "adit" || tags.man_made === "cellar_entrance")
+        return "stollen";
+
+    if(tags.man_made === "mineshaft" || tags.historic === "mineshaft")
+        return "mine";
+
+    if(tags.historic === "wayside_cross")
+        return "cross";
 
     if(tags.tourism === "museum")
-    {
         return "museum";
-    }
 
+    if(tags.tourism != null)
+        return "null";
+
+    if(tags.historic === "castle")
+        return "castle";
 
     if(tags.amenity === "place_of_worship")
-    {
         return "church";
-    }
 
-
-    if(tags.historic === "castle" ||
-       tags.historic === "fort")
-    {
-        return "castle";
-    }
-
-
-    if(tags.industrial ||
-       tags.man_made === "works")
-    {
+    if(tags.historic === "industrial")
         return "industrial";
-    }
-
 
     return "poi";
 
 }
+
 
 
 export async function loadIcons(map)
@@ -43,10 +55,19 @@ export async function loadIcons(map)
     const icons =
     [
         "poi",
+	"null",
         "museum",
         "church",
         "castle",
-        "industrial"
+        "industrial",
+	"cross",
+	"mine",
+	"stollen",
+	"wke",
+	"war_cemetery",
+	"bunker",
+	"historic_boundary_stone",
+	"turm"
     ];
 
 

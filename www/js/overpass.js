@@ -1,5 +1,6 @@
 import { prefetchWikidata }
     from "./wikidata.js";
+import { getIcon } from "./icons.js";
 
 const OVERPASS_URL =
 //    "https://overpass.maprva.org/api/interpreter";
@@ -26,7 +27,7 @@ export function initOverpassLayer(map)
                 features:[]
             },
             cluster:true,
-            clusterRadius:30,
+            clusterRadius:5,
             clusterMaxZoom:16
         }
     );
@@ -258,7 +259,9 @@ async function loadPOIs(map)
 
 }
 
-
+//
+// Die Query gibt eine Obermenge aller Objekte, die potentiell dargestellt werden können
+//
 function createQuery(bounds)
 {
 
@@ -274,20 +277,45 @@ function createQuery(bounds)
 (
  nwr["historic"](${south},${west},${north},${east});
  nwr["heritage"](${south},${west},${north},${east});
- nwr["wikipedia"](${south},${west},${north},${east});
- nwr["wikidata"](${south},${west},${north},${east});
+ nwr["tourism"](${south},${west},${north},${east});
+ nwr["abandoned"](${south},${west},${north},${east});
+ nwr["disused"](${south},${west},${north},${east});
+ //nwr["wikipedia"](${south},${west},${north},${east});
+ //nwr["wikidata"](${south},${west},${north},${east});
+ nwr[amenity=monastery](${south},${west},${north},${east});
+ nwr[amenity=place_of_worship](${south},${west},${north},${east});
+ nwr[amenity=grave_yard](${south},${west},${north},${east});
+ nwr[amenity=prison](${south},${west},${north},${east});
+ nwr[building=castle_wall](${south},${west},${north},${east});
+ nwr[building=monastery](${south},${west},${north},${east});
+ nwr[building=triumphal_arc](${south},${west},${north},${east});
+ nwr[building=chapel](${south},${west},${north},${east});
+ nwr[man_made=campanile](${south},${west},${north},${east});
+ nwr[man_made=cellar_entrance](${south},${west},${north},${east});
+ nwr[man_made=cross](${south},${west},${north},${east});
+ nwr[man_made=water_well](${south},${west},${north},${east});
+ nwr[man_made=windmill](${south},${west},${north},${east});
+ nwr[man_made=watermill](${south},${west},${north},${east});
+ nwr[man_made=mine](${south},${west},${north},${east});
+ nwr[man_made=mineshaft](${south},${west},${north},${east});
+ nwr[man_made=adit](${south},${west},${north},${east});
+ nwr[man_made=spoil_heap](${south},${west},${north},${east});
+ nwr[man_made=obelisk](${south},${west},${north},${east});
+ nwr[man_made=kiln](${south},${west},${north},${east});
+ nwr[man_made=tower](${south},${west},${north},${east});
+ nwr[natural=stone](${south},${west},${north},${east});
+ nwr[natural=spring](${south},${west},${north},${east});
  //nwr["wikimedia_commons"](${south},${west},${north},${east});
  //nwr["man_made"](${south},${west},${north},${east});
 );
 
 
-out center qt 200;
+out center qt 500;
 `;
 
 }
 
 
- //nwr["tourism"](${south},${west},${north},${east});
  //nwr["man_made"](${south},${west},${north},${east});
 
 
@@ -347,9 +375,33 @@ function convertToGeoJSON(data)
 }
 
 
-
+/*
 function getIcon(tags)
 {
+    if(tags.heritage === "1")
+        return "wke";
+
+    if(tags.cemetary === "war_cemetary" || tags.tomb === "war_grave")
+        return "war_cemetary";
+
+    if(tags.building === "bunker" || tags.military === "bunker")
+        return "bunker";
+
+    if(tags.historic === "boundary_stone" || tags.boundary === "marker")
+	    return "boundary_marker";
+
+    if(tags.historic === "tower" || tags.building === "tower" || tags.man_made === "tower")
+	    return "tower";
+
+    if(tags.man_made === "adit" || tags.man_made === "cellar_entrance")
+        return "stollen";
+
+    if(tags.man_made === "mineshaft" || tags.historic === "mineshaft")
+        return "mine";
+
+    if(tags.historic === "wayside_cross")
+        return "cross";
+
     if(tags.tourism === "museum")
         return "museum";
 
@@ -359,13 +411,13 @@ function getIcon(tags)
     if(tags.amenity === "place_of_worship")
         return "church";
 
-    if(tags.man_made)
+    if(tags.historic === "industrial")
         return "industrial";
 
     return "poi";
 
 }
-
+*/
 
 function clearSource(map)
 {
