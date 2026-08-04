@@ -1,11 +1,11 @@
 import { createMap } from "./map.js";
 import { addControls } from "./controls.js";
 import { addRasterLayer } from "./layers.js";
-import { createLayerControl } from "./layercontrol.js";
+//import { createLayerControl } from "./layercontrol.js";
 import { initOverpassLayer } from "./overpass.js";
 import { initPopup } from "./popup.js";
 import { loadIcons } from "./icons.js";
-
+import { createLayerControl } from "./ui/layerControl.js";
 
 const map = createMap();
 
@@ -19,7 +19,7 @@ map.on(
 async () =>
 {
 
-    console.log( "Karte geladen");
+    // console.log( "Karte geladen");
 
     addRasterLayer(
         map,
@@ -40,15 +40,30 @@ async () =>
     );
 
 
-    createLayerControl(map);
-    console.log("Lade Icons...");
-    await loadIcons(map);
-    console.log("Icons geladen");
-    initOverpassLayer(map);
-    console.log("Overpass Layer erstellt");
-    initPopup(map);
-    console.log("Popup aktiviert");
+console.log(
+    "APP MAP:",
+    map
+);
 
+console.log(
+    "getLayer:",
+    typeof map.getLayer
+);
+    createLayerControl(map);
+    // console.log("Lade Icons...");
+    await loadIcons(map);
+    // console.log("Icons geladen");
+    initOverpassLayer(map);
+    // console.log("Overpass Layer erstellt");
+    initPopup(map);
+    // console.log("Popup aktiviert");
+
+    console.log(
+        "MapLibre Layer:",
+        map.getStyle().layers.map(
+            l => l.id
+        )
+    );
 });
 
 
