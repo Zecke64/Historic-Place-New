@@ -1,14 +1,10 @@
 .layer-control
 {
     position:absolute;
-
     top:10px;
     right:10px;
-
     background:white;
-
     padding:10px;
-
     border-radius:5px;
 }
 
@@ -21,15 +17,28 @@
 
 .layer-row
 {
-    display:flex;
-
+    display:grid;
+    grid-template-columns:
+        auto
+        minmax(120px, 1fr)
+        100px
+        45px;
     align-items:center;
-
-    gap:6px;
-
-    margin:4px 0;
+    column-gap:8px;
 }
 
+
+.layer-opacity
+{
+    width:90px;
+    justify-self:end;
+}
+
+.layer-opacity-value
+{
+    width:40px;
+    text-align:right;
+}
 
 .layer-overlay
 {
@@ -38,4 +47,58 @@
 
 .layer-base
 {
+}
+
+
+# Aussehen des Sliders
+
+#.layer-opacity
+#{
+#    width: 90px;
+#    height: 16px;
+#
+#    appearance: none;
+#    -webkit-appearance: none;
+#}
+
+
+/* Firefox */
+.layer-opacity::-moz-range-track
+{
+    height: 3px;
+    background: #aaa;
+    border-radius: 2px;
+}
+
+.layer-opacity::-moz-range-thumb
+{
+    width: 10px;
+    height: 10px;
+
+    border: 1px solid #666;
+    border-radius: 50%;
+    background: white;
+}
+
+
+/* Chrome / Edge */
+.layer-opacity::-webkit-slider-runnable-track
+{
+    height: 3px;
+    background: #aaa;
+    border-radius: 2px;
+}
+
+.layer-opacity::-webkit-slider-thumb
+{
+    -webkit-appearance: none;
+
+    width: 10px;
+    height: 10px;
+
+    margin-top: -6px;
+
+    border: 1px solid #666;
+    border-radius: 50%;
+    background: white;
 }

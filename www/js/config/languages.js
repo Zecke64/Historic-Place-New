@@ -7,6 +7,9 @@ export const languages =
         "layer.opentopomap":
             "OpenTopoMap",
 
+        "layer.kliver":
+            "Kliver Flözkarte",
+
         "layer.osmPois":
             "OSM-POIs"
 
@@ -18,6 +21,9 @@ export const languages =
 
         "layer.opentopomap":
             "OpenTopoMap",
+
+        "layer.kliver":
+            "Kliver map",
 
         "layer.osmPois":
             "OSM POIs"

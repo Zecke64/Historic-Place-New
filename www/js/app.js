@@ -8,6 +8,7 @@ import { loadIcons } from "./icons.js";
 import { createLayerControl } from "./ui/layerControl.js";
 
 const map = createMap();
+window.mapLibreMap = map;
 
 
 addControls(map);
@@ -25,20 +26,30 @@ async () =>
         map,
         {
             id:"topo",
-
             title:"Topografische Karte",
-
             tiles:
             [
               "https://tile.opentopomap.org/{z}/{x}/{y}.png"
             ],
-
             opacity:0.5,
-
             group:"Hintergrundkarten"
         }
     );
 
+    addRasterLayer(
+    map,
+    {
+        id:"kliver-raster",
+        title:"Kliver-Flözkarte",
+        tiles:
+        [
+            "https://tiles.historic.place/mining/Kliver/{z}/{x}/{y}.png"
+        ],
+        opacity:0.7,
+        visible:false,
+        group:"Historische Karten"
+    }
+);
 
 console.log(
     "APP MAP:",

@@ -134,13 +134,47 @@ function createOverlayEntry(layer, map)
     const label =
         document.createElement("span");
 
-    label.textContent =
-        tr(layer.titleKey);
+    label.textContent = tr(layer.titleKey);
+
+
+    const slider = document.createElement("input");
+
+    slider.type = "range";
+    slider.min = 0;
+    slider.max = 100;
+    slider.value = Math.round(layer.opacity * 100);
+    slider.className = "layer-opacity";
+
+    slider.addEventListener(
+        "input",
+        () =>
+        {
+            const percent =
+                slider.value;
+
+            value.textContent =
+                percent + "%";
+
+            setLayerOpacity(
+                map,
+                layer,
+                percent / 100
+            );
+        }
+    );
+
+
+    const value = document.createElement("span");
+
+    value.className = "layer-opacity-value";
+    value.textContent = Math.round(layer.opacity * 100) + "%";
 
 
     row.append(
         checkbox,
-        label
+        label,
+	slider,
+	value
     );
 
 
@@ -155,11 +189,10 @@ function setLayerVisibility(
     visible
 )
 {
+
     console.log(
-        "Set visibility:",
-        layer.id,
-        visible,
-        layer.mapLayers
+        "Set visibility OBJECT:",
+        JSON.stringify(layer, null, 2)
     );
 
     console.log(
@@ -207,6 +240,88 @@ function setLayerVisibility(
     }
 }
 
+
+
+function setLayerOpacity(
+    map,
+    layer,
+    opacity
+)
+{
+    layer.opacity =
+        opacity;
+
+
+    for(const mapLayer of layer.mapLayers)
+    {
+        if(!map.getLayer(mapLayer.id))
+            continue;
+
+
+        switch(mapLayer.type)
+        {
+            case "raster":
+
+                map.setPaintProperty(
+                    mapLayer.id,
+                    "raster-opacity",
+                    opacity
+                );
+
+                break;
+
+
+            case "fill":
+
+                map.setPaintProperty(
+                    mapLayer.id,
+                    "fill-opacity",
+                    opacity
+                );
+
+                break;
+
+
+            case "line":
+
+                map.setPaintProperty(
+                    mapLayer.id,
+                    "line-opacity",
+                    opacity
+                );
+
+                break;
+
+
+            case "circle":
+
+                map.setPaintProperty(
+                    mapLayer.id,
+                    "circle-opacity",
+                    opacity
+                );
+
+                break;
+
+
+            case "symbol":
+
+                map.setPaintProperty(
+                    mapLayer.id,
+                    "icon-opacity",
+                    opacity
+                );
+
+                map.setPaintProperty(
+                    mapLayer.id,
+                    "text-opacity",
+                    opacity
+                );
+
+                break;
+        }
+    }
+}
 
 
 
