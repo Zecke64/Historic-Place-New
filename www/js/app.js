@@ -6,6 +6,7 @@ import { initOverpassLayer } from "./overpass.js";
 import { initPopup } from "./popup.js";
 import { loadIcons } from "./icons.js";
 import { createLayerControl } from "./ui/layerControl.js";
+import { initLayerManager } from "./layers.js";
 
 const map = createMap();
 window.mapLibreMap = map;
@@ -22,6 +23,7 @@ async () =>
 
     // console.log( "Karte geladen");
 
+/*
     addRasterLayer(
         map,
         {
@@ -35,7 +37,11 @@ async () =>
             group:"Hintergrundkarten"
         }
     );
+*/
 
+    initLayerManager(map);
+
+/*
     addRasterLayer(
     map,
     {
@@ -50,6 +56,7 @@ async () =>
         group:"Historische Karten"
     }
 );
+*/
 
 console.log(
     "APP MAP:",

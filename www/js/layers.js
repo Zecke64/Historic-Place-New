@@ -2,43 +2,88 @@
  * Verwaltung der Kartenlayer
  */
 
+import { layerConfig } from "../config/layerconf.js";
+
+console.log(
+    "Layer-Konfiguration:",
+    layerConfig
+);
+
 const layers = {};
 
+export function initLayerManager(map)
+{
+    for(const layer of layerConfig)
+    {
+        console.log(
+            "Init Layer:",
+            layer.id,
+            layer.source?.type
+        );
+
+        if(
+            layer.source &&
+            layer.source.type === "raster"
+        )
+        {
+            addRasterLayer(
+                map,
+                layer
+            );
+        }
+    }
+}
 
 /**
  * Rasterlayer hinzufügen
  */
 export function addRasterLayer(map, options)
 {
+    console.log(
+        "addRasterLayer options:",
+        options
+    );
+
     const
     {
         id,
-        title,
-        tiles,
+        source,
         opacity = 1,
-        visible = true,
-        group = "default"
+        visible = true
     } = options;
 
+    const
+    {
+        tiles,
+        tileSize = 256
+    } = source;
+
+    const mapLayer = options.mapLayers.find( l => l.type === "raster");
+    if(!mapLayer)
+    {
+        console.warn(
+            "Kein Raster MapLayer:",
+            options.id
+        );
+    
+        return;
+    }
 
     map.addSource(
-        id + "-source",
+        mapLayer.id + "-source",
         {
             type:"raster",
             tiles:tiles,
-            tileSize:256
+            tileSize:tileSize
         }
     );
 
 
     map.addLayer(
         {
-            id:id,
-
+            id:mapLayer.id,
             type:"raster",
-
-            source:id + "-source",
-
+            source:mapLayer.id + "-source",
             layout:
             {
                 visibility:
@@ -48,7 +93,6 @@ export function addRasterLayer(map, options)
                     :
                     "none"
             },
-
             paint:
             {
                 "raster-opacity":
@@ -60,10 +104,16 @@ export function addRasterLayer(map, options)
 
     layers[id] =
     {
+	id:id,
+        titleKey:options.titleKey,
+        category:options.category,
+        opacity:opacity
+/*
         id:id,
         title:title,
         group:group,
         opacity:opacity
+*/
     };
 
 }
@@ -73,10 +123,12 @@ export function addRasterLayer(map, options)
 /**
  * Layerinformationen liefern
  */
+/*
 export function getLayers()
 {
-    return layers;
+    return layerConfig;
 }
+*/
 
 
 

@@ -2,7 +2,7 @@ import
 {
     languages
 }
-from "../config/languages.js";
+from "../../config/languages.js";
 
 
 let currentLanguage =

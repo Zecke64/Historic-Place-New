@@ -1,4 +1,4 @@
-export const layers =
+export const layerConfig =
 [
 
     //
@@ -12,16 +12,17 @@ export const layers =
         icon: "map",
         visible: true,
         opacity: 1.0,
+	source:
+        {
+            type:"raster",
+            tiles: [ "https://tile.opentopomap.org/{z}/{x}/{y}.png" ],
+            tileSize:256
+        },
+
         display:
         {
-            overview:
-            {
-                minZoom: 0
-            },
-            detail:
-            {
-                minZoom: 0
-            }
+            overview: { minZoom: 0 },
+            detail: { minZoom: 0 }
         },
         mapLayers:
         [
@@ -45,6 +46,17 @@ export const layers =
         group: "Historische Karten",
         visible: false,
         opacity: 1.0,
+	source:
+        {
+            type:"raster",
+            tiles: [ "https://tiles.historic.place/mining/Kliver/{z}/{x}/{y}.png" ],
+            tileSize:256
+        },
+	shape:
+        {
+            type: "geojson",
+            url: "./shape/Kliver.json"
+        },
         display:
         {
             overview:
@@ -58,6 +70,14 @@ export const layers =
         },
         mapLayers:
         [
+            {
+                id: "kliver-fill",
+                type: "fill"
+            },
+            {
+                id: "kliver-outline",
+                type: "line"
+            },
             {
                 id: "kliver-raster",
                 type: "raster"

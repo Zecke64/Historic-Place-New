@@ -1,4 +1,4 @@
-import { layers } from "../config/layers.js";
+import { layerConfig } from "../../config/layerconf.js";
 import { tr } from "./language.js";
 
 
@@ -23,10 +23,13 @@ export function createLayerControl(map)
 
 
 // noch benötigt?
+/*
 export function getLayers()
 {
-    return layers;
+    //return layers;
+    return layerConfig;
 }
+*/
 
 
 // Basiskarten
@@ -44,7 +47,7 @@ function createBaseSection(parent, map)
     );
 
 
-    for(const layer of layers)
+    for(const layer of layerConfig)
     {
         if(layer.category !== "base")
             continue;
@@ -78,7 +81,7 @@ function createOverlaySection(parent, map)
     );
 
 
-    for(const layer of layers)
+    for(const layer of layerConfig)
     {
         if(layer.category !== "overlay")
             continue;
@@ -398,7 +401,7 @@ function createBaseEntry(layer, map)
 
 function setBaseLayer(map, selectedLayer)
 {
-    for(const layer of layers)
+    for(const layer of layerConfig)
     {
         if(layer.category !== "base")
             continue;
