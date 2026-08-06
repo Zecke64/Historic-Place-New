@@ -1,5 +1,6 @@
 import { layerConfig } from "../../config/layerconf.js";
 import { tr } from "./language.js";
+import { updateLayerVisibility } from "../layers.js";
 
 
 export function createLayerControl(map)
@@ -20,16 +21,6 @@ export function createLayerControl(map)
         .appendChild(control);
 }
 
-
-
-// noch benötigt?
-/*
-export function getLayers()
-{
-    //return layers;
-    return layerConfig;
-}
-*/
 
 
 // Basiskarten
@@ -125,11 +116,9 @@ function createOverlayEntry(layer, map)
         "change",
         () =>
         {
-            setLayerVisibility(
-                map,
-                layer,
-                checkbox.checked
-            );
+	    layer.visible = checkbox.checked;
+
+	    updateLayerVisibility( map);
         }
     );
 
@@ -184,64 +173,6 @@ function createOverlayEntry(layer, map)
     return row;
 }
 
-
-
-function setLayerVisibility(
-    map,
-    layer,
-    visible
-)
-{
-
-    console.log(
-        "Set visibility OBJECT:",
-        JSON.stringify(layer, null, 2)
-    );
-
-    console.log(
-        "setLayerVisibility map:",
-        map
-    );
-
-    console.log(
-        "setLayerVisibility layer:",
-        layer
-    );
-
-    console.log(
-        "visible:",
-        visible
-    );
-
-    for(const mapLayer of layer.mapLayers)
-    {
-        console.log(
-            "   Map layer:",
-            mapLayer.id,
-            map.getLayer(mapLayer.id)
-        );
-
-
-        if(!map.getLayer(mapLayer.id))
-        {
-            console.warn(
-                "Layer nicht gefunden:",
-                mapLayer.id
-            );
-
-            continue;
-        }
-
-
-        map.setLayoutProperty(
-            mapLayer.id,
-            "visibility",
-            visible
-                ? "visible"
-                : "none"
-        );
-    }
-}
 
 
 

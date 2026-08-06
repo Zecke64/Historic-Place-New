@@ -4,32 +4,32 @@
 
 import { layerConfig } from "../config/layerconf.js";
 
-console.log(
-    "Layer-Konfiguration:",
-    layerConfig
-);
-
 const layers = {};
+const layerRegistry = {};
+const layerState = {};
 
-export function initLayerManager(map)
+export async function initLayerManager(map)
 {
     for(const layer of layerConfig)
     {
-        console.log(
-            "Init Layer:",
-            layer.id,
-            layer.source?.type
-        );
+	layerRegistry[layer.id] = layer;
+
+	layerState[layer.id] =
+        {
+            visible: layer.visible
+        };
 
         if(
             layer.source &&
             layer.source.type === "raster"
         )
         {
-            addRasterLayer(
-                map,
-                layer
-            );
+            addRasterLayer( map, layer);
+        }
+
+        if(layer.shape)
+        {
+            await addGeoJsonLayer( map, layer);
         }
     }
 }
@@ -86,12 +86,7 @@ export function addRasterLayer(map, options)
             source:mapLayer.id + "-source",
             layout:
             {
-                visibility:
-                    visible
-                    ?
-                    "visible"
-                    :
-                    "none"
+                visibility: visible ?  "visible" : "none"
             },
             paint:
             {
@@ -108,51 +103,118 @@ export function addRasterLayer(map, options)
         titleKey:options.titleKey,
         category:options.category,
         opacity:opacity
-/*
-        id:id,
-        title:title,
-        group:group,
-        opacity:opacity
-*/
     };
 
 }
 
 
-
-/**
- * Layerinformationen liefern
- */
-/*
-export function getLayers()
+export async function addGeoJsonLayer(map, options)
 {
-    return layerConfig;
-}
-*/
-
-
-
-/**
- * Sichtbarkeit ändern
- */
-export function setLayerVisibility(
-    map,
-    id,
-    visible
-)
-{
-    map.setLayoutProperty(
+    const
+    {
         id,
-        "visibility",
-        visible
-        ?
-        "visible"
-        :
-        "none"
+        shape,
+        mapLayers,
+	visible = true
+    } = options;
+
+    if(!shape || shape.type !== "geojson")
+    {
+        return;
+    }
+
+    const sourceId = id + "-shape-source";
+
+    map.addSource(
+        sourceId,
+        {
+            type:"geojson",
+            data:shape.url
+        }
     );
+
+    for(const mapLayer of mapLayers)
+    {
+        if(
+            mapLayer.type !== "fill" &&
+            mapLayer.type !== "line"
+        )
+        {
+            continue;
+        }
+
+        const layer =
+        {
+            id:mapLayer.id,
+            type:mapLayer.type,
+            source:sourceId,
+	    layout:
+            {
+                visibility: visible ? "visible" : "none"
+            }
+        };
+
+        if(mapLayer.type === "fill")
+        {
+            layer.paint =
+            {
+                "fill-opacity":0.3
+            };
+        }
+
+        if(mapLayer.type === "line")
+        {
+            layer.paint =
+            {
+                "line-width":2
+            };
+        }
+
+        map.addLayer(layer);
+    }
 }
 
 
+
+
+export function updateLayerVisibility(map)
+{
+    const zoom = map.getZoom();
+
+    for(const layer of layerConfig)
+    {
+        for(const mapLayer of layer.mapLayers)
+        {
+            let visible = false;
+
+            if(layer.visible)
+            {
+                if(mapLayer.type === "fill" ||
+                   mapLayer.type === "line")
+                {
+                    visible =
+                        zoom >= layer.display.overview.minZoom &&
+                        zoom < layer.display.detail.minZoom;
+                }
+
+                if(mapLayer.type === "raster")
+                {
+                    visible =
+                        zoom >= layer.display.detail.minZoom;
+                }
+            }
+
+            if(map.getLayer(mapLayer.id))
+            {
+                map.setLayoutProperty(
+                    mapLayer.id,
+                    "visibility",
+                    visible ? "visible" : "none"
+                );
+            }
+        }
+    }
+}
 
 /**
  * Transparenz ändern
@@ -169,3 +231,18 @@ export function setLayerOpacity(
         Number(opacity)
     );
 }
+
+
+
+export function initZoomHandling(map)
+{
+    map.on(
+        "zoom",
+        () =>
+        {
+            updateLayerVisibility(map);
+        }
+    );
+}
+
+

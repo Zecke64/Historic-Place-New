@@ -6,7 +6,7 @@ import { initOverpassLayer } from "./overpass.js";
 import { initPopup } from "./popup.js";
 import { loadIcons } from "./icons.js";
 import { createLayerControl } from "./ui/layerControl.js";
-import { initLayerManager } from "./layers.js";
+import { initLayerManager, initZoomHandling, updateLayerVisibility } from "./layers.js";
 
 const map = createMap();
 window.mapLibreMap = map;
@@ -39,7 +39,9 @@ async () =>
     );
 */
 
-    initLayerManager(map);
+    await initLayerManager(map);
+    updateLayerVisibility(map);
+    initZoomHandling(map);
 
 /*
     addRasterLayer(
