@@ -94,10 +94,12 @@ export const layerConfig =
     {
         id: "osm-pois",
         category: "overlay",
+	type: "poi",
         titleKey: "layer.osmPois",
         icon: "poi",
         visible: true,
-        opacity: 1.0,
+	opacityControl: false,
+        //opacity: 1.0,
         display:
         {
             overview:

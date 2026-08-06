@@ -3,6 +3,7 @@
  */
 
 import { layerConfig } from "../config/layerconf.js";
+import { initOverpassLayer } from "./overpass.js";
 
 const layers = {};
 const layerRegistry = {};
@@ -31,6 +32,12 @@ export async function initLayerManager(map)
         {
             await addGeoJsonLayer( map, layer);
         }
+
+	if(layer.type === "poi")
+        {
+	    initOverpassLayer( map);
+        }
+
     }
 }
 
@@ -202,6 +209,11 @@ export function updateLayerVisibility(map)
                     visible =
                         zoom >= layer.display.detail.minZoom;
                 }
+
+		if(layer.type === "poi")
+		{
+    	  	    visible = layer.visible && zoom >= layer.display.overview.minZoom;
+		}
             }
 
             if(map.getLayer(mapLayer.id))

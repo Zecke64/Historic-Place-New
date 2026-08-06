@@ -128,49 +128,62 @@ function createOverlayEntry(layer, map)
 
     label.textContent = tr(layer.titleKey);
 
-
-    const slider = document.createElement("input");
-
-    slider.type = "range";
-    slider.min = 0;
-    slider.max = 100;
-    slider.value = Math.round(layer.opacity * 100);
-    slider.className = "layer-opacity";
-
-    slider.addEventListener(
-        "input",
-        () =>
-        {
-            const percent =
-                slider.value;
-
-            value.textContent =
-                percent + "%";
-
-            setLayerOpacity(
-                map,
-                layer,
-                percent / 100
-            );
-        }
-    );
+    let slider = null;
+    let value = null;
 
 
-    const value = document.createElement("span");
+    if(layer.opacityControl !== false)
+    {
+        slider = document.createElement("input");
 
-    value.className = "layer-opacity-value";
-    value.textContent = Math.round(layer.opacity * 100) + "%";
+        slider.type = "range";
+        slider.min = 0;
+        slider.max = 100;
+        slider.value = Math.round(layer.opacity * 100);
+        slider.className = "layer-opacity";
+
+        value = document.createElement("span");
+
+        value.className = "layer-opacity-value";
+        value.textContent =
+            Math.round(layer.opacity * 100) + "%";
+
+        slider.addEventListener(
+            "input",
+            () =>
+            {
+                const percent =
+                    slider.value;
+
+                value.textContent =
+                    percent + "%";
+
+                setLayerOpacity(
+                    map,
+                    layer,
+                    percent / 100
+                );
+            }
+        );
+    }
 
 
     row.append(
         checkbox,
-        label,
-	slider,
-	value
+        label
     );
 
 
-    return row;
+    if(slider)
+    {
+        row.append(
+            slider,
+            value
+        );
+    }
+
+
+return row;
 }
 
 
