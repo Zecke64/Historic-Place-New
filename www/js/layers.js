@@ -3,7 +3,7 @@
  */
 
 import { layerConfig } from "../config/layerconf.js";
-import { initOverpassLayer } from "./overpass.js";
+// import { initOverpassLayer } from "./overpass.js";
 
 const layers = {};
 const layerRegistry = {};
@@ -31,11 +31,6 @@ export async function initLayerManager(map)
         if(layer.shape)
         {
             await addGeoJsonLayer( map, layer);
-        }
-
-	if(layer.type === "poi")
-        {
-	    initOverpassLayer( map);
         }
 
     }
@@ -85,7 +80,6 @@ export function addRasterLayer(map, options)
         }
     );
 
-
     map.addLayer(
         {
             id:mapLayer.id,
@@ -102,7 +96,6 @@ export function addRasterLayer(map, options)
             }
         }
     );
-
 
     layers[id] =
     {
@@ -165,7 +158,7 @@ export async function addGeoJsonLayer(map, options)
         {
             layer.paint =
             {
-                "fill-opacity":0.3
+                "fill-opacity": options.shape?.style?.fillOpacity ?? 0.3
             };
         }
 
@@ -173,7 +166,8 @@ export async function addGeoJsonLayer(map, options)
         {
             layer.paint =
             {
-                "line-width":2
+                "line-width":2,
+		"line-opacity": options.shape?.style?.lineOpacity ?? 1
             };
         }
 
@@ -227,23 +221,6 @@ export function updateLayerVisibility(map)
         }
     }
 }
-
-/**
- * Transparenz ändern
- */
-export function setLayerOpacity(
-    map,
-    id,
-    opacity
-)
-{
-    map.setPaintProperty(
-        id,
-        "raster-opacity",
-        Number(opacity)
-    );
-}
-
 
 
 export function initZoomHandling(map)

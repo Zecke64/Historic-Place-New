@@ -5,20 +5,12 @@ import { updateLayerVisibility } from "../layers.js";
 
 export function createLayerControl(map)
 {
-    const control =
-        document.createElement("div");
-
-    control.className =
-        "layer-control";
-
-
+    const control = document.createElement("div");
+    control.className = "layer-control";
     createBaseSection(control, map);
-
     createOverlaySection(control, map);
 
-
-    map.getContainer()
-        .appendChild(control);
+    map.getContainer() .appendChild(control);
 }
 
 
@@ -26,23 +18,14 @@ export function createLayerControl(map)
 // Basiskarten
 function createBaseSection(parent, map)
 {
-    const section =
-        document.createElement("div");
-
-    section.className =
-        "layer-section";
-
-
-    section.appendChild(
-        createHeading("Basiskarten")
-    );
-
+    const section = document.createElement("div");
+    section.className = "layer-section";
+    section.appendChild( createHeading("Basiskarten"));
 
     for(const layer of layerConfig)
     {
         if(layer.category !== "base")
             continue;
-
 
         section.appendChild(
             createBaseEntry(
@@ -52,7 +35,6 @@ function createBaseSection(parent, map)
         );
     }
 
-
     parent.appendChild(section);
 }
 
@@ -60,23 +42,14 @@ function createBaseSection(parent, map)
 // Overlays
 function createOverlaySection(parent, map)
 {
-    const section =
-        document.createElement("div");
-
-    section.className =
-        "layer-section";
-
-
-    section.appendChild(
-        createHeading("Overlays")
-    );
-
+    const section = document.createElement("div");
+    section.className = "layer-section";
+    section.appendChild( createHeading("Overlays"));
 
     for(const layer of layerConfig)
     {
         if(layer.category !== "overlay")
             continue;
-
 
         section.appendChild(
             createOverlayEntry(
@@ -86,8 +59,47 @@ function createOverlaySection(parent, map)
         );
     }
 
-
     parent.appendChild(section);
+}
+
+
+
+function createOpacityControl(layer, map)
+{
+    if(layer.opacityControl === false)
+        return null;
+
+    const container = document.createElement("span");
+    const slider = document.createElement("input");
+
+    slider.type = "range";
+    slider.min = 0;
+    slider.max = 100;
+    slider.value = Math.round(layer.opacity * 100);
+    slider.className = "layer-opacity";
+
+    const value = document.createElement("span");
+
+    value.className = "layer-opacity-value";
+    value.textContent = Math.round(layer.opacity * 100) + "%";
+
+    slider.addEventListener(
+        "input",
+        () =>
+        {
+            const percent = slider.value;
+            value.textContent = percent + "%";
+            setLayerOpacity(
+                map,
+                layer,
+                percent / 100
+            );
+        }
+    );
+
+    container.append( slider, value);
+
+    return container;
 }
 
 
@@ -95,95 +107,29 @@ function createOverlaySection(parent, map)
 // eine Zeile erzeugen
 function createOverlayEntry(layer, map)
 {
-    const row =
-        document.createElement("div");
+    const { row, label } = createLayerRow( layer, "layer-base");
 
-    row.className =
-        "layer-row layer-overlay";
-
-
-    const checkbox =
-        document.createElement("input");
-
-    checkbox.type =
-        "checkbox";
-
-    checkbox.checked =
-        layer.visible;
-
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = layer.visible;
 
     checkbox.addEventListener(
         "change",
         () =>
         {
 	    layer.visible = checkbox.checked;
-
 	    updateLayerVisibility( map);
         }
     );
 
-
-    const label =
-        document.createElement("span");
-
-    label.textContent = tr(layer.titleKey);
-
-    let slider = null;
-    let value = null;
-
-
-    if(layer.opacityControl !== false)
+    const opacityControl = createOpacityControl( layer, map);
+    row.append( checkbox, label);
+    if(opacityControl)
     {
-        slider = document.createElement("input");
-
-        slider.type = "range";
-        slider.min = 0;
-        slider.max = 100;
-        slider.value = Math.round(layer.opacity * 100);
-        slider.className = "layer-opacity";
-
-        value = document.createElement("span");
-
-        value.className = "layer-opacity-value";
-        value.textContent =
-            Math.round(layer.opacity * 100) + "%";
-
-        slider.addEventListener(
-            "input",
-            () =>
-            {
-                const percent =
-                    slider.value;
-
-                value.textContent =
-                    percent + "%";
-
-                setLayerOpacity(
-                    map,
-                    layer,
-                    percent / 100
-                );
-            }
-        );
+        row.append( opacityControl);
     }
 
-
-    row.append(
-        checkbox,
-        label
-    );
-
-
-    if(slider)
-    {
-        row.append(
-            slider,
-            value
-        );
-    }
-
-
-return row;
+    return row;
 }
 
 
@@ -195,8 +141,7 @@ function setLayerOpacity(
     opacity
 )
 {
-    layer.opacity =
-        opacity;
+    layer.opacity = opacity;
 
 
     for(const mapLayer of layer.mapLayers)
@@ -204,55 +149,30 @@ function setLayerOpacity(
         if(!map.getLayer(mapLayer.id))
             continue;
 
-
         switch(mapLayer.type)
         {
             case "raster":
-
                 map.setPaintProperty(
                     mapLayer.id,
                     "raster-opacity",
                     opacity
                 );
-
                 break;
 
-
+	    // Shapes haben immer eine fixe Transparenz
             case "fill":
-
-                map.setPaintProperty(
-                    mapLayer.id,
-                    "fill-opacity",
-                    opacity
-                );
-
-                break;
-
-
             case "line":
-
-                map.setPaintProperty(
-                    mapLayer.id,
-                    "line-opacity",
-                    opacity
-                );
-
                 break;
-
 
             case "circle":
-
                 map.setPaintProperty(
                     mapLayer.id,
                     "circle-opacity",
                     opacity
                 );
-
                 break;
 
-
             case "symbol":
-
                 map.setPaintProperty(
                     mapLayer.id,
                     "icon-opacity",
@@ -274,41 +194,35 @@ function setLayerOpacity(
 
 function createHeading(text)
 {
-    const heading =
-        document.createElement("div");
-
-    heading.className =
-        "layer-heading";
-
-    heading.textContent =
-        text;
+    const heading = document.createElement("div");
+    heading.className = "layer-heading";
+    heading.textContent = text;
 
     return heading;
 }
 
 
 
+
+function createLayerRow(layer, className)
+{
+    const row = document.createElement("div");
+    row.className = "layer-row " + className;
+    const label = document.createElement("span");
+    label.textContent = tr(layer.titleKey);
+
+    return { row, label };
+}
+
+
+
 function createBaseEntry(layer, map)
 {
-    const row =
-        document.createElement("div");
-
-    row.className =
-        "layer-row layer-base";
-
-
-    const radio =
-        document.createElement("input");
-
-    radio.type =
-        "radio";
-
-    radio.name =
-        "base-layer";
-
-    radio.checked =
-        layer.visible;
-
+    const { row, label } = createLayerRow( layer, "layer-base");
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "base-layer";
+    radio.checked = layer.visible;
 
     radio.addEventListener(
         "change",
@@ -316,27 +230,19 @@ function createBaseEntry(layer, map)
         {
             if(radio.checked)
             {
-                setBaseLayer(
-                    map,
-                    layer
-                );
+                setBaseLayer( map, layer);
             }
         }
     );
 
+    const opacityControl = createOpacityControl( layer, map);
 
-    const label =
-        document.createElement("span");
+    row.append( radio, label);
 
-    label.textContent =
-        tr(layer.titleKey);
-
-
-    row.append(
-        radio,
-        label
-    );
-
+    if(opacityControl)
+    {
+        row.append( opacityControl);
+    }
 
     return row;
 }
@@ -350,27 +256,18 @@ function setBaseLayer(map, selectedLayer)
         if(layer.category !== "base")
             continue;
 
-
-        const visible =
-            layer.id === selectedLayer.id;
-
-
-        layer.visible =
-            visible;
-
+        const visible = layer.id === selectedLayer.id;
+        layer.visible = visible;
 
         for(const mapLayer of layer.mapLayers)
         {
             if(!map.getLayer(mapLayer.id))
                 continue;
 
-
             map.setLayoutProperty(
                 mapLayer.id,
                 "visibility",
-                visible
-                    ? "visible"
-                    : "none"
+                visible ? "visible" : "none"
             );
         }
     }

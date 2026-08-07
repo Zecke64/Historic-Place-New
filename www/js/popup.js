@@ -8,11 +8,7 @@ import
     }
     from "./images.js";
 
-import
-    {
-        escapeHTML
-    }
-    from "./utils.js";
+import { escapeHTML } from "./utils.js";
 
 
 let currentPopup = null;
@@ -22,60 +18,41 @@ let popupSequence = 0;
 
 export function initPopup(map)
 {
-
-    /*
-     * Klick auf einzelne POIs
-     */
-
+    // Klick auf einzelne POIs
     map.on(
         "click",
         "osm-pois",
         async e =>
         {
+	    console.log( "POI CLICK", e.features);
 
             if(!e.features || !e.features.length)
                 return;
 
-
-            const feature =
-                e.features[0];
-
-
-            showPopup(
-                map,
-                feature
-            );
+            const feature = e.features[0];
+            showPopup( map, feature);
 
         }
     );
 
-
-
-    /*
-     * Mauszeiger über POIs
-     */
-
+    // Mauszeiger über POIs
     map.on(
         "mouseenter",
         "osm-pois",
         () =>
         {
-            map.getCanvas().style.cursor =
-                "pointer";
+            map.getCanvas().style.cursor = "pointer";
         }
     );
-
 
     map.on(
         "mouseleave",
         "osm-pois",
         () =>
         {
-            map.getCanvas().style.cursor =
-                "";
+            map.getCanvas().style.cursor = "";
         }
     );
-
 }
 
 
@@ -86,126 +63,71 @@ async function showPopup(map, feature)
 {
 
     console.log("POI Properties:", feature.properties);
-
-    const properties =
-        feature.properties;
-
+    const properties = feature.properties;
     const thisPopupId = ++popupSequence;
+    const coordinates = feature.geometry.coordinates;
 
-    const coordinates =
-        feature.geometry.coordinates;
-
-
-
-    /*
-     * Falls noch ein Popup offen ist,
-     * schließen
-     */
-
+    // Falls noch ein Popup offen ist, schließen
     if(currentPopup)
     {
         currentPopup.remove();
     }
 
-
-
-    /*
-     * Grund-Popup sofort anzeigen
-     */
-
+    // Grund-Popup sofort anzeigen
     const html =
     `
     <div class="poi-popup">
 
         ${createHeader(properties)}
 
-
         <div id="poi-loading">
             Lade Zusatzinformationen ...
         </div>
 
-
         <div id="poi-content">
         </div>
 
-
         <details class="poi-details">
-
             <summary>
                 OSM-Tags
             </summary>
-
             ${createTagTable(properties)}
-
         </details>
 
     </div>
     `;
-
-
 
     currentPopup =
         new maplibregl.Popup(
         {
             maxWidth:"380px"
         })
-        .setLngLat(
-            coordinates
-        )
-        .setHTML(
-            html
-        )
+        .setLngLat( coordinates)
+        .setHTML( html)
         .addTo(map);
 
 
-
     // Zusatzinformationen laden
-
-    let wikidata =
-        null;
-
+    let wikidata = null;
 
     if(properties.wikidata)
     {
-
-        wikidata =
-            await loadWikidata(
-                properties.wikidata
-            );
-
+        wikidata = await loadWikidata( properties.wikidata);
     }
 
-
-
-    /*
-     * Bild bestimmen
-     */
-
-    const imageInfo =
-        await getImageInfo(
-            properties,
-            wikidata
-        );
+    // Bild bestimmen
+    const imageInfo = await getImageInfo( properties, wikidata);
 
     console.log("IMAGE INFO:", imageInfo);
 
-
-    /*
-     * Beschreibung bestimmen
-     */
-
+    // Beschreibung bestimmen
     const description =
         selectDescription(
             properties,
             wikidata
         );
 
-
-
-    /*
-     * Dynamischen Inhalt erzeugen
-     */
-
+    // Dynamischen Inhalt erzeugen
     const content =
     `
 
@@ -216,57 +138,43 @@ async function showPopup(map, feature)
 
     `;
 
-
-
     const popupElement =
         currentPopup
             .getElement();
-
 
     const loading =
         popupElement.querySelector(
             "#poi-loading"
         );
 
-
     const container =
         popupElement.querySelector(
             "#poi-content"
         );
-
 
     if(loading)
     {
         loading.remove();
     }
 
-
     if(container && thisPopupId === popupSequence)
     {
-        container.innerHTML =
-            content;
+        container.innerHTML = content;
         installImageHandler(container);
     }
-
 }
 
 
 function createHeader(properties)
 {
-
     let subtitle = "";
-
 
     if(properties.tourism)
         subtitle = "Tourismus: " + properties.tourism;
-
     else if(properties.historic)
         subtitle = "Historisch: " + properties.historic;
-
     else if(properties.man_made)
         subtitle = "Bauwerk: " + properties.man_made;
-
-
 
     return `
     <h2 class="poi-title">
@@ -295,16 +203,11 @@ function createHeader(properties)
 }
 
 
-
-
-
-
 function createDescription(text)
 {
 
     if(!text)
         return "";
-
 
     return `
     <div class="poi-description">
@@ -313,38 +216,24 @@ function createDescription(text)
 
     </div>
     `;
-
 }
-
-
 
 
 
 function createLinks(properties, wikidata)
 {
-
     let html = "";
-
 
     html += createLink(
         "Wikipedia",
         wikidata?.wikipedia ||
-        createWikipediaUrl(
-            properties.wikipedia
-        )
+        createWikipediaUrl( properties.wikipedia)
     );
-
 
     html += createLink(
         "Wikidata",
-        wikidata?.id
-        ?
-        "https://www.wikidata.org/wiki/" +
-        wikidata.id
-        :
-        null
+        wikidata?.id ?  "https://www.wikidata.org/wiki/" + wikidata.id : null
     );
-
 
     html += createLink(
         "Website",
@@ -352,10 +241,8 @@ function createLinks(properties, wikidata)
         properties.website
     );
 
-
     if(!html)
         return "";
-
 
     return `
     <div class="poi-links">
@@ -369,14 +256,10 @@ function createLinks(properties, wikidata)
 
 
 
-
-
 function createLink(title, url)
 {
-
     if(!url)
         return "";
-
 
     return `
     <a
@@ -438,74 +321,47 @@ function createTagTable(properties)
 }
 
 
-
-
-
 function selectDescription(properties, wikidata)
 {
-
     if(wikidata?.description)
         return wikidata.description;
-
 
     if(properties.description)
         return properties.description;
 
-
     if(properties.note)
         return properties.note;
 
-
     if(wikidata?.label)
         return wikidata.label;
-
 
     return null;
 }
 
 
 
-
-
-
 function createWikipediaUrl(value)
 {
-
     if(!value)
         return null;
 
-
-
-    /*
-     * Format:
-     * de:Artikel
-     */
-
+    // Format: * de:Artikel
     let parts =
         value.split(":");
 
-
-
     if(parts.length === 2)
     {
-
         return (
             "https://" +
             parts[0] +
             ".wikipedia.org/wiki/" +
             encodeURIComponent(parts[1])
         );
-
     }
-
-
 
     return (
         "https://www.wikipedia.org/wiki/" +
         encodeURIComponent(value)
     );
-
 }
-
-
 

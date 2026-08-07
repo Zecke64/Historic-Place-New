@@ -12,6 +12,7 @@ export const layerConfig =
         icon: "map",
         visible: true,
         opacity: 1.0,
+        opacity: 1.0,
 	source:
         {
             type:"raster",
@@ -34,7 +35,7 @@ export const layerConfig =
     },
 
     //
-    // Overlay-Layer: Können alle aktive sein, haben Transparenz-Slider
+    // Overlay-Layer: Können alle aktiv sein
     //
 
     {
@@ -55,7 +56,12 @@ export const layerConfig =
 	shape:
         {
             type: "geojson",
-            url: "./shape/Kliver.json"
+            url: "./shape/Kliver.json",
+            style:
+            {
+                fillOpacity: 0.25,
+                lineOpacity: 0.8
+            }
         },
         display:
         {
