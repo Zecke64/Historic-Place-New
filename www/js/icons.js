@@ -43,6 +43,9 @@ export function getIcon(tags)
     if(tags.historic === "industrial")
         return "industrial";
 
+    if(tags.amenity === "graveyard")
+        return "cemetery";
+
     return "poi";
 
 }

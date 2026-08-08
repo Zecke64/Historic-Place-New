@@ -1,6 +1,20 @@
 import { prefetchWikidata }
     from "./wikidata.js";
 import { getIcon } from "./icons.js";
+import { zoomClasses } from "../config/zoomclasses.js";
+
+const zoomClassState = new Map();
+
+for(const zoomClass of zoomClasses)
+{
+    zoomClassState.set(
+        zoomClass.id,
+        {
+            loadedTiles: new Set(),
+	    features: []
+        }
+    );
+}
 
 const OVERPASS_URL =
 //    "https://overpass.maprva.org/api/interpreter";
@@ -9,6 +23,7 @@ const OVERPASS_URL =
       "https://mystic.historic.place:4443/api/interpreter";
 
 const sourceId = "osm-pois";
+
 
 let currentRequest = null;
 
@@ -185,83 +200,424 @@ export function initOverpassLayer(map)
 }
 
 
+
+function lon2tileX(lon, zoom)
+{
+    return Math.floor( (lon + 180) / 360 * Math.pow(2, zoom));
+}
+
+
+function lat2tileY(lat, zoom)
+{
+    const latRad = lat * Math.PI / 180;
+    return Math.floor( ( 1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * Math.pow(2, zoom));
+}
+
+
+function tile2lon(x, zoom)
+{
+    return x / Math.pow(2, zoom) * 360 - 180;
+}
+
+
+function tile2lat(y, zoom)
+{
+    const n = Math.PI - 2 * Math.PI * y / Math.pow(2, zoom);
+    return 180 / Math.PI * Math.atan(Math.sinh(n));
+}
+
+
+
+function getTilesForBounds(bounds, zoom)
+{
+    const xMin = lon2tileX(bounds.getWest(), zoom);
+    const xMax = lon2tileX(bounds.getEast(), zoom);
+    const yMin = lat2tileY(bounds.getNorth(), zoom);
+    const yMax = lat2tileY(bounds.getSouth(), zoom);
+
+    const tiles = [];
+
+    for(let x = xMin; x <= xMax; x++)
+    {
+        for(let y = yMin; y <= yMax; y++)
+        {
+            tiles.push(
+                {
+                    x: x,
+                    y: y,
+                    zoom: zoom
+                }
+            );
+        }
+    }
+
+    return tiles;
+}
+
+
+
+function getTileBounds(tile)
+{
+    return new maplibregl.LngLatBounds(
+        [
+            tile2lon(tile.x, tile.zoom),
+            tile2lat(tile.y + 1, tile.zoom)
+        ],
+        [
+            tile2lon(tile.x + 1, tile.zoom),
+            tile2lat(tile.y, tile.zoom)
+        ]
+    );
+}
+
+
+
+
+function createQueryForZoomClass(zoomClass, bounds)
+{
+    const south = bounds.getSouth();
+    const west = bounds.getWest();
+    const north = bounds.getNorth();
+    const east = bounds.getEast();
+
+    const queries =
+        zoomClass.objectTypes.map(
+            ([key, value]) =>
+                `nwr[${key}=${value}](${south},${west},${north},${east});`
+        );
+
+    return `
+[out:json][timeout:30];
+
+(
+    ${queries.join("\n")}
+);
+
+out center qt 500;
+`;
+}
+
+
+
+function getZoomClass(zoom)
+{
+    return zoomClasses.find(
+        z =>
+            zoom >= z.minZoom &&
+            zoom <= z.maxZoom
+    );
+}
+
+
+
 async function loadPOIs(map)
 {
+    const zoom = map.getZoom();
 
     /*
-     * Keine Overpass-Abfrage bei kleinen Zoomstufen
+     * Unterhalb der ersten Zoomklasse
      */
-    if(map.getZoom() < 12)
+    if(zoom < 12)
     {
         clearSource(map);
         return;
     }
 
+    /*
+     * Alle Zoomklassen ermitteln, die bei diesem
+     * Zoom aktiv sind.
+     *
+     * Die Klassen sind kumulativ:
+     * Bei z14 sind also z12_13 UND z14 aktiv.
+     */
+    const activeClasses = zoomClasses.filter(
+        zoomClass =>
+            zoom >= zoomClass.minZoom
+    );
+
     const bounds = map.getBounds();
-    const query = createQuery(bounds);
-    
-    console.log(query);
 
     /*
-     * laufende Anfrage abbrechen
+     * Aktive Zoomklassen laden
      */
-    if(currentRequest)
+    for(const zoomClass of activeClasses)
     {
-        currentRequest.abort();
-    }
-
-    currentRequest = new AbortController();
-
-    try
-    {
-        const response =
-            await fetch(
-                OVERPASS_URL,
-                {
-                    method:"POST",
-                    headers:
-                    {
-                        "Content-Type":
-                        "application/x-www-form-urlencoded"
-                    },
-                    body: "data=" + encodeURIComponent(query),
-                    signal: currentRequest.signal
-                }
+        /*
+         * Laufzeitdaten dieser Zoomklasse holen.
+         */
+        const state =
+            zoomClassState.get(
+                zoomClass.id
             );
 
-        const data = await response.json();
-        console.log( "Overpass Elemente:", data.elements.length);
-
-        const geojson = convertToGeoJSON(data);
-        console.log( "GeoJSON:", geojson.features.length);
-
-	const ids = geojson.features
-                .map(f => f.properties.wikidata)
-                .filter(Boolean);
-
-        prefetchWikidata(ids);
-
-        map
-        .getSource(sourceId)
-        .setData(geojson);
-    }
-
-    catch(error)
-    {
-        if(error.name !== "AbortError")
+        if(!state)
         {
             console.error(
-                "Overpass Fehler",
-                error
+                "Kein Zustand für Zoomklasse:",
+                zoomClass.id
             );
+
+            continue;
+        }
+
+        /*
+         * Kacheln für diese Zoomklasse bestimmen.
+         *
+         * Wichtig:
+         * Die Kachelgröße richtet sich nach dem minZoom
+         * der jeweiligen Zoomklasse.
+         */
+        const tiles =
+            getTilesForBounds(
+                bounds,
+                zoomClass.minZoom
+            );
+
+        for(const tile of tiles)
+        {
+            const tileId =
+                `${tile.zoom}/${tile.x}/${tile.y}`;
+
+            /*
+             * Kachel wurde für diese Zoomklasse
+             * bereits erfolgreich geladen.
+             */
+            if(state.loadedTiles.has(tileId))
+            {
+                continue;
+            }
+
+            const tileBounds =
+                getTileBounds(tile);
+
+            const query =
+                createQueryForZoomClass(
+                    zoomClass,
+                    tileBounds
+                );
+
+            console.log(
+                "Lade Kachel:",
+                zoomClass.id,
+                tileId
+            );
+
+            /*
+             * Laufende Anfrage abbrechen.
+             *
+             * Dadurch wird beispielsweise beim Verschieben
+             * der Karte eine alte Anfrage beendet.
+             */
+            if(currentRequest)
+            {
+                currentRequest.abort();
+            }
+
+            currentRequest =
+                new AbortController();
+
+            try
+            {
+                const response =
+                    await fetch(
+                        OVERPASS_URL,
+                        {
+                            method:"POST",
+
+                            headers:
+                            {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded"
+                            },
+
+                            body:
+                                "data=" +
+                                encodeURIComponent(query),
+
+                            signal:
+                                currentRequest.signal
+                        }
+                    );
+
+                /*
+                 * HTTP-Fehler explizit behandeln.
+                 */
+                if(!response.ok)
+                {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                console.log(
+                    "Overpass Elemente:",
+                    data.elements.length
+                );
+
+                /*
+                 * Overpass-Daten in GeoJSON umwandeln.
+                 *
+                 * Die Zoomklasse wird übergeben, damit
+                 * convertToGeoJSON ggf. Informationen der
+                 * Zoomklasse berücksichtigen kann.
+                 */
+                const geojson =
+                    convertToGeoJSON(
+                        data,
+                        zoomClass
+                    );
+
+                console.log(
+                    "GeoJSON:",
+                    geojson.features.length
+                );
+
+                /*
+                 * Bereits vorhandene OSM-Objekte dieser
+                 * Zoomklasse nicht doppelt übernehmen.
+                 */
+                const existingIds =
+                    new Set(
+                        state.features.map(
+                            feature =>
+                                feature.properties._osm_type +
+                                "/" +
+                                feature.properties._osm_id
+                        )
+                    );
+
+                for(const feature of geojson.features)
+                {
+                    const id =
+                        feature.properties._osm_type +
+                        "/" +
+                        feature.properties._osm_id;
+
+                    if(!existingIds.has(id))
+                    {
+                        state.features.push(feature);
+                        existingIds.add(id);
+                    }
+                }
+
+                /*
+                 * Erst jetzt gilt die Kachel als geladen.
+                 *
+                 * Falls die Anfrage vorher einen Fehler hatte,
+                 * wird sie beim nächsten Aufruf erneut versucht.
+                 */
+                state.loadedTiles.add(tileId);
+            }
+
+            catch(error)
+            {
+                if(error.name !== "AbortError")
+                {
+                    console.error(
+                        "Overpass Fehler:",
+                        error
+                    );
+                }
+            }
         }
     }
 
+    /*
+     * Alle Features der momentan aktiven Zoomklassen
+     * zusammenführen.
+     *
+     * Beispiel:
+     *
+     * z12_13:  70 Objekte
+     * z14:     25 Objekte
+     *
+     * => bei Zoom 14 werden 95 Objekte angezeigt.
+     */
+    const features = [];
+
+    const globalIds = new Set();
+
+    for(const zoomClass of activeClasses)
+    {
+        const state =
+            zoomClassState.get(
+                zoomClass.id
+            );
+
+        if(!state)
+            continue;
+
+        for(const feature of state.features)
+        {
+            const id =
+                feature.properties._osm_type +
+                "/" +
+                feature.properties._osm_id;
+
+            /*
+             * Sicherheitshalber auch zoomklassenübergreifend
+             * doppelte OSM-Objekte vermeiden.
+             */
+            if(!globalIds.has(id))
+            {
+                globalIds.add(id);
+                features.push(feature);
+            }
+        }
+    }
+
+    console.log(
+        "Gesamt POIs:",
+        features.length
+    );
+
+    /*
+     * Wikidata-Daten vorbereiten.
+     */
+    const ids =
+        features
+            .map(
+                feature =>
+                    feature.properties.wikidata
+            )
+            .filter(Boolean);
+
+    prefetchWikidata(ids);
+
+    /*
+     * GeoJSON für MapLibre erzeugen.
+     */
+    const geojson =
+    {
+        type:"FeatureCollection",
+        features:features
+    };
+
+    /*
+     * Karte aktualisieren.
+     */
+    const source =
+        map.getSource(sourceId);
+
+    if(source)
+    {
+        source.setData(geojson);
+    }
 }
+
+
 
 //
 // Die Query gibt eine Obermenge aller Objekte, die potentiell dargestellt werden können
 //
+
+
+
+
+/*
 function createQuery(bounds)
 {
 
@@ -314,13 +670,15 @@ out center qt 500;
 `;
 
 }
-
+*/
 
  //nwr["man_made"](${south},${west},${north},${east});
 
 
 
-function convertToGeoJSON(data)
+
+
+function convertToGeoJSON(data, zoomClass)
 {
     const features = [];
 
@@ -331,93 +689,71 @@ function convertToGeoJSON(data)
 
         if(e.type === "node")
         {
-            lat=e.lat;
-            lon=e.lon;
+            lat = e.lat;
+            lon = e.lon;
         }
         else if(e.center)
         {
-            lat=e.center.lat;
-            lon=e.center.lon;
+            lat = e.center.lat;
+            lon = e.center.lon;
         }
 
-        if(!lat || !lon)
+        if(lat === undefined || lon === undefined)
             continue;
 
         const tags = e.tags || {};
 
+        /*
+         * Prüfen, ob das Objekt mindestens eines
+         * der für diese Zoomklasse relevanten Tags besitzt.
+         */
+        const relevant =
+            zoomClass.requiredTags.some(
+                tag =>
+                    tags[tag] !== undefined &&
+                    tags[tag] !== null &&
+                    tags[tag] !== ""
+            );
+
+        if(!relevant)
+            continue;
+
         features.push(
             {
                 type:"Feature",
+
                 geometry:
                 {
                     type:"Point",
-                    coordinates: [ lon, lat ]
+                    coordinates:[ lon, lat ]
                 },
+
                 properties:
                 {
                     ...tags,
-                    _app_icon: getIcon(tags)
+
+                    _osm_type:e.type,
+                    _osm_id:e.id,
+
+                    _app_icon:getIcon(tags)
                 }
             }
         );
 
+        /*
+         * Maximale Anzahl Objekte pro Abfrage.
+         */
         if(features.length >= 200)
             break;
-
     }
-
 
     return {
         type:"FeatureCollection",
         features:features
     };
-
 }
 
 
-/*
-function getIcon(tags)
-{
-    if(tags.heritage === "1")
-        return "wke";
-
-    if(tags.cemetary === "war_cemetary" || tags.tomb === "war_grave")
-        return "war_cemetary";
-
-    if(tags.building === "bunker" || tags.military === "bunker")
-        return "bunker";
-
-    if(tags.historic === "boundary_stone" || tags.boundary === "marker")
-	    return "boundary_marker";
-
-    if(tags.historic === "tower" || tags.building === "tower" || tags.man_made === "tower")
-	    return "tower";
-
-    if(tags.man_made === "adit" || tags.man_made === "cellar_entrance")
-        return "stollen";
-
-    if(tags.man_made === "mineshaft" || tags.historic === "mineshaft")
-        return "mine";
-
-    if(tags.historic === "wayside_cross")
-        return "cross";
-
-    if(tags.tourism === "museum")
-        return "museum";
-
-    if(tags.historic === "castle")
-        return "castle";
-
-    if(tags.amenity === "place_of_worship")
-        return "church";
-
-    if(tags.historic === "industrial")
-        return "industrial";
-
-    return "poi";
-
-}
-*/
 
 function clearSource(map)
 {
