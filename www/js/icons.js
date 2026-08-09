@@ -1,7 +1,28 @@
-/**
- * Auswahl der POI-Symbole
- */
+import { iconRules } from "../config/icons.js";
 
+
+// anhand der config die Icons bestimmen
+export function getIcon(tags)
+{
+    for(const rule of iconRules)
+    {
+        const matches =
+            rule.match.some(
+                ([key, value]) =>
+                    tags[key] === value ||
+                    value === "*"
+            );
+
+        if(matches)
+            return rule.icon;
+    }
+
+    return "poi";
+}
+
+
+
+/*
 export function getIcon(tags)
 {
     if(tags.heritage === "1")
@@ -49,6 +70,7 @@ export function getIcon(tags)
     return "poi";
 
 }
+*/
 
 
 

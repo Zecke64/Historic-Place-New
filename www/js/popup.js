@@ -116,26 +116,37 @@ async function showPopup(map, feature)
     }
 
     // Bild bestimmen
-    const imageInfo = await getImageInfo( properties, wikidata);
+
+    const imageInfo =
+        await getImageInfo(
+            properties,
+            wikidata
+        );
 
     console.log("IMAGE INFO:", imageInfo);
 
-    // Beschreibung bestimmen
+    const imageContent =
+        imageInfo?.source === "osm-image"
+            ? createImageLink(imageInfo)
+            : createImage(imageInfo);
+
+    const imageCredit =
+        imageInfo?.source === "osm-image"
+            ? ""
+            : createImageCredit(imageInfo);
+
     const description =
         selectDescription(
             properties,
             wikidata
         );
 
-    // Dynamischen Inhalt erzeugen
     const content =
     `
-
-        ${createImage(imageInfo)}
-        ${createImageCredit(imageInfo)}
+        ${imageContent}
+        ${imageCredit}
         ${createDescription(description)}
         ${createLinks(properties, wikidata)}
-
     `;
 
     const popupElement =
@@ -363,5 +374,24 @@ function createWikipediaUrl(value)
         "https://www.wikipedia.org/wiki/" +
         encodeURIComponent(value)
     );
+}
+
+
+
+function createImageLink(image)
+{
+    if(!image?.url)
+        return "";
+
+    return `
+        <a
+            class="poi-button"
+            href="${escapeHTML(image.url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Bild öffnen
+        </a>
+    `;
 }
 
