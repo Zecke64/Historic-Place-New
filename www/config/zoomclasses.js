@@ -4,31 +4,38 @@ export const zoomClasses = [
         minZoom: 12,
         maxZoom: 13,
 
-        objectTypes: [
-            ["man_made", "tower"],
-            ["man_made", "watermill"],
-            ["man_made", "windmill"],
-            ["man_made", "campanile"],
+        groups: [
 
-            ["building", "chapel"],
-            ["building", "monastery"],
+            {
+                id: "historic",
+                objectTypes: [
+                    ["man_made", "tower"],
+                    ["man_made", "watermill"],
+                    ["man_made", "windmill"],
+                    ["man_made", "campanile"],
 
-            ["amenity", "prison"],
-            ["amenity", "place_of_worship"],
-            ["amenity", "monastery"],
+                    ["building", "chapel"],
+                    ["building", "monastery"],
 
-            ["tourism", "museum"]
-        ],
+                    ["amenity", "prison"],
+                    ["amenity", "place_of_worship"],
+                    ["amenity", "monastery"],
 
-        requiredTags: [
-            "historic",
-            "wikidata",
-            "wikipedia",
-            "image",
-            "abandoned",
-            "disused",
-            "razed",
-            "heritage"
+                    ["tourism", "museum"]
+                ],
+
+                requiredTags: [
+                    "historic",
+                    "wikidata",
+                    "wikipedia",
+                    "image",
+                    "abandoned",
+                    "disused",
+                    "razed",
+                    "heritage"
+                ]
+            }
+
         ]
     },
 
@@ -37,24 +44,47 @@ export const zoomClasses = [
         minZoom: 14,
         maxZoom: 15,
 
-        objectTypes: [
-            ["amenity", "graveyard"],
-            ["man_made", "cellar_entrance"],
-            ["man_made", "mine"],
-            ["man_made", "mineshaft"],
-            ["man_made", "adit"],
-            ["man_made", "tower"]
-        ],
+        groups: [
 
-        requiredTags: [
-            "historic",
-            "wikidata",
-            "wikipedia",
-            "image",
-            "abandoned",
-            "disused",
-            "razed",
-            "heritage"
+            {
+                id: "special_places",
+
+                objectTypes: [
+                    ["amenity", "graveyard"],
+                    ["man_made", "cellar_entrance"],
+                    ["man_made", "mine"],
+                    ["man_made", "mineshaft"],
+                    ["man_made", "adit"]
+                ],
+
+                requiredTags: [
+                    "historic",
+                    "wikidata",
+                    "wikipedia",
+                    "image",
+                    "abandoned",
+                    "disused",
+                    "razed",
+                    "heritage"
+                ]
+            }, 
+
+            {
+                id: "mining",
+
+                objectTypes: [
+                    ["man_made", "mine"],
+                    ["man_made", "mineshaft"],
+                    ["man_made", "adit"]
+                ],
+
+                requiredTags: [
+                    "abandoned",
+                    "disused",
+                    "razed",
+                ]
+	    }
+
         ]
     }
 ];

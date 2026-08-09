@@ -276,15 +276,21 @@ function getTileBounds(tile)
 function createQueryForZoomClass(zoomClass, bounds)
 {
     const south = bounds.getSouth();
-    const west = bounds.getWest();
+    const west  = bounds.getWest();
     const north = bounds.getNorth();
-    const east = bounds.getEast();
+    const east  = bounds.getEast();
 
-    const queries =
-        zoomClass.objectTypes.map(
-            ([key, value]) =>
+    const queries = [];
+
+    for(const group of zoomClass.groups)
+    {
+        for(const [key, value] of group.objectTypes)
+        {
+            queries.push(
                 `nwr[${key}=${value}](${south},${west},${north},${east});`
-        );
+            );
+        }
+    }
 
     return `
 [out:json][timeout:30];
@@ -677,7 +683,6 @@ out center qt 500;
 
 
 
-
 function convertToGeoJSON(data, zoomClass)
 {
     const features = [];
@@ -704,54 +709,185 @@ function convertToGeoJSON(data, zoomClass)
         const tags = e.tags || {};
 
         /*
-         * Prüfen, ob das Objekt mindestens eines
-         * der für diese Zoomklasse relevanten Tags besitzt.
+         * Prüfen, ob das Objekt mindestens eine
+         * Gruppe der Zoomklasse erfüllt.
          */
-        const relevant =
-            zoomClass.requiredTags.some(
+        const relevant = zoomClass.groups.some(group =>
+        {
+            /*
+             * Passt der OSM-Typ zu dieser Gruppe?
+             */
+            const matchesObjectType =
+                group.objectTypes.some(
+                    ([key, value]) =>
+                        tags[key] === value
+                );
+
+            if(!matchesObjectType)
+                return false;
+
+            /*
+             * Keine requiredTags:
+             * Objekt ist zugelassen.
+             */
+            if(!group.requiredTags ||
+               group.requiredTags.length === 0)
+            {
+                return true;
+            }
+
+            /*
+             * Mindestens eines der requiredTags
+             * muss vorhanden und nicht leer sein.
+             */
+            return group.requiredTags.some(
                 tag =>
                     tags[tag] !== undefined &&
                     tags[tag] !== null &&
                     tags[tag] !== ""
             );
+        });
 
+        /*
+         * Keine passende Gruppe.
+         */
         if(!relevant)
             continue;
 
         features.push(
+        {
+            type: "Feature",
+
+            geometry:
             {
-                type:"Feature",
+                type: "Point",
+                coordinates: [lon, lat]
+            },
 
-                geometry:
-                {
-                    type:"Point",
-                    coordinates:[ lon, lat ]
-                },
+            properties:
+            {
+                ...tags,
 
-                properties:
-                {
-                    ...tags,
+                _osm_type: e.type,
+                _osm_id: e.id,
 
-                    _osm_type:e.type,
-                    _osm_id:e.id,
-
-                    _app_icon:getIcon(tags)
-                }
+                _app_icon: getIcon(tags)
             }
-        );
+        });
 
         /*
-         * Maximale Anzahl Objekte pro Abfrage.
+         * Maximal 200 Objekte pro Overpass-Abfrage.
          */
         if(features.length >= 200)
             break;
     }
 
     return {
-        type:"FeatureCollection",
-        features:features
+        type: "FeatureCollection",
+        features: features
     };
 }
+
+
+/*
+function convertToGeoJSON(data, zoomClass)
+{
+    const features = [];
+
+    for(const e of data.elements)
+    {
+        let lat;
+        let lon;
+
+        if(e.type === "node")
+        {
+            lat = e.lat;
+            lon = e.lon;
+        }
+        else if(e.center)
+        {
+            lat = e.center.lat;
+            lon = e.center.lon;
+        }
+
+        if(lat === undefined || lon === undefined)
+            continue;
+
+        const tags = e.tags || {};
+
+        const matchingGroups = [];
+
+        for(const group of zoomClass.groups)
+        {
+            const matchesObjectType =
+                group.objectTypes.some(
+                    ([key, value]) =>
+                        tags[key] === value
+                );
+
+            if(!matchesObjectType)
+                continue;
+
+            if(!group.requiredTags ||
+               group.requiredTags.length === 0)
+            {
+                matchingGroups.push(group);
+                continue;
+            }
+
+            const hasRequiredTag =
+                group.requiredTags.some(
+                    tag =>
+                        tags[tag] !== undefined &&
+                        tags[tag] !== null &&
+                        tags[tag] !== ""
+                );
+
+            if(hasRequiredTag)
+            {
+                matchingGroups.push(group);
+            }
+        }
+
+        if(matchingGroups.length === 0)
+            continue;
+
+        const group = matchingGroups[0];
+
+        features.push(
+        {
+            type: "Feature",
+
+            geometry:
+            {
+                type: "Point",
+                coordinates: [lon, lat]
+            },
+
+            properties:
+            {
+                ...tags,
+
+                _osm_type: e.type,
+                _osm_id: e.id,
+
+                _zoomClass: zoomClass.id,
+                _zoomGroup: group.id,
+
+                _app_icon: getIcon(tags)
+            }
+        });
+
+        if(features.length >= 200)
+            break;
+    }
+
+    return {
+        type: "FeatureCollection",
+        features: features
+    };
+}
+*/
 
 
 

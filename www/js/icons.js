@@ -7,7 +7,7 @@ export function getIcon(tags)
     if(tags.heritage === "1")
         return "wke";
 
-    if(tags.cemetary === "war_cemetary" || tags.tomb === "war_grave")
+    if(tags.cemetery === "war_cemetery" || tags.tomb === "war_grave")
         return "war_cemetery";
 
     if(tags.building === "bunker" || tags.military === "bunker")
