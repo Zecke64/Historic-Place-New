@@ -4,29 +4,77 @@ export const languages =
     de:
     {
 
-        "layer.opentopomap":
-            "OpenTopoMap",
-
-        "layer.kliver":
-            "Kliver Flözkarte",
-
-        "layer.osmPois":
-            "OSM-POIs"
-
+        "layer.opentopomap": 		"OpenTopoMap",
+        "layer.kliver": 		"Kliver Flözkarte",
+        "layer.osmPois": 		"OSM-POIs",
+	"status.mouse":			"Maus:",
+	"status.pois":			"POIs:",
+	"icon.bunker":			"Bunker",
+	"icon.campanile":		"Kirchturm",
+	"icon.castle":			"Burg / Schloss",
+	"icon.cemetery":		"Friedhof",
+	"icon.chapel":			"Kapelle",
+	"icon.church":			"Kirche",
+	"icon.cross":			"Kreuz",
+	"icon.historic_boundary_stone":	"Grenzstein",
+	"icon.industrial":		"Industrie",
+	"icon.mine":			"Bergwerk",
+	"icon.monastery":		"Kloster",
+	"icon.museum":			"Museum",
+	"icon.poi":			"Interessantes Objekt",
+	"icon.prison":			"Gefängnis",
+	"icon.stollen":			"Stollen",
+	"icon.turm":			"Turm",
+	"icon.war_cemetery":		"Soldatenfriedhof",
+	"icon.watermill":		"Wassermühle",
+	"icon.windmill":		"Windmühle",
+	"icon.wke":			"Weltkulturerbe",
+	"popup.loadingAdditionalInfo":	"Lade Zusatzinformationen ...",
+	"popup.website":		"Website",
+	"popup.noOsmTags":		"Keine OSM-Tags vorhanden.",
+	"popup.openImage":		"Bild anzeigen",
+	"popup.image":			"Bild",
+	"popup.author":			"Urheber",
+	"popup.license":		"Lizenz",
+	"popup.source":	         	"Quelle",
     },
 
 
     en:
     {
-
-        "layer.opentopomap":
-            "OpenTopoMap",
-
-        "layer.kliver":
-            "Kliver map",
-
-        "layer.osmPois":
-            "OSM POIs"
+        "layer.opentopomap": 		"OpenTopoMap",
+        "layer.kliver": 		"Kliver map",
+        "layer.osmPois": 		"OSM POIs",
+	"status.mouse":			"Mouse:",
+	"status.pois":			"POI's:",
+	"icon.bunker":			"Bunker",
+	"icon.campanile":		"Bell Tower",
+	"icon.castle":			"Castle",
+	"icon.cemetery":		"Cemetery",
+	"icon.chapel":			"Chapel",
+	"icon.church":			"Church",
+	"icon.cross":			"Cross",
+	"icon.historic_boundary_stone":	"Historic Boundary Stone",
+	"icon.industrial":		"Industrial Object",
+	"icon.mine":			"Mine",
+	"icon.monastery":		"Monastery",
+	"icon.museum":			"Museum",
+	"icon.poi":			"Point of Interest",
+	"icon.prison":			"Prison",
+	"icon.stollen":			"Adit",
+	"icon.turm":			"Tower",
+	"icon.war_cemetery":		"War Cemetery",
+	"icon.watermill":		"Watermill",
+	"icon.windmill":		"Windmill",
+	"icon.wke":			"World Heritage Site",
+	"popup.loadingAdditionalInfo":	"Lade Zusatzinformationen ...",
+	"popup.website":		"Website",
+	"popup.noOsmTags":		"No OSM tags available.",
+	"popup.openImage":		"Show Image",
+	"popup.image":			"Image",
+	"popup.author":			"Author",
+	"popup.license":		"License",
+	"popup.source":	         	"Source",
 
     }
 

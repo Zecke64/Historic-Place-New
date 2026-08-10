@@ -5,6 +5,13 @@ import { initPopup } from "./popup.js";
 import { loadIcons } from "./icons.js";
 import { createLayerControl } from "./ui/layerControl.js";
 import { initLayerManager, initZoomHandling, updateLayerVisibility } from "./layers.js";
+import { createLanguageSelector } from "./ui/languageSelector.js";
+import { updateLanguage } from "./ui/language.js";
+
+window.addEventListener(
+    "languagechange",
+    updateLanguage
+);
 
 const map = createMap();
 window.mapLibreMap = map;
@@ -30,6 +37,12 @@ async () =>
             l => l.id
         )
     );
+
+    const languageContainer = document.createElement("div");
+    languageContainer.className = "language-selector-container";
+    document.body.appendChild( languageContainer);
+    createLanguageSelector( languageContainer);
+    
 });
 
 

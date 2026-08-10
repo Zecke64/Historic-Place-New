@@ -72,6 +72,7 @@ function createOpacityControl(layer, map)
     const container = document.createElement("span");
     const slider = document.createElement("input");
 
+    container.className = "layer-opacity-container";
     slider.type = "range";
     slider.min = 0;
     slider.max = 100;
@@ -208,8 +209,14 @@ function createLayerRow(layer, className)
 {
     const row = document.createElement("div");
     row.className = "layer-row " + className;
+
     const label = document.createElement("span");
-    label.textContent = tr(layer.titleKey);
+
+    label.dataset.i18n =
+        layer.titleKey;
+
+    label.textContent =
+        tr(layer.titleKey);
 
     return { row, label };
 }

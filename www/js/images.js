@@ -4,13 +4,8 @@
  * Hilfsfunktionen für Bilder
  */
 
-import
-{
-    escapeHTML,
-    cleanCommonsHTML,
-    stripHTML
-}
-from "./utils.js";
+import { escapeHTML, cleanCommonsHTML, stripHTML } from "./utils.js";
+import { tr } from "./ui/language.js";
 
 
 const commonsCache = new Map();
@@ -303,7 +298,7 @@ export function createImageCredit(image)
     if(image.original)
     {
         lines.push(
-            "Bild: " +
+	    tr("popup.image") + ": " +
             escapeHTML(
                 image.original
             )
@@ -314,7 +309,7 @@ export function createImageCredit(image)
     if(image.author)
     {
         lines.push(
-            "Urheber: " +
+	    tr("popup.author") + ": " +
             cleanCommonsHTML(
                 image.author
             )
@@ -325,7 +320,7 @@ export function createImageCredit(image)
     if(image.license)
     {
         lines.push(
-            "Lizenz: " +
+	    tr("popup.license") + ": " +
             stripHTML(
                 image.license
             )
@@ -380,13 +375,13 @@ function getImageSourceText(image)
     switch(image.source)
     {
         case "osm-image":
-            return "Quelle: OSM image=*";
+            return tr("popup.source") + ": OSM image=*";
 
         case "commons":
-            return "Quelle: Wikimedia Commons";
+            return tr("popup.source") + ": Wikimedia Commons";
 
         case "wikidata":
-            return "Quelle: Wikidata (P18)";
+            return tr("popup.source") + ": Wikidata (P18)";
 
         default:
             return "";
@@ -394,30 +389,74 @@ function getImageSourceText(image)
 }
 
 
+function getCommonsFileName(value)
+{
+    if(!value)
+        return null;
 
+    /*
+     * File:Name.jpg
+     *
+     * Case-insensitiv, damit auch
+     * file:Name.jpg funktioniert.
+     */
+    if(/^File:/i.test(value))
+    {
+        return value.substring(5);
+    }
+
+    /*
+     * https://commons.wikimedia.org/wiki/File:Name.jpg
+     *
+     * Case-insensitiv.
+     */
+    const fileMatch =
+        value.match(
+            /\/wiki\/File:([^?]+)/i
+        );
+
+    if(fileMatch)
+    {
+        return decodeURIComponent(
+            fileMatch[1]
+        );
+    }
+
+    /*
+     * https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
+     *
+     * Ebenfalls case-insensitiv.
+     */
+    const pathMatch =
+        value.match(
+            /\/wiki\/Special:FilePath\/([^?]+)/i
+        );
+
+    if(pathMatch)
+    {
+        return decodeURIComponent(
+            pathMatch[1]
+        );
+    }
+
+    return null;
+}
+
+/*
 function getCommonsFileName(value)
 {
     if (!value)
         return null;
 
-
-    /*
-     * File:Name.jpg
-     */
-
+    // File:Name.jpg
     if(value.startsWith("File:"))
     {
         return value.substring(5);
     }
 
-
-    /*
-     * https://commons.wikimedia.org/wiki/File:Name.jpg
-     */
-
+    // https://commons.wikimedia.org/wiki/File:Name.jpg
     const fileMarker =
         "/wiki/File:";
-
 
     if(value.includes(fileMarker))
     {
@@ -428,14 +467,9 @@ function getCommonsFileName(value)
         );
     }
 
-
-    /*
-     * https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
-     */
-
+    // https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
     const pathMarker =
         "/wiki/Special:FilePath/";
-
 
     if(value.includes(pathMarker))
     {
@@ -446,9 +480,9 @@ function getCommonsFileName(value)
         );
     }
 
-
     return null;
 }
+*/
 
 
 function normalizeCacheKey(fileName)

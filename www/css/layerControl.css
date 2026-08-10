@@ -28,17 +28,40 @@
 }
 
 
-.layer-opacity
-{
-    width:90px;
-    justify-self:end;
+.layer-opacity-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.layer-opacity-value
-{
-    width:40px;
-    text-align:right;
+.layer-opacity-value {
+    margin-left: 6px;
+    white-space: nowrap;
 }
+
+.layer-opacity {
+    width: 100px;
+}
+
+.layer-row .layer-opacity {
+    display: inline-block;
+}
+
+
+
+
+
+#.layer-opacity
+#{
+#    width:90px;
+#    justify-self:end;
+#}
+
+#.layer-opacity-value
+#{
+#    width:40px;
+#    text-align:right;
+#}
 
 .layer-overlay
 {

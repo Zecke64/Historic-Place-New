@@ -9,6 +9,8 @@ import
     from "./images.js";
 
 import { escapeHTML } from "./utils.js";
+import { getIcon } from "./icons.js";
+import { tr } from "./ui/language.js";
 
 
 let currentPopup = null;
@@ -81,7 +83,7 @@ async function showPopup(map, feature)
         ${createHeader(properties)}
 
         <div id="poi-loading">
-            Lade Zusatzinformationen ...
+	    ${tr("popup.loadingAdditionalInfo")}
         </div>
 
         <div id="poi-content">
@@ -178,39 +180,21 @@ async function showPopup(map, feature)
 
 function createHeader(properties)
 {
-    let subtitle = "";
+    const icon = getIcon(properties);
 
-    if(properties.tourism)
-        subtitle = "Tourismus: " + properties.tourism;
-    else if(properties.historic)
-        subtitle = "Historisch: " + properties.historic;
-    else if(properties.man_made)
-        subtitle = "Bauwerk: " + properties.man_made;
+    // Das transparente Icon wird nicht als Popup verwendet
+    if(icon === "null")
+        return "";
+
+    const title =
+        properties.name ||
+        tr("icon." + icon);
 
     return `
-    <h2 class="poi-title">
-
-        ${escapeHTML(
-            properties.name ||
-            "Unbekanntes Objekt"
-        )}
-
-    </h2>
-
-
-    ${
-        subtitle
-        ?
-        `
-        <div class="poi-subtitle">
-            ${escapeHTML(subtitle)}
-        </div>
-        `
-        :
-        ""
-    }
+        <h2 class="poi-title">
+            ${escapeHTML(title)}
+        </h2>
     `;
-
 }
 
 
@@ -247,7 +231,7 @@ function createLinks(properties, wikidata)
     );
 
     html += createLink(
-        "Website",
+        tr("popup.website"),
         wikidata?.website ||
         properties.website
     );
@@ -323,7 +307,7 @@ function createTagTable(properties)
     }
 
     if (!rows)
-        return "<div>Keine OSM-Tags vorhanden.</div>";
+	return `<div>${tr("popup.noOsmTags")}</div>`;
 
     return `
     <table class="poi-table">
@@ -390,7 +374,7 @@ function createImageLink(image)
             target="_blank"
             rel="noopener noreferrer"
         >
-            Bild öffnen
+	    ${tr("popup.openImage")}
         </a>
     `;
 }
