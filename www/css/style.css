@@ -12,64 +12,39 @@ body
     font-family:Arial,sans-serif;
 }
 
+
 #map
 {
     position:absolute;
 
     left:0;
     top:0;
-    right:300px;
-    bottom:28px;
-    height:100%;
-}
-
-#sidebar
-{
-    position:absolute;
-
-    top:0;
     right:0;
-
-    width:300px;
     bottom:28px;
 
-    background:#f7f7f7;
-
-    border-left:1px solid #cccccc;
-
-    overflow:auto;
-}
-
-#sidebar h2
-{
-    margin:10px;
-}
-
-#layerPanel
-{
-    margin:10px;
+    height:100%;
 }
 
 #statusbar
 {
     position:absolute;
 
-    right:10px;
     top:10px;
+    left:50%;
 
-    z-index:10;
+    transform:translateX(-50%);
 
-    background:#efefef;
-
-    border:1px solid #bbbbbb;
-
-    border-radius:4px;
+    z-index:30;
 
     padding:5px 10px;
 
-    font-size:14px;
+    background:rgba(255,255,255,0.9);
 
-    box-shadow:0 1px 4px rgba(0,0,0,0.3);
+    border-radius:4px;
+
+    box-shadow:0 1px 4px rgba(0,0,0,0.25);
+
+    white-space:nowrap;
 }
 
 .maplibregl-popup-content
@@ -104,3 +79,63 @@ body
     padding: 5px;
     border-radius: 4px;
 }
+
+
+.map-control-button
+{
+    position:absolute;
+
+    z-index:30;
+
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:5px;
+
+    border:1px solid rgba(0,0,0,0.2);
+    border-radius:4px;
+
+    background:rgba(255,255,255,0.92);
+
+    cursor:pointer;
+
+    box-shadow:0 1px 4px rgba(0,0,0,0.25);
+}
+
+
+#layer-button
+{
+    position:absolute;
+    box-sizing:border-box;
+    top:10px;
+    right:10px;
+}
+
+
+#language-button
+{
+    position:absolute;
+    box-sizing:border-box;
+    top:56px;
+    right:10px;
+}
+
+.map-control-button img
+{
+    display:block;
+
+    width:32px;
+    height:32px;
+
+    object-fit:contain;
+}
+
+.map-control-button:hover
+{
+    background:white;
+}
+

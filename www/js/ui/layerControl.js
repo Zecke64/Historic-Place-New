@@ -8,20 +8,51 @@ let creditElement = null;
 
 
 
+
 export function createLayerControl(map)
 {
+    const button = document.createElement("button");
+    button.className = "map-control-button";
+    button.id = "layer-button";
+    const icon = document.createElement("img");
+    icon.src = "img/icons/layers.svg";
+    icon.alt = "Layer";
+    button.appendChild(icon);
+
     const control = document.createElement("div");
     control.className = "layer-control";
+    control.style.display = "none";
 
     createBaseSection(control, map);
     createOverlaySection(control, map);
     createHistObjSection(control, map);
 
-    creditElement = document.createElement("div");
-    creditElement.id = "map-credits";
-    map.getContainer().appendChild( creditElement);
+    button.addEventListener(
+        "click",
+        () =>
+        {
+            control.style.display =
+                control.style.display === "none"
+                    ? "block"
+                    : "none";
+        }
+    );
 
-    map.getContainer().appendChild(control);
+    const mapContainer =
+        map.getContainer();
+
+    mapContainer.appendChild(button);
+    mapContainer.appendChild(control);
+
+    creditElement =
+        document.createElement("div");
+
+    creditElement.id =
+        "map-credits";
+
+    mapContainer.appendChild(
+        creditElement
+    );
 
     activeCredits = [];
 
@@ -29,14 +60,19 @@ export function createLayerControl(map)
     {
         if(!layer.visible)
             continue;
+
         if(!layer.credit)
             continue;
-        activeCredits.push( layer.id);
+
+        activeCredits.push(
+            layer.id
+        );
     }
 
     updateLayerCredits();
-
 }
+
+
 
 
 // Basiskarten
