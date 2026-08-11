@@ -5,8 +5,13 @@ export const languages =
     {
 
         "layer.opentopomap": 		"OpenTopoMap",
+        "layer.openstreetmap": 		"OpenStreetMap",
+        "layer.kdr1893": 		"Karte des Deutschen Reiches 1893",
+        "layer.gm1936": 		"Topografische Karte von 1936",
         "layer.kliver": 		"Kliver Flözkarte",
+        "layer.puettl1822": 		"Püttlingen Nassau SB 1822",
         "layer.osmPois": 		"OSM-POIs",
+	"layer.historicalObjects": 	"Historische Objekte",
 	"status.mouse":			"Maus:",
 	"status.pois":			"POIs:",
 	"icon.bunker":			"Bunker",
@@ -43,8 +48,13 @@ export const languages =
     en:
     {
         "layer.opentopomap": 		"OpenTopoMap",
+        "layer.openstreetmap": 		"OpenStreetMap",
+        "layer.kdr1893": 		"Map of German Empire 1893",
+        "layer.gm1936": 		"Topographic map from 1936",
         "layer.kliver": 		"Kliver map",
+        "layer.puettl1822": 		"Püttlingen Nassau SB 1822",
         "layer.osmPois": 		"OSM POIs",
+	"layer.historicalObjects": 	"Historical Objects",
 	"status.mouse":			"Mouse:",
 	"status.pois":			"POI's:",
 	"icon.bunker":			"Bunker",

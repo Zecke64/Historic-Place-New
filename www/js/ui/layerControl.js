@@ -3,16 +3,40 @@ import { tr } from "./language.js";
 import { updateLayerVisibility } from "../layers.js";
 
 
+let activeCredits = [];
+let creditElement = null;
+
+
+
 export function createLayerControl(map)
 {
     const control = document.createElement("div");
     control.className = "layer-control";
+
     createBaseSection(control, map);
     createOverlaySection(control, map);
+    createHistObjSection(control, map);
 
-    map.getContainer() .appendChild(control);
+    creditElement = document.createElement("div");
+    creditElement.id = "map-credits";
+    map.getContainer().appendChild( creditElement);
+
+    map.getContainer().appendChild(control);
+
+    activeCredits = [];
+
+    for(const layer of layerConfig)
+    {
+        if(!layer.visible)
+            continue;
+        if(!layer.credit)
+            continue;
+        activeCredits.push( layer.id);
+    }
+
+    updateLayerCredits();
+
 }
-
 
 
 // Basiskarten
@@ -58,6 +82,28 @@ function createOverlaySection(parent, map)
             )
         );
     }
+
+    parent.appendChild(section);
+}
+
+
+
+// Historische Objekte
+function createHistObjSection(parent, map)
+{
+    const section = document.createElement("div");
+    section.className = "layer-section";
+
+    section.appendChild( 
+	createHeading( tr("layer.historicalObjects") )
+    );
+
+    for(const layer of layerConfig)
+    {
+        if(layer.category !== "hist-objects")
+            continue;
+
+        section.appendChild( createOverlayEntry( layer, map)); }
 
     parent.appendChild(section);
 }
@@ -119,7 +165,19 @@ function createOverlayEntry(layer, map)
         () =>
         {
 	    layer.visible = checkbox.checked;
+
+            if(layer.visible)
+            {
+                activeCredits = activeCredits.filter( id => id !== layer.id);
+                activeCredits.push( layer.id);
+            }
+            else
+            {
+                activeCredits = activeCredits.filter( id => id !== layer.id);
+            }
+
 	    updateLayerVisibility( map);
+	    updateLayerCredits();
         }
     );
 
@@ -278,4 +336,46 @@ function setBaseLayer(map, selectedLayer)
             );
         }
     }
+
+    activeCredits =
+        activeCredits.filter(
+            id =>
+            !layerConfig.some(
+                layer =>
+                    layer.category === "base" &&
+                    layer.id === id
+            )
+        );
+
+    activeCredits.push(
+        selectedLayer.id
+    );
+
+    updateLayerCredits();
+}
+
+
+
+function updateLayerCredits()
+{
+    if(!creditElement)
+        return;
+
+    const credits = [];
+
+    for(const layerId of activeCredits)
+    {
+        const layer =
+            layerConfig.find( layer => layer.id === layerId);
+
+        if(!layer)
+            continue;
+
+        if(!layer.credit)
+            continue;
+
+        credits.push(layer.credit);
+    }
+
+    creditElement.innerHTML = credits.join(" | ");
 }
