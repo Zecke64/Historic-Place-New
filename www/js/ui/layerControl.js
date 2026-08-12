@@ -14,6 +14,8 @@ export function createLayerControl(map)
     const button = document.createElement("button");
     button.className = "map-control-button";
     button.id = "layer-button";
+    button.dataset.i18n = "button.layers";
+    button.title = tr("button.layers");
     const icon = document.createElement("img");
     icon.src = "img/icons/layers.svg";
     icon.alt = "Layer";
@@ -80,7 +82,7 @@ function createBaseSection(parent, map)
 {
     const section = document.createElement("div");
     section.className = "layer-section";
-    section.appendChild( createHeading("Basiskarten"));
+    section.appendChild( createHeading( "layer.baseMaps" ) );
 
     for(const layer of layerConfig)
     {
@@ -104,7 +106,7 @@ function createOverlaySection(parent, map)
 {
     const section = document.createElement("div");
     section.className = "layer-section";
-    section.appendChild( createHeading("Overlays"));
+    section.appendChild( createHeading("layer.histMaps"));
 
     for(const layer of layerConfig)
     {
@@ -131,7 +133,7 @@ function createHistObjSection(parent, map)
     section.className = "layer-section";
 
     section.appendChild( 
-	createHeading( tr("layer.historicalObjects") )
+	createHeading( "layer.historicalObjects" )
     );
 
     for(const layer of layerConfig)
@@ -287,15 +289,20 @@ function setLayerOpacity(
 
 
 
-function createHeading(text)
+function createHeading(i18nKey)
 {
     const heading = document.createElement("div");
+
     heading.className = "layer-heading";
-    heading.textContent = text;
+
+    heading.dataset.i18n =
+        i18nKey;
+
+    heading.textContent =
+        tr(i18nKey);
 
     return heading;
 }
-
 
 
 

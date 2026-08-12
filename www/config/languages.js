@@ -4,6 +4,8 @@ export const languages =
     de:
     {
 
+	"button.layers":		"Ebenenauswahl",
+	"button.language":		"Sprache",
         "layer.opentopomap": 		"OpenTopoMap",
         "layer.openstreetmap": 		"OpenStreetMap",
         "layer.kdr1893": 		"Karte des Deutschen Reiches 1893",
@@ -11,6 +13,8 @@ export const languages =
         "layer.kliver": 		"Kliver Flözkarte",
         "layer.puettl1822": 		"Püttlingen Nassau SB 1822",
         "layer.osmPois": 		"OSM-POIs",
+	"layer.baseMaps":		"Basiskarten",
+	"layer.histMaps":		"Historische Karten",
 	"layer.historicalObjects": 	"Historische Objekte",
 	"status.mouse":			"Maus:",
 	"status.pois":			"POIs:",
@@ -47,6 +51,8 @@ export const languages =
 
     en:
     {
+	"button.layers":		"Layers",
+	"button.language":		"Language",
         "layer.opentopomap": 		"OpenTopoMap",
         "layer.openstreetmap": 		"OpenStreetMap",
         "layer.kdr1893": 		"Map of German Empire 1893",
@@ -54,6 +60,8 @@ export const languages =
         "layer.kliver": 		"Kliver map",
         "layer.puettl1822": 		"Püttlingen Nassau SB 1822",
         "layer.osmPois": 		"OSM POIs",
+	"layer.baseMaps":		"Base Maps",
+	"layer.histMaps":		"Historic Maps",
 	"layer.historicalObjects": 	"Historical Objects",
 	"status.mouse":			"Mouse:",
 	"status.pois":			"POI's:",

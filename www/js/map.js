@@ -28,7 +28,9 @@ export function createMap()
             CONFIG.map.minZoom,
 
         maxZoom:
-            CONFIG.map.maxZoom
+            CONFIG.map.maxZoom,
+
+	attributionControl: false
 
     });
 

@@ -3,8 +3,8 @@
 .layer-control
 {
     position:absolute;
-    top:48px;
-    left:10px;
+    top:17px;
+    right: 51px;
     z-index:30;
     max-height:calc(100% - 60px);
     overflow-y:auto;
@@ -28,7 +28,10 @@
 
 .layer-section
 {
-    margin-bottom:12px;
+    margin-bottom: 6px;
+    margin-top: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
 }
 
 

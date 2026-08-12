@@ -5,18 +5,16 @@ import
     setLanguage
 }
 from "./language.js";
+import { tr } from "./language.js";
 
 
 export function createLanguageSelector(container)
 {
-    const button =
-        document.createElement("button");
-
-    button.id =
-        "language-button";
-
-    button.className =
-        "map-control-button";
+    const button = document.createElement("button");
+    button.id = "language-button";
+    button.className = "map-control-button";
+    button.dataset.i18n = "button.language"
+    button.title = tr("button.language");
 
     const icon = document.createElement("img");
     icon.src = "img/icons/language.svg";

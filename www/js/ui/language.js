@@ -112,11 +112,12 @@ export function updateLanguage()
         .forEach(
             element =>
             {
-                const key =
-                    element.dataset.i18n;
+		const text = tr(element.dataset.i18n);
 
-                element.textContent =
-                    tr(key);
+                if(element.hasAttribute("title"))
+                    element.title = text;
+		else
+                    element.textContent = text;
             }
         );
 }
