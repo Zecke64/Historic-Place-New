@@ -61,3 +61,63 @@ export function stripHTML(html)
         .replace(/<[^>]*>/g, "")
         .trim();
 }
+
+
+
+export function normalizeTags(tags)
+{
+    const result = { ...tags };
+
+    const lifecyclePrefixes =
+    [
+        "disused",
+        "abandoned",
+        "razed"
+    ];
+
+    for(const key of Object.keys(tags))
+    {
+        const parts = key.split(":");
+
+        if(parts.length < 2)
+            continue;
+
+        const baseKey =
+            parts[parts.length - 1];
+
+        const prefixes =
+            parts.slice(0, -1);
+
+        // Nur bekannte Lifecycle-Präfixe berücksichtigen
+        if(!prefixes.every(
+            prefix => lifecyclePrefixes.includes(prefix)
+        ))
+        {
+            continue;
+        }
+
+        /*
+         * Aus
+         *
+         * disused:man_made=mineshaft
+         *
+         * wird
+         *
+         * man_made=mineshaft
+         * disused=yes
+         */
+
+        if(result[baseKey] === undefined)
+        {
+            result[baseKey] = tags[key];
+        }
+
+        for(const prefix of prefixes)
+        {
+            result[prefix] = "yes";
+        }
+    }
+
+    return result;
+}
+

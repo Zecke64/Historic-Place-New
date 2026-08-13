@@ -2,6 +2,7 @@ import { prefetchWikidata }
     from "./wikidata.js";
 import { getIcon } from "./icons.js";
 import { zoomClasses } from "../config/zoomclasses.js";
+import { normalizeTags } from "./utils.js";
 
 const zoomClassState = new Map();
 
@@ -286,8 +287,15 @@ function createQueryForZoomClass(zoomClass, bounds)
     {
         for(const [key, value] of group.objectTypes)
         {
+            const objectTypeQuery =
+                createObjectTypeQuery(
+                    key,
+                    value,
+                    group.lifecycle === true
+                );
+
             queries.push(
-                `nwr[${key}=${value}](${south},${west},${north},${east});`
+                `nwr${objectTypeQuery}(${south},${west},${north},${east});`
             );
         }
     }
@@ -402,12 +410,6 @@ async function loadPOIs(map)
                     tileBounds
                 );
 
-            console.log(
-                "Lade Kachel:",
-                zoomClass.id,
-                tileId
-            );
-
             /*
              * Laufende Anfrage abbrechen.
              *
@@ -458,11 +460,6 @@ async function loadPOIs(map)
                 const data =
                     await response.json();
 
-                console.log(
-                    "Overpass Elemente:",
-                    data.elements.length
-                );
-
                 /*
                  * Overpass-Daten in GeoJSON umwandeln.
                  *
@@ -475,11 +472,6 @@ async function loadPOIs(map)
                         data,
                         zoomClass
                     );
-
-                console.log(
-                    "GeoJSON:",
-                    geojson.features.length
-                );
 
                 /*
                  * Bereits vorhandene OSM-Objekte dieser
@@ -706,17 +698,30 @@ function convertToGeoJSON(data, zoomClass)
         if(lat === undefined || lon === undefined)
             continue;
 
-        const tags = e.tags || {};
+	// Original-Tags unverändert erhalten.
+        const originalTags = e.tags || {};
+
+        let matchedTags = null;
 
         /*
          * Prüfen, ob das Objekt mindestens eine
          * Gruppe der Zoomklasse erfüllt.
          */
-        const relevant = zoomClass.groups.some(group =>
+        for(const group of zoomClass.groups)
         {
             /*
-             * Passt der OSM-Typ zu dieser Gruppe?
+             * Für Lifecycle-Gruppen eine normalisierte
+             * Sicht der Tags verwenden.
+             *
+             * Für alle anderen Gruppen die
+             * Original-Tags.
              */
+            const tags =
+                group.lifecycle
+                ? normalizeTags(originalTags)
+                : originalTags;
+
+	    // Passt der OSM-Typ?
             const matchesObjectType =
                 group.objectTypes.some(
                     ([key, value]) =>
@@ -724,7 +729,7 @@ function convertToGeoJSON(data, zoomClass)
                 );
 
             if(!matchesObjectType)
-                return false;
+                continue;
 
             /*
              * Keine requiredTags:
@@ -733,25 +738,33 @@ function convertToGeoJSON(data, zoomClass)
             if(!group.requiredTags ||
                group.requiredTags.length === 0)
             {
-                return true;
+                matchedTags = tags;
+                break;
             }
 
             /*
              * Mindestens eines der requiredTags
              * muss vorhanden und nicht leer sein.
              */
-            return group.requiredTags.some(
-                tag =>
-                    tags[tag] !== undefined &&
-                    tags[tag] !== null &&
-                    tags[tag] !== ""
-            );
-        });
+            const matchesRequiredTags =
+                group.requiredTags.some(
+                    tag =>
+                        tags[tag] !== undefined &&
+                        tags[tag] !== null &&
+                        tags[tag] !== ""
+                );
+
+            if(matchesRequiredTags)
+            {
+                matchedTags = tags;
+                break;
+            }
+        }
 
         /*
          * Keine passende Gruppe.
          */
-        if(!relevant)
+        if(!matchedTags)
             continue;
 
         features.push(
@@ -766,12 +779,18 @@ function convertToGeoJSON(data, zoomClass)
 
             properties:
             {
-                ...tags,
+                /*
+                 * Ausschließlich die originalen
+                 * OSM-Tags ins Feature übernehmen.
+                 */
+                ...originalTags,
 
                 _osm_type: e.type,
                 _osm_id: e.id,
 
-                _app_icon: getIcon(tags)
+                _app_icon:
+                    getIcon(matchedTags)
+		    //"poi"
             }
         });
 
@@ -789,106 +808,6 @@ function convertToGeoJSON(data, zoomClass)
 }
 
 
-/*
-function convertToGeoJSON(data, zoomClass)
-{
-    const features = [];
-
-    for(const e of data.elements)
-    {
-        let lat;
-        let lon;
-
-        if(e.type === "node")
-        {
-            lat = e.lat;
-            lon = e.lon;
-        }
-        else if(e.center)
-        {
-            lat = e.center.lat;
-            lon = e.center.lon;
-        }
-
-        if(lat === undefined || lon === undefined)
-            continue;
-
-        const tags = e.tags || {};
-
-        const matchingGroups = [];
-
-        for(const group of zoomClass.groups)
-        {
-            const matchesObjectType =
-                group.objectTypes.some(
-                    ([key, value]) =>
-                        tags[key] === value
-                );
-
-            if(!matchesObjectType)
-                continue;
-
-            if(!group.requiredTags ||
-               group.requiredTags.length === 0)
-            {
-                matchingGroups.push(group);
-                continue;
-            }
-
-            const hasRequiredTag =
-                group.requiredTags.some(
-                    tag =>
-                        tags[tag] !== undefined &&
-                        tags[tag] !== null &&
-                        tags[tag] !== ""
-                );
-
-            if(hasRequiredTag)
-            {
-                matchingGroups.push(group);
-            }
-        }
-
-        if(matchingGroups.length === 0)
-            continue;
-
-        const group = matchingGroups[0];
-
-        features.push(
-        {
-            type: "Feature",
-
-            geometry:
-            {
-                type: "Point",
-                coordinates: [lon, lat]
-            },
-
-            properties:
-            {
-                ...tags,
-
-                _osm_type: e.type,
-                _osm_id: e.id,
-
-                _zoomClass: zoomClass.id,
-                _zoomGroup: group.id,
-
-                _app_icon: getIcon(tags)
-            }
-        });
-
-        if(features.length >= 200)
-            break;
-    }
-
-    return {
-        type: "FeatureCollection",
-        features: features
-    };
-}
-*/
-
 
 
 function clearSource(map)
@@ -905,4 +824,19 @@ function clearSource(map)
         );
     }
 
+}
+
+
+function createObjectTypeQuery(
+    key,
+    value,
+    lifecycle = false
+)
+{
+    if(!lifecycle)
+    {
+        return `["${key}"="${value}"]`;
+    }
+
+    return `[ ~"^(disused:|abandoned:|razed:)*${key}$"~"^${value}$" ]`;
 }

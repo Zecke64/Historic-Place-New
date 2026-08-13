@@ -24,6 +24,8 @@ export const zoomClasses = [
                     ["tourism", "museum"]
                 ],
 
+		lifecycle: true,
+
                 requiredTags: [
                     "historic",
                     "wikidata",
@@ -57,6 +59,8 @@ export const zoomClasses = [
                     ["man_made", "adit"]
                 ],
 
+		lifecycle: true,
+
                 requiredTags: [
                     "historic",
                     "wikidata",
@@ -77,6 +81,8 @@ export const zoomClasses = [
                     ["man_made", "mineshaft"],
                     ["man_made", "adit"]
                 ],
+
+		lifecycle: true,
 
                 requiredTags: [
                     "abandoned",

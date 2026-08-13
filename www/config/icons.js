@@ -71,13 +71,6 @@ export const iconRules = [
 
     {
         match: [
-            ["tourism", "*"]
-        ],
-        icon: "null"
-    },
-
-    {
-        match: [
             ["historic", "castle"]
         ],
         icon: "castle"
@@ -93,6 +86,13 @@ export const iconRules = [
     {
         match: [
             ["historic", "industrial"]
+        ],
+        icon: "industrial"
+    },
+
+    {
+        match: [
+            ["man_made", "watermill"]
         ],
         icon: "industrial"
     },
