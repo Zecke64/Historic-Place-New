@@ -1,6 +1,7 @@
 import { resolvedLayerConfig as layerConfig } from "../layerconfig.js";
 import { tr } from "./language.js";
 import { updateLayerVisibility } from "../layers.js";
+import { layerRegistry } from "../layers.js";
 
 
 let activeCredits = [];
@@ -26,8 +27,32 @@ export function createLayerControl(map)
     control.style.display = "none";
 
     createBaseSection(control, map);
-    createOverlaySection(control, map);
+    const overlaySection =
+        createOverlaySection(control, map);
     createHistObjSection(control, map);
+
+    map.on(
+        "moveend",
+        () =>
+        {
+            updateOverlaySection(
+                overlaySection,
+                map
+            );
+        }
+    );
+
+    map.on(
+        "zoomend",
+        () =>
+        {
+            updateOverlaySection(
+                overlaySection,
+                map
+            );
+        }
+    );
+
 
     button.addEventListener(
         "click",
@@ -106,23 +131,52 @@ function createOverlaySection(parent, map)
 {
     const section = document.createElement("div");
     section.className = "layer-section";
-    section.appendChild( createHeading("layer.histMaps"));
+    section.id = "overlay-layer-section";
+
+    section.appendChild(
+        createHeading("layer.histMaps")
+    );
+
+    updateOverlaySection(section, map);
+
+    parent.appendChild(section);
+
+    return section;
+}
+
+
+
+function updateOverlaySection(section, map)
+{
+    /*
+     * Alle bisherigen Einträge entfernen,
+     * die Überschrift aber behalten.
+     */
+    while(section.children.length > 1)
+    {
+        section.removeChild(
+            section.lastChild
+        );
+    }
 
     for(const layer of layerConfig)
     {
         if(layer.category !== "overlay")
             continue;
 
+        if(!layerIsAvailable(map, layer))
+            continue;
+
         section.appendChild(
             createOverlayEntry(
-		layer,
-		map
+                layer,
+                map
             )
         );
     }
-
-    parent.appendChild(section);
 }
+
+
 
 
 
@@ -421,4 +475,70 @@ function updateLayerCredits()
     }
 
     creditElement.innerHTML = credits.join(" | ");
+}
+
+
+
+
+function layerIsInView(map, layer)
+{
+    if(!layer._shapeBounds)
+    {
+        return false;
+    }
+
+    const bounds = map.getBounds();
+
+    const west  = bounds.getWest();
+    const east  = bounds.getEast();
+    const south = bounds.getSouth();
+    const north = bounds.getNorth();
+
+    const shape = layer._shapeBounds;
+
+    return !(
+        shape.maxLon < west ||
+        shape.minLon > east ||
+        shape.maxLat < south ||
+        shape.minLat > north
+    );
+}
+
+
+
+
+// Zoom >= minZoom(layer)?
+function layerIsAvailable(map, layer)
+{
+    if(layer.category !== "overlay")
+        return true;
+
+    const minZoom =
+        layer.display?.overview?.minZoom;
+
+    if(
+        minZoom !== undefined &&
+        map.getZoom() < minZoom
+    )
+    {
+        return false;
+    }
+
+    if(!layer._shapeBounds)
+        return false;
+
+    const mapBounds = map.getBounds();
+    const shapeBounds = layer._shapeBounds;
+
+    if(
+        shapeBounds.maxLon < mapBounds.getWest() ||
+        shapeBounds.minLon > mapBounds.getEast() ||
+        shapeBounds.maxLat < mapBounds.getSouth() ||
+        shapeBounds.minLat > mapBounds.getNorth()
+    )
+    {
+        return false;
+    }
+
+    return true;
 }

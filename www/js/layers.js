@@ -6,7 +6,7 @@ import { resolvedLayerConfig as layerConfig } from "./layerconfig.js";
 
 
 const layers = {};
-const layerRegistry = {};
+export const layerRegistry = {};
 const layerState = {};
 
 export async function initLayerManager(map)
@@ -108,6 +108,102 @@ export function addRasterLayer(map, options)
 }
 
 
+
+export async function addGeoJsonLayer(map, options)
+{
+    const
+    {
+        id,
+        shape,
+        mapLayers,
+        visible = true
+    } = options;
+
+    if(!shape || shape.type !== "geojson")
+    {
+        return;
+    }
+
+    /*
+     * Shape laden
+     */
+    const response = await fetch(shape.url);
+
+    if(!response.ok)
+    {
+        throw new Error(
+            `Shape konnte nicht geladen werden: ${shape.url}`
+        );
+    }
+
+    const shapeData = await response.json();
+
+    /*
+     * Shape-Daten im Layer selbst ablegen.
+     *
+     * Das brauchen wir später für die Prüfung,
+     * ob die Shape den Kartenausschnitt schneidet.
+     */
+    options._shapeData = shapeData;
+    options._shapeBounds = getGeoJsonBounds(shapeData);
+
+    const sourceId = id + "-shape-source";
+
+    map.addSource(
+        sourceId,
+        {
+            type:"geojson",
+            data:shapeData
+        }
+    );
+
+    for(const mapLayer of mapLayers)
+    {
+        if(
+            mapLayer.type !== "fill" &&
+            mapLayer.type !== "line"
+        )
+        {
+            continue;
+        }
+
+        const layer =
+        {
+            id:mapLayer.id,
+            type:mapLayer.type,
+            source:sourceId,
+            layout:
+            {
+                visibility: visible ? "visible" : "none"
+            }
+        };
+
+        if(mapLayer.type === "fill")
+        {
+            layer.paint =
+            {
+                "fill-opacity":
+                    options.shape?.style?.fillOpacity ?? 0.3
+            };
+        }
+
+        if(mapLayer.type === "line")
+        {
+            layer.paint =
+            {
+                "line-width":2,
+                "line-opacity":
+                    options.shape?.style?.lineOpacity ?? 1
+            };
+        }
+
+        map.addLayer(layer);
+    }
+}
+
+
+
+/*
 export async function addGeoJsonLayer(map, options)
 {
     const
@@ -174,8 +270,92 @@ export async function addGeoJsonLayer(map, options)
         map.addLayer(layer);
     }
 }
+*/
 
 
+export function getGeoJsonBounds(geojson)
+{
+    let minLon = Infinity;
+    let minLat = Infinity;
+    let maxLon = -Infinity;
+    let maxLat = -Infinity;
+
+    function processCoordinates(coordinates)
+    {
+        if(
+            typeof coordinates[0] === "number" &&
+            typeof coordinates[1] === "number"
+        )
+        {
+            const lon = coordinates[0];
+            const lat = coordinates[1];
+
+            minLon = Math.min(minLon, lon);
+            minLat = Math.min(minLat, lat);
+            maxLon = Math.max(maxLon, lon);
+            maxLat = Math.max(maxLat, lat);
+
+            return;
+        }
+
+        for(const child of coordinates)
+        {
+            processCoordinates(child);
+        }
+    }
+
+    if(geojson.type === "FeatureCollection")
+    {
+        for(const feature of geojson.features)
+        {
+            if(feature.geometry)
+            {
+                processCoordinates(
+                    feature.geometry.coordinates
+                );
+            }
+        }
+    }
+    else if(geojson.type === "Feature")
+    {
+        if(geojson.geometry)
+        {
+            processCoordinates(
+                geojson.geometry.coordinates
+            );
+        }
+    }
+    else if(geojson.type === "GeometryCollection")
+    {
+        for(const geometry of geojson.geometries)
+        {
+            if(geometry)
+            {
+                processCoordinates(
+                    geometry.coordinates
+                );
+            }
+        }
+    }
+    else if(geojson.coordinates)
+    {
+        processCoordinates(
+            geojson.coordinates
+        );
+    }
+
+    if(minLon === Infinity)
+    {
+        return null;
+    }
+
+    return {
+        minLon,
+        minLat,
+        maxLon,
+        maxLat
+    };
+}
 
 
 export function updateLayerVisibility(map)

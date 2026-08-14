@@ -87,7 +87,7 @@ export const layerConfig =
 	source: { tiles: [ "https://tiles.historic.place/kdr1893/{z}/{x}/{y}.png" ], },
 	shape: { url: "./shape/kdr1893.json", }, 
 	display: {
-            overview: { minZoom: 10 },
+            overview: { minZoom: 8 },
             detail: { minZoom: 13 }
         },
 	credit: '<a href="https://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>'
@@ -102,7 +102,7 @@ export const layerConfig =
 	source: { tiles: [ "https://tiles.historic.place/gm1936/{z}/{x}/{y}.png" ], },
 	shape: { url: "./shape/gm1936.json", },
         display: {
-            overview: { minZoom: 10 },
+            overview: { minZoom: 9 },
             detail: { minZoom: 13 }
         },
 	credit: '<a href="https://lib.byu.edu/collections/german-maps/" target="_blank">BYU Harold B. Lee Library</a>'
@@ -138,7 +138,7 @@ export const layerConfig =
         },
 	shape: { url: "./shape/Puettl-Nassau-1822.json", },
         display: {
-            overview: { minZoom: 10 },
+            overview: { minZoom: 11 },
             detail: { minZoom: 12 }
         },
 	credit: 'Saarländisches Landesarchiv'
