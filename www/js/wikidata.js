@@ -18,7 +18,7 @@ export async function loadWikidata(id)
         console.log("Wikidata aus Cache:", id);
         return wikidataCache.get(id);
     }
-    console.log("Wikidata vom Server:", id);
+    //console.log("Wikidata vom Server:", id);
 
     const url =
         "https://www.wikidata.org/w/api.php?" +

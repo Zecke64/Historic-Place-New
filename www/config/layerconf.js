@@ -17,15 +17,20 @@ export const layerTemplates =
             type: "raster",
             tileSize: 256
         },
-        shape:
-        {
-            type: "geojson"
-        },
         display:
         {
             overview: { minZoom: 0 },
             detail: { minZoom: 0 }
         }
+    },
+
+    "ovl-raster-template":
+    {
+	extends: "raster-template",
+        shape:
+        {
+            type: "geojson"
+        },
     }
 };
 
@@ -77,7 +82,7 @@ export const layerConfig =
     //*********************  Karte des Deutschen Reiches  1893   ***********************
     {
         id: "kdr1893",
-        template: "raster-template",
+        template: "ovl-raster-template",
         titleKey: "layer.kdr1893",
 	source: { tiles: [ "https://tiles.historic.place/kdr1893/{z}/{x}/{y}.png" ], },
 	shape: { url: "./shape/kdr1893.json", }, 
@@ -92,7 +97,7 @@ export const layerConfig =
     //*********************  Topographische Karten ca. 1935   ***********************
     {
         id: "gm1936",
-	template: "raster-template",
+	template: "ovl-raster-template",
         titleKey: "layer.gm1936",
 	source: { tiles: [ "https://tiles.historic.place/gm1936/{z}/{x}/{y}.png" ], },
 	shape: { url: "./shape/gm1936.json", },
@@ -108,7 +113,7 @@ export const layerConfig =
     //*********************  Kliver'sche Flözkarte ca. 1893   ***********************
     {
         id: "kliver",
-        template: "raster-template",
+        template: "ovl-raster-template",
         titleKey: "layer.kliver",
         source: { tiles: [ "https://tiles.historic.place/mining/Kliver/{z}/{x}/{y}.png" ] },
         shape: { url: "./shape/Kliver.json" },
@@ -123,9 +128,10 @@ export const layerConfig =
 
 
 
+    //*********************  Püttlinger Bannkarte 1822   ***********************
     {
         id: "puettl1822",
-        template: "raster-template",
+        template: "ovl-raster-template",
         titleKey: "layer.puettl1822",
 	source: {
             tiles: [ "https://tiles.historic.place/city/Puettlingen/Nassau_1822/{z}/{x}/{y}.png" ],
