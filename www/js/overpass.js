@@ -1,8 +1,7 @@
-import { prefetchWikidata }
-    from "./wikidata.js";
+import { prefetchWikidata } from "./wikidata.js";
 import { getIcon } from "./icons.js";
-import { zoomClasses } from "../config/zoomclasses.js";
 import { normalizeTags } from "./utils.js";
+import { resolvedZoomClasses as zoomClasses } from "./zoomclasses.js";
 
 const zoomClassState = new Map();
 
@@ -605,73 +604,6 @@ async function loadPOIs(map)
         source.setData(geojson);
     }
 }
-
-
-
-//
-// Die Query gibt eine Obermenge aller Objekte, die potentiell dargestellt werden können
-//
-
-
-
-
-/*
-function createQuery(bounds)
-{
-
-    const south = bounds.getSouth();
-    const west = bounds.getWest();
-    const north = bounds.getNorth();
-    const east = bounds.getEast();
-
-    return `
-[out:json][timeout:30];
-
-
-(
- nwr["historic"](${south},${west},${north},${east});
- nwr["heritage"](${south},${west},${north},${east});
- nwr["tourism"](${south},${west},${north},${east});
- nwr["abandoned"](${south},${west},${north},${east});
- nwr["disused"](${south},${west},${north},${east});
- //nwr["wikipedia"](${south},${west},${north},${east});
- //nwr["wikidata"](${south},${west},${north},${east});
- nwr[amenity=monastery](${south},${west},${north},${east});
- nwr[amenity=place_of_worship](${south},${west},${north},${east});
- nwr[amenity=grave_yard](${south},${west},${north},${east});
- nwr[amenity=prison](${south},${west},${north},${east});
- nwr[building=castle_wall](${south},${west},${north},${east});
- nwr[building=monastery](${south},${west},${north},${east});
- nwr[building=triumphal_arc](${south},${west},${north},${east});
- nwr[building=chapel](${south},${west},${north},${east});
- nwr[man_made=campanile](${south},${west},${north},${east});
- nwr[man_made=cellar_entrance](${south},${west},${north},${east});
- nwr[man_made=cross](${south},${west},${north},${east});
- nwr[man_made=water_well](${south},${west},${north},${east});
- nwr[man_made=windmill](${south},${west},${north},${east});
- nwr[man_made=watermill](${south},${west},${north},${east});
- nwr[man_made=mine](${south},${west},${north},${east});
- nwr[man_made=mineshaft](${south},${west},${north},${east});
- nwr[man_made=adit](${south},${west},${north},${east});
- nwr[man_made=spoil_heap](${south},${west},${north},${east});
- nwr[man_made=obelisk](${south},${west},${north},${east});
- nwr[man_made=kiln](${south},${west},${north},${east});
- nwr[man_made=tower](${south},${west},${north},${east});
- nwr[natural=stone](${south},${west},${north},${east});
- nwr[natural=spring](${south},${west},${north},${east});
- //nwr["wikimedia_commons"](${south},${west},${north},${east});
- //nwr["man_made"](${south},${west},${north},${east});
-);
-
-
-out center qt 500;
-`;
-
-}
-*/
-
- //nwr["man_made"](${south},${west},${north},${east});
-
 
 
 

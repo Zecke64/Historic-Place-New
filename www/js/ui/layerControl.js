@@ -1,4 +1,4 @@
-import { layerConfig } from "../../config/layerconf.js";
+import { resolvedLayerConfig as layerConfig } from "../layerconfig.js";
 import { tr } from "./language.js";
 import { updateLayerVisibility } from "../layers.js";
 

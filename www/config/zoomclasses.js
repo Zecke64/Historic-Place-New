@@ -1,3 +1,11 @@
+export const zoomClassDefaults =
+{
+    lifecycle: true,
+    requiredTags: []
+};
+
+
+
 export const zoomClasses = [
     {
         id: "z12_13",
@@ -24,8 +32,6 @@ export const zoomClasses = [
                     ["tourism", "museum"]
                 ],
 
-		lifecycle: true,
-
                 requiredTags: [
                     "historic",
                     "wikidata",
@@ -46,6 +52,17 @@ export const zoomClasses = [
         minZoom: 14,
         maxZoom: 15,
 
+        defaults:
+        {
+            requiredTags:
+            [
+                    "abandoned",
+                    "disused",
+                    "razed",
+
+            ]
+        },
+
         groups: [
 
             {
@@ -58,8 +75,6 @@ export const zoomClasses = [
                     ["man_made", "mineshaft"],
                     ["man_made", "adit"]
                 ],
-
-		lifecycle: true,
 
                 requiredTags: [
                     "historic",
@@ -82,13 +97,6 @@ export const zoomClasses = [
                     ["man_made", "adit"]
                 ],
 
-		lifecycle: true,
-
-                requiredTags: [
-                    "abandoned",
-                    "disused",
-                    "razed",
-                ]
 	    }
 
         ]

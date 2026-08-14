@@ -2,8 +2,8 @@
  * Verwaltung der Kartenlayer
  */
 
-import { layerConfig } from "../config/layerconf.js";
-// import { initOverpassLayer } from "./overpass.js";
+import { resolvedLayerConfig as layerConfig } from "./layerconfig.js";
+
 
 const layers = {};
 const layerRegistry = {};
@@ -233,5 +233,36 @@ export function initZoomHandling(map)
         }
     );
 }
+
+// layer config in template reinmergen
+function deepMerge(base, override)
+{
+    const result = { ...base };
+
+    for(const key of Object.keys(override))
+    {
+        const value = override[key];
+
+        if(
+            value &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            base[key] &&
+            typeof base[key] === "object" &&
+            !Array.isArray(base[key])
+        )
+        {
+            result[key] =
+                deepMerge(base[key], value);
+        }
+        else
+        {
+            result[key] = value;
+        }
+    }
+
+    return result;
+}
+
 
 

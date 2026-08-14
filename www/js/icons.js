@@ -9,8 +9,9 @@ export function getIcon(tags)
         const matches =
             rule.match.some(
                 ([key, value]) =>
-                    tags[key] === value ||
                     value === "*"
+                    ? tags[key] !== undefined
+                    : tags[key] === value
             );
 
         if(matches)
