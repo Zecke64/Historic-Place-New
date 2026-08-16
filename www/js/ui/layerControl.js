@@ -18,7 +18,7 @@ export function createLayerControl(map)
     button.dataset.i18n = "button.layers";
     button.title = tr("button.layers");
     const icon = document.createElement("img");
-    icon.src = "img/icons/layers.svg";
+    icon.src = "img/map_icons/layers.svg";
     icon.alt = "Layer";
     button.appendChild(icon);
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#set -x 
+
+iconpath="$(dirname $0)/../www/img"
+
+json="[\n"
+for f in $(ls -1 "$iconpath/poi_icons"); do
+	json+="    \"${f%.png}\",\n"
+done
+json=${json::-3}	# remove comma+linefeed from last line
+json+="\n]\n"
+echo -e "$json" > $iconpath/icons.json
+

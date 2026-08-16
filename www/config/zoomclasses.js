@@ -8,98 +8,145 @@ export const zoomClassDefaults =
 
 export const zoomClasses = [
     {
-        id: "z12_13",
-        minZoom: 12,
-        maxZoom: 13,
+	id: "z06_10",
+	minZoom: 6,
 
-        groups: [
-
-            {
-                id: "historic",
-                objectTypes: [
-                    ["man_made", "tower"],
-                    ["man_made", "watermill"],
-                    ["man_made", "windmill"],
-                    ["man_made", "campanile"],
-
-                    ["building", "chapel"],
-                    ["building", "monastery"],
-
-                    ["amenity", "prison"],
-                    ["amenity", "place_of_worship"],
-                    ["amenity", "monastery"],
-
-                    ["tourism", "museum"]
-                ],
-
-                requiredTags: [
-                    "historic",
-                    "wikidata",
-                    "wikipedia",
-                    "image",
-                    "abandoned",
-                    "disused",
-                    "razed",
-                    "heritage"
-                ]
-            }
-
-        ]
+	groups: [
+	    {
+		id: "gr_wke",
+		objectTypes: [
+		    ["heritage", "1"],
+		]
+	    }
+	]
     },
 
     {
-        id: "z14_15",
-        minZoom: 14,
-        maxZoom: 15,
+	id: "z11",
+	minZoom: 11,
 
-        defaults:
-        {
-            requiredTags:
-            [
-                    "abandoned",
-                    "disused",
-                    "razed",
+	groups: [
+	    {
+		id: "gr_monastery",
+		objectTypes: [
+		    ["building", "monastery"],
+		    ["amenity", "monastery"],
+		    ["historic", "monastery"],
+		    ["historic", "abbey"],
+		],
+		requiredTags: [ "building" ]
+	    },
+	    {
+		id: "gr_castle",
+		objectTypes: [
+		    ["historic", "castle"],
+		    ["historic", "fort"],
+		    ["historic", "palace"],
+		],
+	    },
+	    {
+		id: "gr_manor",
+		objectTypes: [
+		    ["historic", "manor"],
+		    ["castle_type", "manor"],
+		],
+	    },
+	    {
+		id: "gr_prison",
+		objectTypes: [
+		    ["amenity", "prison"],
+		    ["amenity", "prison_camp"],
+		],
+	    },
+	]
+    
+    },
 
-            ]
-        },
+    {
+        id: "z12",
+        minZoom: 12,
 
         groups: [
-
             {
-                id: "special_places",
-
+                id: "gr_12a",
                 objectTypes: [
-                    ["amenity", "graveyard"],
-                    ["man_made", "cellar_entrance"],
-                    ["man_made", "mine"],
-                    ["man_made", "mineshaft"],
-                    ["man_made", "adit"]
+                    ["man_made", "watermill"],
+                    ["man_made", "windmill"],
+		    ["historic", "archeological_site"],
+		    ["abandoned", "village"],
+		    ["historic", "battlefield"],
+		    ["historic", "industrial"],
                 ],
+	    },
 
+	    {
+                id: "gr_12b",
+                objectTypes: [
+		    ["place", "village"],
+		    ["place", "hamlet"],
+                ],
                 requiredTags: [
-                    "historic",
-                    "wikidata",
-                    "wikipedia",
-                    "image",
                     "abandoned",
-                    "disused",
                     "razed",
-                    "heritage"
                 ]
-            }, 
+            }
+        ]
+    },
 
+  {
+        id: "z13",
+        minZoom: 13,
+
+        groups: [
             {
-                id: "mining",
-
+                id: "gr_13a",
                 objectTypes: [
                     ["man_made", "mine"],
                     ["man_made", "mineshaft"],
-                    ["man_made", "adit"]
+                    ["man_made", "adit"],
+                    ["man_made", "drill_hole"],
+                    ["landuse", "landfill"],
                 ],
+                requiredTags: [
+		    "historic",
+		    "disused",
+                    "abandoned",
+                    "razed",
+                ]
+            },
 
-	    }
+            {
+                id: "gr_13b",
+                objectTypes: [
+                    ["man_made", "spoil_heap"],
+                ],
+                requiredTags: [
+                    "abandoned",
+                    "razed",
+                ]
+            },
 
+            {
+                id: "gr_13c",
+                objectTypes: [
+                    ["natural", "sinkhole"],
+                ],
+                requiredTags: [
+                    ["historic", "mine"]
+                ]
+            },
+
+            {
+                id: "gr_13d",
+                objectTypes: [
+                    ["man_made", "cellar_entrance"],
+                    ["denotation", "natural_monument"],
+                    ["historic", "mine"],
+                    ["historic", "monument"],
+                ],
+            },
         ]
-    }
+    },
+
 ];
 

@@ -180,7 +180,14 @@ async function showPopup(map, feature)
 
 function createHeader(properties)
 {
-    const icon = getIcon(properties);
+    const icon = properties._app_icon;
+
+    console.log(
+        "CREATE HEADER:",
+        "name =", properties.name,
+        "icon =", icon,
+        "properties =", properties
+    );
 
     // Das transparente Icon wird nicht als Popup verwendet
     if(icon === "null")

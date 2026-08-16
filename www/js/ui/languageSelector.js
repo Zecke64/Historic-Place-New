@@ -17,7 +17,7 @@ export function createLanguageSelector(container)
     button.title = tr("button.language");
 
     const icon = document.createElement("img");
-    icon.src = "img/icons/language.svg";
+    icon.src = "img/map_icons/language.svg";
     icon.alt = "Sprache";
     button.appendChild(icon);
 

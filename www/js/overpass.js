@@ -342,7 +342,7 @@ console.log("LOAD POIS START");
     /*
      * Unterhalb der ersten Zoomklasse
      */
-    if(zoom < 12)
+    if(zoom < 6)
     {
         clearSource(map);
         return;

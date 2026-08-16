@@ -1,52 +1,77 @@
 import { iconRules } from "../config/icons.js";
 
 
-// anhand der config die Icons bestimmen
+// AND/OR Logik in den Icon conditions
+function evaluateCondition(condition, tags)
+{
+    // Einzelne Bedingung: ["amenity", "prison"]
+    if(Array.isArray(condition))
+    {
+        const [key, value] = condition;
+
+        return value === "*"
+            ? tags[key] !== undefined
+            : tags[key] === value;
+    }
+
+    // AND
+    if(condition.type === "AND")
+    {
+        return condition.conditions.every(
+            subCondition =>
+                evaluateCondition(subCondition, tags)
+        );
+    }
+
+    // OR
+    if(condition.type === "OR")
+    {
+        return condition.conditions.some(
+            subCondition =>
+                evaluateCondition(subCondition, tags)
+        );
+    }
+
+    return false;
+}
+
+
+// Icon aus den iconrules bestimmen
 export function getIcon(tags)
 {
     for(const rule of iconRules)
     {
-        const matches =
-            rule.match.some(
+	// neue Syntax mit condition:
+        if(rule.condition)
+        {
+            if(evaluateCondition(rule.condition, tags))
+                return rule.icon;
+        }
+	// alte Syntx: OR
+        else if(rule.match)
+        {
+            const matches = rule.match.some(
                 ([key, value]) =>
                     value === "*"
-                    ? tags[key] !== undefined
-                    : tags[key] === value
+                        ? tags[key] !== undefined
+                        : tags[key] === value
             );
 
-        if(matches)
-        {
-            return rule.icon;
+            if(matches)
+                return rule.icon;
         }
     }
 
-    return "poi";
+    return "null";
 }
-
 
 
 
 export async function loadIcons(map)
 {
 
-    const icons =
-    [
-        "poi",
-	"null",
-        "museum",
-        "church",
-        "castle",
-        "industrial",
-	"cross",
-	"mine",
-	"stollen",
-	"wke",
-	"war_cemetery",
-	"bunker",
-	"historic_boundary_stone",
-	"turm"
-    ];
-
+    const response = await fetch("img/icons.json");
+    const icons = await response.json();
 
     for (const icon of icons)
     {
@@ -55,7 +80,7 @@ export async function loadIcons(map)
         try
         {
             const image =
-                await map.loadImage( `img/${icon}.png`);
+                await map.loadImage( `img/poi_icons/${icon}.png`);
 
             if (!map.hasImage(icon))
             {
