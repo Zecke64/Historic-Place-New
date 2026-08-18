@@ -2,10 +2,10 @@
 
 Hier stehen die Regeln zur Bestimmung des Icons.
 Sie sind unabhängig von den Regeln für Zoomstufen.
-Spezifischere Regeln sollten nach allgemeineren Regeln kommen:
+Spezifischere Regeln sollten VOR allgemeineren Regeln kommen:
 
-	historic=castle --> Icon castle
 	historic=castle + castle_type=manor --> Icon: manor
+	historic=castle --> Icon castle
 
 */
 
@@ -27,7 +27,7 @@ export function OR(...conditions)
 
 export const iconRules = [
 
-    // Zoom 6
+    // *****************************   Zoom 6   *****************************
     {
         match: [
             ["heritage", "1"]
@@ -316,18 +316,213 @@ export const iconRules = [
     {
         // Monument
         match: [
-            ["historic", "memorial"]
+            ["historic", "monument"]
         ],
         icon: "monument"
     },
 
 
+    // *****************************   Zoom 14   *****************************
+    {
+        // Turm
+        condition:
+            AND(
+                OR(
+                    ["historic", "tower"],
+                    ["building", "tower"],
+		),
+                OR(
+                    ["historic", "*"],
+                    ["disused", "*"],
+                    ["abandoned", "*"],
+                    ["razed", "*"]
+                )
+            ),
+        icon: "turm"
+    },
+
+    {
+        // Bunker
+        condition:
+            AND(
+                OR(
+                    ["military", "bunker"],
+                    ["historic", "bunker"],
+                ),
+                OR(
+                    ["historic", "*"],
+                    ["disused", "*"],
+                    ["abandoned", "*"],
+                    ["razed", "*"]
+                )
+            ),
+        icon: "bunker"
+    },
+
+    {
+        // Schiff
+        match: [
+            ["historic", "ship"]
+        ],
+        icon: "ship"
+    },
+
+    {
+        // Wrack
+        match: [
+            ["historic", "wreck"]
+        ],
+        icon: "wreck"
+    },
+
+    {
+        // Lokomotive
+        match: [
+            ["historic", "locomotive"]
+        ],
+        icon: "locomotive"
+    },
+
+    {
+        // Flugzeug
+        match: [
+            ["historic", "aircraft"]
+        ],
+        icon: "aircraft"
+    },
+
+    {
+        // Leuchtturm
+        match: [
+            ["man_made", "lighthouse"]
+        ],
+        icon: "lighthouse"
+    },
+
+    {
+        // Vermessungspunkt
+        match: [
+            ["man_made", "survey_point"]
+        ],
+        icon: "trigpoint"
+    },
 
 
+    // *****************************   Zoom 15   *****************************
 
 
+    {
+        // Kirche
+        match: [
+            ["historic", "church"]
+        ],
+        icon: "church"
+    },
 
+    {
+        // Kapelle
+        condition:
+            AND(
+                OR(
+                    ["historic", "chapel"],
+                    ["building", "chapel"],
+                ),
+                OR(
+                    ["historic", "*"],
+                    ["disused", "*"],
+                    ["abandoned", "*"],
+                    ["razed", "*"]
+                )
+            ),
+        icon: "chapel"
+    },
 
+    {
+        // Wegkreuz
+        condition:
+            OR(
+                ["historic", "wayside_shrine"],
+                ["historic", "tree_shrine"],
+                ["historic", "wayside_cross"],
+            ),
+        icon: "cross"
+    },
+
+    {
+        // Religiöse Stätte
+        condition:
+            AND(
+                ["amenity", "place_of_worship"],
+                OR(
+                    ["historic", "*"],
+                    ["disused", "*"],
+                    ["abandoned", "*"],
+                )
+            ),
+        icon: "worship"
+    },
+
+    {
+        // Grab
+        match: [
+            ["historic", "tomb"]
+        ],
+        icon: "tomb"
+    },
+
+    {
+        // Bombenkrater
+        match: [
+            ["historic", "bomb_crater"]
+        ],
+        icon: "bombe"
+    },
+
+    {
+        // Kirche
+        match: [
+            ["historic", "bridge"]
+        ],
+        icon: "bridge"
+    },
+
+    {
+        // Denkmal
+        match: [
+            ["historic", "memorial"]
+        ],
+        icon: "memorial"
+    },
+
+    {
+        // Kanone
+        match: [
+            ["historic", "cannon"]
+        ],
+        icon: "cannon"
+    },
+
+    {
+        // Soldatenfriedhof
+        match: [
+            ["cemetery", "war_cemetery"]
+        ],
+        icon: "war_cemetery"
+    },
+
+    {
+        // Portal
+        condition:
+            AND(
+                ["man_made", "portal"],
+                OR(
+                    ["historic", "*"],
+                    ["disused", "*"],
+                    ["abandoned", "*"],
+                )
+            ),
+        icon: "portal"
+    },
 
 
 

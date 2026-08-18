@@ -8,6 +8,7 @@ export const zoomClassDefaults =
 
 export const zoomClasses = [
     {
+	// ***************************   Zoom 06   ******************************
 	id: "z06_10",
 	minZoom: 6,
 
@@ -21,7 +22,9 @@ export const zoomClasses = [
 	]
     },
 
+
     {
+	// ***************************   Zoom 11   ******************************
 	id: "z11",
 	minZoom: 11,
 
@@ -62,7 +65,9 @@ export const zoomClasses = [
     
     },
 
+
     {
+	// ***************************   Zoom 12   ******************************
         id: "z12",
         minZoom: 12,
 
@@ -93,7 +98,9 @@ export const zoomClasses = [
         ]
     },
 
+
   {
+	// ***************************   Zoom 13   ******************************
         id: "z13",
         minZoom: 13,
 
@@ -143,6 +150,66 @@ export const zoomClasses = [
                     ["denotation", "natural_monument"],
                     ["historic", "mine"],
                     ["historic", "monument"],
+                ],
+            },
+        ]
+    },
+
+
+    {
+	// ***************************   Zoom 14   ******************************
+        id: "z14",
+        minZoom: 14,
+
+        groups: [
+            {
+                id: "gr_14a",
+                objectTypes: [
+                    ["military", "bunker"],
+                    ["building", "bunker"],
+                    ["building", "tower"],
+                    ["historic", "tower"],
+                    ["historic", "ship"],
+                    ["historic", "wreck"],
+                    ["historic", "locomotive"],
+                    ["historic", "aircraft"],
+                    ["man_made", "lighthouse"],
+                    ["man_made", "surveypoint"],
+                ],
+                requiredTags: [
+		    "historic",
+                    "abandoned",
+                ]
+            },
+        ]
+    },
+
+
+    {
+        // ***************************   Zoom 15   ******************************
+        id: "z15",
+        minZoom: 15,
+
+        groups: [
+            {
+                id: "gr_14a",
+                objectTypes: [
+                    ["amenity", "place_of_worship"],
+                    ["historic", "church"],
+                    ["historic", "chapel"],
+                    ["historic", "wayside_shrine"],
+                    ["historic", "tree_shrine"],
+                    ["historic", "wayside_cross"],
+                    ["historic", "tomb"],
+                    ["historic", "bomb_crater"],
+                    ["historic", "bridge"],
+                    ["historic", "memorial"],
+                    ["historic", "memorial"],
+                    ["historic", "cannon"],
+		    ["cemetary", "war_cemetary"],
+                    ["building", "chapel"],
+                    ["man_made", "portal"],
+		    
                 ],
             },
         ]

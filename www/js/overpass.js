@@ -28,6 +28,9 @@ const MAX_PARALLEL_REQUESTS = 8;
 
 //let currentRequest = null;
 let loadPOIsRunning = false;
+//let zoomAtStart = null;
+let loadPOIsPending = false;
+let loadPOIsController = null;
 
 export function initOverpassLayer(map)
 {
@@ -189,6 +192,22 @@ export function initOverpassLayer(map)
 
 
     /*
+     * Zoomvorgang merken
+     */
+    map.on(
+        "zoomstart",
+        () =>
+        {
+            if(loadPOIsRunning && loadPOIsController)
+            {
+                console.log("ZOOM START – laufende Requests abbrechen");
+                loadPOIsController.abort();
+            }
+        }
+    );
+
+
+    /*
      * Nach Kartenbewegung neu laden
      */
     map.on(
@@ -329,12 +348,19 @@ async function loadPOIs(map)
 {
     if(loadPOIsRunning)
     {
-        console.log("LOAD POIS bereits aktiv – übersprungen");
+        console.log(
+            "LOAD POIS bereits aktiv – neuer Aufruf vorgemerkt"
+        );
+
+        loadPOIsPending = true;
         return;
     }
-    loadPOIsRunning = true;
 
-console.log("LOAD POIS START");
+    loadPOIsRunning = true;
+    loadPOIsPending = false;
+    loadPOIsController = new AbortController();
+
+    console.log("LOAD POIS START");
 
     try {
     const zoom = map.getZoom();
@@ -416,7 +442,8 @@ console.log("LOAD POIS START");
                         loadTile(
                             tile,
                             zoomClass,
-                            state
+                            state,
+    			    loadPOIsController.signal
                         )
                 )
             );
@@ -506,15 +533,29 @@ console.log("LOAD POIS START");
     }
 
     }
+
     finally
     {
-	loadPOIsRunning = false;
-	console.log("LOAD POIS END");
+        loadPOIsRunning = false;
+        loadPOIsController = null;
+
+        console.log("LOAD POIS END");
+
+        if(loadPOIsPending)
+        {
+            loadPOIsPending = false;
+
+            console.log(
+                "LOAD POIS – vorgemerkten Aufruf starten"
+            );
+
+            loadPOIs(map);
+        }
     }
 }
 
 
-async function loadTile(tile, zoomClass, state)
+async function loadTile(tile, zoomClass, state, signal)
 {
     const tileId =
         `${tile.zoom}/${tile.x}/${tile.y}`;
@@ -542,9 +583,6 @@ async function loadTile(tile, zoomClass, state)
         tileId
     );
 
-    const controller =
-        new AbortController();
-
     try
     {
         const response =
@@ -563,8 +601,7 @@ async function loadTile(tile, zoomClass, state)
                         "data=" +
                         encodeURIComponent(query),
 
-                    signal:
-                        controller.signal
+                    signal: signal
                 }
             );
 
