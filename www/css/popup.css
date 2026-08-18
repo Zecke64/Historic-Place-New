@@ -38,7 +38,8 @@
     text-align: center;
 }
 
-.poi-image-credit
+.poi-image-credit,
+.poi-gallery-credit
 {
     margin-top: 5px;
     font-size: 0.75em;
@@ -51,7 +52,26 @@
     text-decoration: none;
 }
 
-.poi-description
+.poi-gallery-image-container
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.poi-gallery-image
+{
+    max-width: calc(100% - 60px);
+    max-height: 300px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.poi-description,
+.poi-gallery-description
 {
     margin-bottom:10px;
     line-height:1.4;

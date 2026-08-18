@@ -127,15 +127,29 @@ async function showPopup(map, feature)
 
     console.log("IMAGE INFO:", imageInfo);
 
-    const imageContent =
-        imageInfo?.source === "osm-image"
-            ? createImageLink(imageInfo)
-            : createImage(imageInfo);
+    let imageContent = "";
+    let imageCredit = "";
 
-    const imageCredit =
-        imageInfo?.source === "osm-image"
-            ? ""
-            : createImageCredit(imageInfo);
+    if(imageInfo?.source === "commons-category")
+    {
+        imageContent =
+            createImageGallery(
+                imageInfo.images,
+		imageInfo.categoryUrl
+            );
+    }
+    else if(imageInfo)
+    {
+        imageContent =
+            imageInfo.source === "osm-image"
+                ? createImageLink(imageInfo)
+                : createImage(imageInfo);
+
+        imageCredit =
+            imageInfo.source === "osm-image"
+                ? ""
+                : createImageCredit(imageInfo);
+    }
 
     const description =
         selectDescription(
@@ -174,6 +188,13 @@ async function showPopup(map, feature)
     {
         container.innerHTML = content;
         installImageHandler(container);
+        if(imageInfo?.source === "commons-category")
+        {
+            installImageGalleryHandler(
+                container,
+                imageInfo.images
+            );
+        }
     }
 }
 
@@ -384,5 +405,201 @@ function createImageLink(image)
 	    ${tr("popup.openImage")}
         </a>
     `;
+}
+
+
+
+function createImageGallery(images)
+{
+    if(!images || images.length === 0)
+        return "";
+
+    const count =
+        Math.min(images.length, 5);
+
+    const galleryImages =
+        images.slice(0, count);
+
+    return `
+        <div class="poi-image-gallery">
+
+            <div class="poi-gallery-image-container">
+
+                <button
+                    class="poi-gallery-prev"
+                    type="button"
+                    ${count <= 1 ? "disabled" : ""}
+                >
+                    ‹
+                </button>
+
+                <img
+                    class="poi-gallery-image"
+                    src="${escapeHTML(
+                        galleryImages[0].thumbnail ||
+                        galleryImages[0].url
+                    )}"
+                    alt=""
+                >
+
+                <button
+                    class="poi-gallery-next"
+                    type="button"
+                    ${count <= 1 ? "disabled" : ""}
+                >
+                    ›
+                </button>
+
+            </div>
+
+            <div class="poi-gallery-counter">
+                1 / ${count}
+            </div>
+
+	    <div class="poi-gallery-info">
+
+                ${createImageCredit(galleryImages[0])}
+
+		<div class="poi-gallery-description">
+		    ${galleryImages[0].description || ""}
+		</div>
+    
+            </div>
+        </div>
+    `;
+}
+
+
+
+function installImageGalleryHandler( container, images)
+{
+    if(!images || images.length <= 1)
+        return;
+
+    const galleryImages = images.slice(0, 5);
+
+    let currentIndex = 0;
+
+    const image       = container.querySelector( ".poi-gallery-image");
+    const counter     = container.querySelector( ".poi-gallery-counter");
+    const galleryInfo = container.querySelector( ".poi-gallery-info");
+    const description = container.querySelector( ".poi-gallery-description");
+    const credit      = container.querySelector( ".poi-gallery-credit");
+    const fileLink    = container.querySelector( ".poi-gallery-file-link");
+    const previous    = container.querySelector( ".poi-gallery-prev");
+    const next        = container.querySelector( ".poi-gallery-next");
+
+    function showImage(index)
+    {
+        currentIndex = index;
+        const current = galleryImages[currentIndex];
+        image.src = current.thumbnail || current.url;
+        counter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+
+	if(galleryInfo)
+	{
+    	    const currentImage =
+        	galleryImages[currentIndex];
+
+	    galleryInfo.innerHTML =
+        	`
+        	${createImageCredit(currentImage)}
+
+        	<div class="poi-gallery-description">
+            	${currentImage.description || ""}
+        	</div>
+        	`;
+	}
+        if(description)
+        {
+	    description.innerHTML = cleanCommonsHtml( current.description || "");
+        }
+
+        if(credit)
+        {
+            let html = "";
+            if(current.author)
+            {
+                html = "Urheber: " + cleanCommonsHtml( current.author);
+            }
+            if(current.license)
+            {
+                if(html)
+                    html += " · ";
+
+                html += escapeHTML( current.license);
+            }
+            credit.innerHTML = html;
+        }
+
+        if(fileLink)
+        {
+            if(current.commonsUrl)
+            {
+                fileLink.href = current.commonsUrl;
+                fileLink.style.display = "";
+            }
+            else
+            {
+                fileLink.style.display = "none";
+            }
+        }
+    }
+
+    previous.addEventListener(
+        "click",
+        () =>
+        {
+            showImage(
+                (currentIndex - 1 +
+                    galleryImages.length) %
+                    galleryImages.length
+            );
+        }
+    );
+
+
+    next.addEventListener(
+        "click",
+        () =>
+        {
+            showImage(
+                (currentIndex + 1) %
+                galleryImages.length
+            );
+        }
+    );
+}
+
+
+
+
+function cleanCommonsHtml(value)
+{
+    if(!value)
+        return "";
+
+    return value
+        .replace(/<script[\s\S]*?<\/script>/gi, "")
+        .replace(/<style[\s\S]*?<\/style>/gi, "")
+        .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+        .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+        .replace(
+            /href\s*=\s*["']([^"']*)["']/gi,
+            (match, url) =>
+            {
+                if(
+                    url.startsWith("https://") ||
+                    url.startsWith("http://")
+                )
+                {
+                    return `href="${escapeHTML(url)}"`;
+                }
+
+                return "";
+            }
+        );
+
+    return value;
 }
 
