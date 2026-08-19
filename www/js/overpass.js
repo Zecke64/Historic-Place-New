@@ -2,6 +2,10 @@ import { prefetchWikidata } from "./wikidata.js";
 import { getIcon } from "./icons.js";
 import { normalizeTags } from "./utils.js";
 import { resolvedZoomClasses as zoomClasses } from "./zoomclasses.js";
+import { getPendingPermalinkPoi, clearPendingPermalinkPoi } from "./permalink.js";
+import { showPopup } from "./popup.js";
+
+
 
 const zoomClassState = new Map();
 
@@ -532,7 +536,52 @@ async function loadPOIs(map)
         source.setData(geojson);
     }
 
+    /*
+     * Prüfen, ob ein POI aus einem Permalink
+     * geöffnet werden soll.
+     */
+    const pendingPoi =
+        getPendingPermalinkPoi();
+
+    if(pendingPoi)
+    {
+        console.log(
+            "PERMALINK POI gefunden:",
+            pendingPoi
+        );
+
+        const [osmType, osmId] =
+            pendingPoi.split("/");
+
+        const feature =
+            features.find(
+                feature =>
+                    feature.properties._osm_type === osmType &&
+                    String(feature.properties._osm_id) === String(osmId)
+            );
+
+        if(feature)
+        {
+            console.log(
+                "PERMALINK POI Feature gefunden:",
+                feature
+            );
+
+            await showPopup(
+                map,
+                feature
+            );
+        }
+        else
+        {
+            console.log(
+                "PERMALINK POI nicht in geladenen Features:",
+                pendingPoi
+            );
+        }
     }
+
+    } 		// try
 
     finally
     {

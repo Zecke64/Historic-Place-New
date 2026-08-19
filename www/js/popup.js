@@ -14,6 +14,7 @@ import { tr } from "./ui/language.js";
 
 
 let currentPopup = null;
+export let currentPopupFeature = null;
 let popupSequence = 0;
 
 
@@ -61,10 +62,11 @@ export function initPopup(map)
 
 
 
-async function showPopup(map, feature)
+export async function showPopup(map, feature)
 {
 
     console.log("POI Properties:", feature.properties);
+    currentPopupFeature = feature;	// für Permalink
     const properties = feature.properties;
     const thisPopupId = ++popupSequence;
     const coordinates = feature.geometry.coordinates;
@@ -108,6 +110,14 @@ async function showPopup(map, feature)
         .setHTML( html)
         .addTo(map);
 
+    currentPopup.on(
+        "close",
+        () =>
+        {
+            currentPopup = null;
+	    currentPopupFeature = null;
+        }
+    );
 
     // Zusatzinformationen laden
     let wikidata = null;

@@ -7,6 +7,7 @@ import { createLayerControl } from "./ui/layerControl.js";
 import { initLayerManager, initZoomHandling, updateLayerVisibility } from "./layers.js";
 import { createLanguageSelector } from "./ui/languageSelector.js";
 import { updateLanguage } from "./ui/language.js";
+import { createPermalinkControl, loadPermalink } from "./permalink.js";
 
 window.addEventListener(
     "languagechange",
@@ -27,6 +28,8 @@ async () =>
     updateLayerVisibility(map);
     initZoomHandling(map);
     createLayerControl(map);
+    createPermalinkControl(map);
+    loadPermalink(map);
     await loadIcons(map);
     initOverpassLayer(map);
     initPopup(map);

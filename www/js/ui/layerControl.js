@@ -71,6 +71,24 @@ export function createLayerControl(map)
     mapContainer.appendChild(button);
     mapContainer.appendChild(control);
 
+    const permalinkButton = document.createElement("button");
+    permalinkButton.className = "map-control-button";
+    permalinkButton.id = "permalink-button";
+    permalinkButton.title = "Permalink kopieren";
+    const permalinkIcon = document.createElement("img");
+    permalinkIcon.src = "img/map_icons/permalink.svg";
+    permalinkIcon.alt = "Permalink";
+    permalinkButton.appendChild( permalinkIcon);
+    permalinkButton.addEventListener(
+        "click",
+        () =>
+        {
+            copyPermalink(map);
+        }
+    );
+    mapContainer.appendChild( permalinkButton);
+
+
     creditElement =
         document.createElement("div");
 
@@ -100,6 +118,69 @@ export function createLayerControl(map)
 }
 
 
+async function copyPermalink(map)
+{
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    const bearing = map.getBearing();
+    const pitch = map.getPitch();
+
+    /*
+     * Sichtbare Layer ermitteln.
+     */
+    const layers = [];
+
+    for(const layer of layerConfig)
+    {
+        if(!map.getLayer(layer.id))
+            continue;
+        const visibility = map.getLayoutProperty( layer.id, "visibility");
+        if(visibility !== "none")
+        {
+            layers.push(layer.id);
+        }
+    }
+
+    /*
+     * URL erzeugen.
+     */
+    const url = new URL( window.location.href);
+    url.search = "";
+    const params = new URLSearchParams();
+    params.set( "lat", center.lat.toFixed(6));
+    params.set( "lon", center.lng.toFixed(6));
+    params.set( "zoom", zoom.toFixed(2));
+
+    if(Math.abs(bearing) > 0.01)
+    {
+        params.set( "bearing", bearing.toFixed(2));
+    }
+
+    if(Math.abs(pitch) > 0.01)
+    {
+        params.set( "pitch", pitch.toFixed(2));
+    }
+
+    if(layers.length > 0)
+    {
+        params.set( "layers", layers.join(","));
+    }
+
+    url.search = params.toString();
+
+    try
+    {
+        await navigator.clipboard.writeText( url.toString());
+
+        console.log( "Permalink kopiert:", url.toString());
+    }
+    catch(error)
+    {
+        console.error( "Permalink konnte nicht kopiert werden:", error);
+    }
+}
+
+
 
 
 // Basiskarten
@@ -107,6 +188,7 @@ function createBaseSection(parent, map)
 {
     const section = document.createElement("div");
     section.className = "layer-section";
+    section.id = "base-layer-section";
     section.appendChild( createHeading( "layer.baseMaps" ) );
 
     for(const layer of layerConfig)
@@ -207,27 +289,65 @@ function createOpacityControl(layer, map)
     if(layer.opacityControl === false)
         return null;
 
-    const container = document.createElement("span");
-    const slider = document.createElement("input");
+    const container =
+        document.createElement("span");
 
-    container.className = "layer-opacity-container";
+    const slider =
+        document.createElement("input");
+
+    container.className =
+        "layer-opacity-container";
+
     slider.type = "range";
     slider.min = 0;
     slider.max = 100;
-    slider.value = Math.round(layer.opacity * 100);
     slider.className = "layer-opacity";
 
-    const value = document.createElement("span");
 
-    value.className = "layer-opacity-value";
-    value.textContent = Math.round(layer.opacity * 100) + "%";
+    /*
+     * Aktuelle Transparenz aus MapLibre lesen.
+     */
+    let opacity = layer.opacity;
+
+    const rasterId =
+        `${layer.id}-raster`;
+
+    if(map.getLayer(rasterId))
+    {
+        const mapOpacity =
+            map.getPaintProperty(
+                rasterId,
+                "raster-opacity"
+            );
+
+        if(mapOpacity != null)
+            opacity = mapOpacity;
+    }
+
+    slider.value =
+        Math.round(opacity * 100);
+
+
+    const value =
+        document.createElement("span");
+
+    value.className =
+        "layer-opacity-value";
+
+    value.textContent =
+        Math.round(opacity * 100) + "%";
+
 
     slider.addEventListener(
         "input",
         () =>
         {
-            const percent = slider.value;
-            value.textContent = percent + "%";
+            const percent =
+                slider.value;
+
+            value.textContent =
+                percent + "%";
+
             setLayerOpacity(
                 map,
                 layer,
@@ -236,7 +356,10 @@ function createOpacityControl(layer, map)
         }
     );
 
-    container.append( slider, value);
+    container.append(
+        slider,
+        value
+    );
 
     return container;
 }
@@ -247,10 +370,24 @@ function createOpacityControl(layer, map)
 function createOverlayEntry(layer, map)
 {
     const { row, label } = createLayerRow( layer, "layer-base");
-
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.checked = layer.visible;
+
+    const rasterId =
+        `${layer.id}-raster`;
+
+    if(map.getLayer(rasterId))
+    {
+        checkbox.checked =
+            map.getLayoutProperty(
+                rasterId,
+                "visibility"
+            ) !== "none";
+    }
+    else
+    {
+        checkbox.checked = false;
+    }
 
     checkbox.addEventListener(
         "change",
@@ -377,14 +514,40 @@ function createLayerRow(layer, className)
 }
 
 
-
 function createBaseEntry(layer, map)
 {
-    const { row, label } = createLayerRow( layer, "layer-base");
-    const radio = document.createElement("input");
+    const { row, label } =
+        createLayerRow(
+            layer,
+            "layer-base"
+        );
+
+    const radio =
+        document.createElement("input");
+
     radio.type = "radio";
     radio.name = "base-layer";
-    radio.checked = layer.visible;
+
+
+    /*
+     * Aktuelle Sichtbarkeit aus MapLibre lesen.
+     */
+    const rasterId =
+        `${layer.id}-raster`;
+
+    if(map.getLayer(rasterId))
+    {
+        radio.checked =
+            map.getLayoutProperty(
+                rasterId,
+                "visibility"
+            ) !== "none";
+    }
+    else
+    {
+        radio.checked = false;
+    }
+
 
     radio.addEventListener(
         "change",
@@ -392,22 +555,36 @@ function createBaseEntry(layer, map)
         {
             if(radio.checked)
             {
-                setBaseLayer( map, layer);
+                setBaseLayer(
+                    map,
+                    layer
+                );
             }
         }
     );
 
-    const opacityControl = createOpacityControl( layer, map);
 
-    row.append( radio, label);
+    const opacityControl =
+        createOpacityControl(
+            layer,
+            map
+        );
+
+    row.append(
+        radio,
+        label
+    );
 
     if(opacityControl)
     {
-        row.append( opacityControl);
+        row.append(
+            opacityControl
+        );
     }
 
     return row;
 }
+
 
 
 
@@ -542,3 +719,54 @@ function layerIsAvailable(map, layer)
 
     return true;
 }
+
+
+
+
+export function refreshLayerControl(map)
+{
+    const overlaySection =
+        document.getElementById(
+            "overlay-layer-section"
+        );
+
+    if(overlaySection)
+    {
+        updateOverlaySection(
+            overlaySection,
+            map
+        );
+    }
+
+
+    const baseSection =
+        document.getElementById(
+            "base-layer-section"
+        );
+
+    if(baseSection)
+    {
+        while(baseSection.children.length > 1)
+        {
+            baseSection.removeChild(
+                baseSection.lastChild
+            );
+        }
+
+        for(const layer of layerConfig)
+        {
+            if(layer.category !== "base")
+                continue;
+
+            baseSection.appendChild(
+                createBaseEntry(
+                    layer,
+                    map
+                )
+            );
+        }
+    }
+}
+
+
+
