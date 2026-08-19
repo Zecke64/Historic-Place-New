@@ -13,7 +13,7 @@ export function createPermalinkControl(map)
     button.id = "permalink-button";
     button.title = "Permalink kopieren";
     const icon = document.createElement("img");
-    icon.src = "img/map_icons/link.svg";
+    icon.src = "img/map_icons/permalink.svg";
     icon.alt = "Permalink";
 
     button.appendChild(icon);

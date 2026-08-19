@@ -71,6 +71,7 @@ export function createLayerControl(map)
     mapContainer.appendChild(button);
     mapContainer.appendChild(control);
 
+/*
     const permalinkButton = document.createElement("button");
     permalinkButton.className = "map-control-button";
     permalinkButton.id = "permalink-button";
@@ -87,6 +88,7 @@ export function createLayerControl(map)
         }
     );
     mapContainer.appendChild( permalinkButton);
+*/
 
 
     creditElement =

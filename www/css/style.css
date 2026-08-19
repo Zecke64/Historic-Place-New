@@ -124,6 +124,14 @@ body
     right:10px;
 }
 
+#permalink-button
+{
+    position:absolute;
+    box-sizing:border-box;
+    top:102px;
+    right:10px;
+}
+
 .map-control-button img
 {
     display:block;
