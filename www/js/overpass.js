@@ -8,13 +8,7 @@ import {resolvedZoomClasses as zoomClasses} from "./zoomclasses.js";
 const zoomClassState = new Map();
 
 for (const zoomClass of zoomClasses) {
-    zoomClassState.set(
-        zoomClass.id, 
-        { 
-            loadedTiles : new Set(), 
-            features : []
-        }
-    );
+    zoomClassState.set(zoomClass.id, {loadedTiles : new Set(), features : []});
 }
 
 const OVERPASS_URL =
@@ -38,11 +32,17 @@ export function initOverpassLayer(map) {
      */
     map.addSource(sourceId, {
         type : "geojson",
-        data : { type : "FeatureCollection", features : [] },
+        data : {type : "FeatureCollection", features : []},
         cluster : true,
         clusterRadius : 5,
         clusterMaxZoom : 16
     });
+
+    map.addSource("osm-object-polygons",
+                  {type : "geojson", data : {type : "FeatureCollection", features : []}});
+
+    map.addSource("osm-object-lines",
+                  {type : "geojson", data : {type : "FeatureCollection", features : []}});
 
     /*
      * Cluster-Kreise
@@ -73,6 +73,38 @@ export function initOverpassLayer(map) {
     });
 
     /*
+     * Flächen füllen
+     */
+    map.addLayer({
+        id : "osm-object-fill",
+        type : "fill",
+        source : "osm-object-polygons",
+        paint : {"fill-color" : "#3388ff", "fill-opacity" : 0.25}
+    });
+
+    /*
+     * Polygonumrisse
+     */
+    map.addLayer({
+        id : "osm-object-line",
+        type : "line",
+        source : "osm-object-polygons",
+        paint : {"line-color" : "#3388ff", "line-width" : 3}
+    });
+
+    /*
+     * Linienobjekte
+     */
+    map.addLayer({
+        id : "osm-object-lines",
+        type : "line",
+        source : "osm-object-lines",
+        paint : {"line-color" : "#3388ff", "line-width" : 3}
+    });
+
+    console.log("OBJECT LAYERS:", map.getLayer("osm-object-fill"), map.getLayer("osm-object-line"));
+
+    /*
      * Einzelne POIs
      */
     map.addLayer({
@@ -81,9 +113,7 @@ export function initOverpassLayer(map) {
         source : sourceId,
         filter : [ "!", [ "has", "point_count" ] ],
         layout :
-            {"icon-image" : [ "get", "_app_icon" ], 
-             "icon-size" : 0.8, 
-             "icon-allow-overlap" : true}
+            {"icon-image" : [ "get", "_app_icon" ], "icon-size" : 0.8, "icon-allow-overlap" : true}
     });
 
     /*
@@ -190,7 +220,7 @@ function createQueryForZoomClass(zoomClass, bounds) {
     ${queries.join("\n")}
 );
 
-out geom center qt 500;
+out geom qt 500;
 `;
 }
 
@@ -313,16 +343,59 @@ async function loadPOIs(map) {
         /*
          * GeoJSON für MapLibre erzeugen.
          */
-        const geojson = {type : "FeatureCollection", features : features};
+        const poiFeatures = features.filter(feature => feature.geometry.type === "Point");
+        const objectFeatures = features.filter(feature => feature.geometry.type !== "Point");
+
+        const polygonFeatures =
+            objectFeatures.filter(feature => feature.geometry.type === "Polygon");
+
+        const lineFeatures =
+            objectFeatures.filter(feature => feature.geometry.type === "LineString");
+
+        const poiGeoJSON = {type : "FeatureCollection", features : poiFeatures};
+
+        const polygonGeoJSON = {type : "FeatureCollection", features : polygonFeatures};
+
+        const lineGeoJSON = {type : "FeatureCollection", features : lineFeatures};
 
         /*
-         * Karte aktualisieren.
+         * POIs aktualisieren.
          */
-        const source = map.getSource(sourceId);
+        const poiSource = map.getSource(sourceId);
 
-        if (source) {
-            source.setData(geojson);
+        if (poiSource) {
+            poiSource.setData(poiGeoJSON);
         }
+
+        /*
+         * Linien und Flächen aktualisieren.
+         */
+        const polygonSource = map.getSource("osm-object-polygons");
+
+        if (polygonSource) {
+            polygonSource.setData(polygonGeoJSON);
+
+            console.log("POLYGON SOURCE DATA:", polygonGeoJSON);
+            console.log("POLYGON COUNT:", polygonGeoJSON.features.length);
+        } else {
+            console.error("POLYGON SOURCE NICHT GEFUNDEN");
+        }
+
+        const lineSource = map.getSource("osm-object-lines");
+
+        if (lineSource) {
+            lineSource.setData(lineGeoJSON);
+        }
+
+        console.log("POLYGONS:", polygonFeatures.length, "LINES:", lineFeatures.length);
+        // console.log("OBJECT SOURCE:", objectSource);
+        // console.log("OBJECT GEOJSON:", objectGeoJSON);
+        // console.log( "OBJECT TYPES:", objectGeoJSON.features.map( feature => ({id :
+        // feature.properties._osm_id, type : feature.properties._geometry_type})));
+        //}
+
+        console.log("POI FEATURES:", poiFeatures.length);
+        console.log("OBJECT FEATURES:", objectFeatures.length);
 
         /*
          * Prüfen, ob ein POI aus einem Permalink
@@ -380,7 +453,7 @@ async function loadTile(tile, zoomClass, state, signal) {
 
     const query = createQueryForZoomClass(zoomClass, tileBounds);
 
-    console.log("OVERPASS REQUEST:", zoomClass.id, tileId);
+    console.log("OVERPASS REQUEST:", zoomClass.id, tileId /*, query */);
 
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -445,24 +518,79 @@ async function loadTile(tile, zoomClass, state, signal) {
 }
 
 function convertToGeoJSON(data, zoomClass) {
+
+    console.log("Overpass Elements:", data.elements.filter(e => e.type !== "node").slice(0, 5));
+
     const features = [];
 
     for (const e of data.elements) {
-        let lat;
-        let lon;
+        let geometry = null;
+        let iconLon;
+        let iconLat;
 
+        /*
+         * Node
+         */
         if (e.type === "node") {
-            lat = e.lat;
-            lon = e.lon;
-        } else if (e.center) {
-            lat = e.center.lat;
-            lon = e.center.lon;
+            iconLon = e.lon;
+            iconLat = e.lat;
+
+            geometry = {type : "Point", coordinates : [ e.lon, e.lat ]};
         }
 
-        if (lat === undefined || lon === undefined)
-            continue;
+        /*
+         * Way
+         */
+        else if (e.type === "way") {
+            if (!e.geometry || e.geometry.length < 2)
+                continue;
 
-        // Original-Tags unverändert erhalten.
+            const coordinates = e.geometry.map(point => [point.lon, point.lat]);
+
+            iconLon = (e.bounds.minlon + e.bounds.maxlon) / 2;
+
+            iconLat = (e.bounds.minlat + e.bounds.maxlat) / 2;
+
+            /*
+             * Geschlossener Way
+             */
+            const first = coordinates[0];
+
+            const last = coordinates[coordinates.length - 1];
+
+            const isClosed =
+                coordinates.length >= 4 && first[0] === last[0] && first[1] === last[1];
+
+            if (isClosed) {
+                geometry = {type : "Polygon", coordinates : [ coordinates ]};
+            } else {
+                geometry = {type : "LineString", coordinates : coordinates};
+            }
+        }
+
+        /*
+         * Relation:
+         * zunächst nur den vorhandenen Center-Punkt
+         */
+        else if (e.type === "relation") {
+            if (!e.center)
+                continue;
+
+            iconLon = e.center.lon;
+            iconLat = e.center.lat;
+
+            geometry = {type : "Point", coordinates : [ iconLon, iconLat ]};
+        }
+
+        if (iconLon === undefined || iconLat === undefined || !geometry) {
+            continue;
+        }
+
+        const geometryType = geometry.type;
+
+        /*
+         * Original-Tags unverändert erhalten.
+         */
         const originalTags = e.tags || {};
 
         let matchedTags = null;
@@ -481,7 +609,9 @@ function convertToGeoJSON(data, zoomClass) {
              */
             const tags = group.lifecycle ? normalizeTags(originalTags) : originalTags;
 
-            // Passt der OSM-Typ?
+            /*
+             * Passt der OSM-Typ?
+             */
             const matchesObjectType =
                 group.objectTypes.some(([ key, value ]) => tags[key] === value);
 
@@ -519,7 +649,7 @@ function convertToGeoJSON(data, zoomClass) {
         features.push({
             type : "Feature",
 
-            geometry : {type : "Point", coordinates : [ lon, lat ]},
+            geometry : geometry,
 
             properties : {
                 /*
@@ -531,8 +661,9 @@ function convertToGeoJSON(data, zoomClass) {
                 _osm_type : e.type,
                 _osm_id : e.id,
 
+                _geometry_type : geometryType,
+
                 _app_icon : getIcon(matchedTags)
-                //"poi"
             }
         });
 
@@ -542,6 +673,14 @@ function convertToGeoJSON(data, zoomClass) {
         if (features.length >= 200)
             break;
     }
+
+    console.log("GeoJSON-Geometrietypen:", features.reduce((result, feature) => {
+        const type = feature.geometry?.type;
+
+        result[type] = (result[type] || 0) + 1;
+
+        return result;
+    }, {}));
 
     return {type : "FeatureCollection", features : features};
 }
@@ -560,4 +699,20 @@ function createObjectTypeQuery(key, value, lifecycle = false) {
     }
 
     return `[ ~"^(disused:|abandoned:|razed:)*${key}$"~"^${value}$" ]`;
+}
+
+function getGeometryCenter(coordinates) {
+    let minLon = Infinity;
+    let maxLon = -Infinity;
+    let minLat = Infinity;
+    let maxLat = -Infinity;
+
+    for (const [lon, lat] of coordinates) {
+        minLon = Math.min(minLon, lon);
+        maxLon = Math.max(maxLon, lon);
+        minLat = Math.min(minLat, lat);
+        maxLat = Math.max(maxLat, lat);
+    }
+
+    return [ (minLon + maxLon) / 2, (minLat + maxLat) / 2 ];
 }
