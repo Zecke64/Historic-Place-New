@@ -5,52 +5,39 @@ let running = 0;
 
 const MAX_PARALLEL = 3;
 
+export async function loadWikidata(id) {
 
-export async function loadWikidata(id)
-{
-
-    if(!id)
+    if (!id)
         return null;
 
     // Bereits geladen?
-    if (wikidataCache.has(id))
-    {
+    if (wikidataCache.has(id)) {
         console.log("Wikidata aus Cache:", id);
         return wikidataCache.get(id);
     }
-    //console.log("Wikidata vom Server:", id);
+    // console.log("Wikidata vom Server:", id);
 
-    const url =
-        "https://www.wikidata.org/w/api.php?" +
-        new URLSearchParams(
-        {
-            action:"wbgetentities",
-            ids:id,
+    const url = "https://www.wikidata.org/w/api.php?" + new URLSearchParams({
+                    action : "wbgetentities",
+                    ids : id,
 
-            format:"json",
+                    format : "json",
 
-            languages:"de|en",
+                    languages : "de|en",
 
-            props:
-            "labels|descriptions|claims|sitelinks",
+                    props : "labels|descriptions|claims|sitelinks",
 
-            origin:"*"
-        });
+                    origin : "*"
+                });
 
+    try {
+        const response = await fetch(url);
 
+        const data = await response.json();
 
-    try
-    {
-        const response =
-            await fetch(url);
+        const entity = data.entities[id];
 
-        const data =
-            await response.json();
-
-        const entity =
-            data.entities[id];
-
-        if(!entity)
+        if (!entity)
             return null;
 
         /*
@@ -58,184 +45,79 @@ export async function loadWikidata(id)
          * danach Extract laden
          */
 
-        const wikipedia =
-            getWikipedia(
-                entity
-            );
+        const wikipedia = getWikipedia(entity);
 
-
-        const extract =
-            await getWikipediaExtract(
-                wikipedia
-            );
-
+        const extract = await getWikipediaExtract(wikipedia);
 
         const result = {
 
-            id:id,
-            label:
-                getLanguageValue(
-                    entity.labels
-                ),
-            description:
-                getLanguageValue(
-                    entity.descriptions
-                ),
-            image:
-                getImage(
-                    entity
-                ),
-            wikipedia:
-                wikipedia,
-            website:
-                getWebsite(
-                    entity
-                ),
-	    extract:
-                shorten(
-                    extract
-                )
+            id : id,
+            label : getLanguageValue(entity.labels),
+            description : getLanguageValue(entity.descriptions),
+            image : getImage(entity),
+            wikipedia : wikipedia,
+            website : getWebsite(entity),
+            extract : shorten(extract)
         };
 
         wikidataCache.set(id, result);
 
-	return result;
+        return result;
 
     }
 
-    catch(error)
-    {
+    catch (error) {
 
-        console.error(
-            "Wikidata Fehler:",
-            error
-        );
+        console.error("Wikidata Fehler:", error);
 
         return null;
-
     }
-
 }
 
+function getLanguageValue(obj) {
 
-
-
-
-
-function getLanguageValue(obj)
-{
-
-    if(!obj)
+    if (!obj)
         return null;
 
-
-    return (
-        obj.de?.value ||
-        obj.en?.value ||
-        null
-    );
-
+    return (obj.de?.value || obj.en?.value || null);
 }
 
+function getImage(entity) {
 
+    const claim = entity.claims?.P18?.[0];
 
+    const value = claim?.mainsnak?.datavalue?.value;
 
-
-
-function getImage(entity)
-{
-
-    const claim =
-        entity.claims?.P18?.[0];
-
-
-    const value =
-        claim
-        ?.mainsnak
-        ?.datavalue
-        ?.value;
-
-
-    if(!value)
+    if (!value)
         return null;
 
-
-    return (
-        "https://commons.wikimedia.org/wiki/Special:FilePath/" +
-        encodeURIComponent(value)
-    );
-
+    return ("https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(value));
 }
 
+function getWikipedia(entity) {
 
+    const links = entity.sitelinks;
 
-
-
-
-
-function getWikipedia(entity)
-{
-
-    const links =
-        entity.sitelinks;
-
-
-    if(!links)
+    if (!links)
         return null;
 
-
-
-    if(links.dewiki)
-    {
-        return (
-            "https://de.wikipedia.org/wiki/" +
-            encodeURIComponent(
-                links.dewiki.title
-            )
-        );
+    if (links.dewiki) {
+        return ("https://de.wikipedia.org/wiki/" + encodeURIComponent(links.dewiki.title));
     }
 
-
-
-    if(links.enwiki)
-    {
-        return (
-            "https://en.wikipedia.org/wiki/" +
-            encodeURIComponent(
-                links.enwiki.title
-            )
-        );
+    if (links.enwiki) {
+        return ("https://en.wikipedia.org/wiki/" + encodeURIComponent(links.enwiki.title));
     }
-
 
     return null;
-
 }
 
+function getWebsite(entity) {
 
+    const claim = entity.claims?.P856?.[0];
 
-
-
-
-
-function getWebsite(entity)
-{
-
-    const claim =
-        entity.claims?.P856?.[0];
-
-
-    return (
-        claim
-        ?.mainsnak
-        ?.datavalue
-        ?.value
-        ||
-        null
-    );
-
+    return (claim?.mainsnak?.datavalue?.value || null);
 }
-
 
 /*
 
@@ -273,17 +155,13 @@ async function getWikipediaExtract(url)
 }
 */
 
-
-
-export function prefetchWikidata(ids)
-{
-    for(const id of ids)
-    {
-        if(!id)
+export function prefetchWikidata(ids) {
+    for (const id of ids) {
+        if (!id)
             continue;
-        if(wikidataCache.has(id))
+        if (wikidataCache.has(id))
             continue;
-        if(prefetchQueue.includes(id))
+        if (prefetchQueue.includes(id))
             continue;
 
         prefetchQueue.push(id);
@@ -292,98 +170,55 @@ export function prefetchWikidata(ids)
     processQueue();
 }
 
-
-async function processQueue()
-{
-    while(
-        running < MAX_PARALLEL &&
-        prefetchQueue.length
-    )
-    {
-        const id =
-            prefetchQueue.shift();
+async function processQueue() {
+    while (running < MAX_PARALLEL && prefetchQueue.length) {
+        const id = prefetchQueue.shift();
         running++;
-        loadWikidata(id)
-            .finally(
-                () =>
-                {
-                    running--;
-                    processQueue();
-                }
-            );
+        loadWikidata(id).finally(() => {
+            running--;
+            processQueue();
+        });
     }
-
 }
 
-
-async function getWikipediaExtract(url)
-{
-    if(!url)
+async function getWikipediaExtract(url) {
+    if (!url)
         return null;
 
+    try {
+        const u = new URL(url);
 
-    try
-    {
-        const u =
-            new URL(url);
+        const language = u.hostname.split(".")[0];
 
+        const title = decodeURIComponent(u.pathname.replace("/wiki/", ""));
 
-        const language =
-            u.hostname.split(".")[0];
+        const api = `https://${language}.wikipedia.org/api/rest_v1/page/summary/${
+            encodeURIComponent(title)}`;
 
+        const response = await fetch(api);
 
-        const title =
-            decodeURIComponent(
-                u.pathname
-                .replace("/wiki/","")
-            );
-
-
-        const api =
-            `https://${language}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-
-
-        const response =
-            await fetch(api);
-
-
-        if(!response.ok)
+        if (!response.ok)
             return null;
 
-
-        const json =
-            await response.json();
-
+        const json = await response.json();
 
         return json.extract;
 
     }
 
-    catch(error)
-    {
-        console.error(
-            "Wikipedia Extract Fehler:",
-            error
-        );
+    catch (error) {
+        console.error("Wikipedia Extract Fehler:", error);
 
         return null;
     }
 }
 
-
-
-function shorten(text, max=500)
-{
-    if(!text)
+function shorten(text, max = 500) {
+    if (!text)
         return null;
 
-
-    if(text.length <= max)
+    if (text.length <= max)
         return text;
 
-
-    return (
-        text.substring(0,max) +
-        "…"
-    );
+    return (text.substring(0, max) + "…");
 }

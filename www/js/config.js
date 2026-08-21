@@ -2,19 +2,15 @@
 
 export const CONFIG = {
 
-    map: {
+    map : {
 
         // Startposition Saarland / Deutschland
-        center: [
-            6.95,
-            49.25
-        ],
+        center : [ 6.95, 49.25 ],
 
-        zoom: 10,
+        zoom : 10,
 
-        minZoom: 2,
-        maxZoom: 19,
-
+        minZoom : 2,
+        maxZoom : 19,
 
         // MapLibre Style
         //
@@ -23,8 +19,7 @@ export const CONFIG = {
         // MapTiler,
         // OpenMapTiles usw.
 
-        style:
-        "https://demotiles.maplibre.org/style.json"
+        style : "https://demotiles.maplibre.org/style.json"
 
     }
 

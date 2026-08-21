@@ -2,125 +2,63 @@
  * Verwaltung der Kartenlayer
  */
 
-import { resolvedLayerConfig as layerConfig } from "./layerconfig.js";
-
+import {resolvedLayerConfig as layerConfig} from "./layerconfig.js";
 
 const layers = {};
 export const layerRegistry = {};
 const layerState = {};
 
-export async function initLayerManager(map)
-{
-    for(const layer of layerConfig)
-    {
-	layerRegistry[layer.id] = layer;
+export async function initLayerManager(map) {
+    for (const layer of layerConfig) {
+        layerRegistry[layer.id] = layer;
 
-	layerState[layer.id] =
-        {
-            visible: layer.visible
-        };
+        layerState[layer.id] = {visible : layer.visible};
 
-        if(
-            layer.source &&
-            layer.source.type === "raster"
-        )
-        {
-            addRasterLayer( map, layer);
+        if (layer.source && layer.source.type === "raster") {
+            addRasterLayer(map, layer);
         }
 
-        if(layer.shape)
-        {
-            await addGeoJsonLayer( map, layer);
+        if (layer.shape) {
+            await addGeoJsonLayer(map, layer);
         }
-
     }
 }
 
 /**
  * Rasterlayer hinzufügen
  */
-export function addRasterLayer(map, options)
-{
-    console.log(
-        "addRasterLayer options:",
-        options
-    );
+export function addRasterLayer(map, options) {
+    console.log("addRasterLayer options:", options);
 
-    const
-    {
-        id,
-        source,
-        opacity = 1,
-        visible = true
-    } = options;
+    const {id, source, opacity = 1, visible = true} = options;
 
-    const
-    {
-        tiles,
-        tileSize = 256
-    } = source;
+    const {tiles, tileSize = 256} = source;
 
-    const mapLayer = options.mapLayers.find( l => l.type === "raster");
-    if(!mapLayer)
-    {
-        console.warn(
-            "Kein Raster MapLayer:",
-            options.id
-        );
-    
+    const mapLayer = options.mapLayers.find(l => l.type === "raster");
+    if (!mapLayer) {
+        console.warn("Kein Raster MapLayer:", options.id);
+
         return;
     }
 
-    map.addSource(
-        mapLayer.id + "-source",
-        {
-            type:"raster",
-            tiles:tiles,
-            tileSize:tileSize
-        }
-    );
+    map.addSource(mapLayer.id + "-source", {type : "raster", tiles : tiles, tileSize : tileSize});
 
-    map.addLayer(
-        {
-            id:mapLayer.id,
-            type:"raster",
-            source:mapLayer.id + "-source",
-            layout:
-            {
-                visibility: visible ?  "visible" : "none"
-            },
-            paint:
-            {
-                "raster-opacity":
-                    opacity
-            }
-        }
-    );
+    map.addLayer({
+        id : mapLayer.id,
+        type : "raster",
+        source : mapLayer.id + "-source",
+        layout : {visibility : visible ? "visible" : "none"},
+        paint : {"raster-opacity" : opacity}
+    });
 
     layers[id] =
-    {
-	id:id,
-        titleKey:options.titleKey,
-        category:options.category,
-        opacity:opacity
-    };
-
+        {id : id, titleKey : options.titleKey, category : options.category, opacity : opacity};
 }
 
+export async function addGeoJsonLayer(map, options) {
+    const {id, shape, mapLayers, visible = true} = options;
 
-
-export async function addGeoJsonLayer(map, options)
-{
-    const
-    {
-        id,
-        shape,
-        mapLayers,
-        visible = true
-    } = options;
-
-    if(!shape || shape.type !== "geojson")
-    {
+    if (!shape || shape.type !== "geojson") {
         return;
     }
 
@@ -129,11 +67,8 @@ export async function addGeoJsonLayer(map, options)
      */
     const response = await fetch(shape.url);
 
-    if(!response.ok)
-    {
-        throw new Error(
-            `Shape konnte nicht geladen werden: ${shape.url}`
-        );
+    if (!response.ok) {
+        throw new Error(`Shape konnte nicht geladen werden: ${shape.url}`);
     }
 
     const shapeData = await response.json();
@@ -149,59 +84,34 @@ export async function addGeoJsonLayer(map, options)
 
     const sourceId = id + "-shape-source";
 
-    map.addSource(
-        sourceId,
-        {
-            type:"geojson",
-            data:shapeData
-        }
-    );
+    map.addSource(sourceId, {type : "geojson", data : shapeData});
 
-    for(const mapLayer of mapLayers)
-    {
-        if(
-            mapLayer.type !== "fill" &&
-            mapLayer.type !== "line"
-        )
-        {
+    for (const mapLayer of mapLayers) {
+        if (mapLayer.type !== "fill" && mapLayer.type !== "line") {
             continue;
         }
 
-        const layer =
-        {
-            id:mapLayer.id,
-            type:mapLayer.type,
-            source:sourceId,
-            layout:
-            {
-                visibility: visible ? "visible" : "none"
-            }
+        const layer = {
+            id : mapLayer.id,
+            type : mapLayer.type,
+            source : sourceId,
+            layout : {visibility : visible ? "visible" : "none"}
         };
 
-        if(mapLayer.type === "fill")
-        {
-            layer.paint =
-            {
-                "fill-opacity":
-                    options.shape?.style?.fillOpacity ?? 0.3
-            };
+        if (mapLayer.type === "fill") {
+            layer.paint = {"fill-opacity" : options.shape?.style?.fillOpacity ?? 0.3};
         }
 
-        if(mapLayer.type === "line")
-        {
-            layer.paint =
-            {
-                "line-width":2,
-                "line-opacity":
-                    options.shape?.style?.lineOpacity ?? 1
+        if (mapLayer.type === "line") {
+            layer.paint = {
+                "line-width" : 2,
+                "line-opacity" : options.shape?.style?.lineOpacity ?? 1
             };
         }
 
         map.addLayer(layer);
     }
 }
-
-
 
 /*
 export async function addGeoJsonLayer(map, options)
@@ -211,7 +121,7 @@ export async function addGeoJsonLayer(map, options)
         id,
         shape,
         mapLayers,
-	visible = true
+    visible = true
     } = options;
 
     if(!shape || shape.type !== "geojson")
@@ -244,7 +154,7 @@ export async function addGeoJsonLayer(map, options)
             id:mapLayer.id,
             type:mapLayer.type,
             source:sourceId,
-	    layout:
+        layout:
             {
                 visibility: visible ? "visible" : "none"
             }
@@ -263,7 +173,7 @@ export async function addGeoJsonLayer(map, options)
             layer.paint =
             {
                 "line-width":2,
-		"line-opacity": options.shape?.style?.lineOpacity ?? 1
+        "line-opacity": options.shape?.style?.lineOpacity ?? 1
             };
         }
 
@@ -272,21 +182,14 @@ export async function addGeoJsonLayer(map, options)
 }
 */
 
-
-export function getGeoJsonBounds(geojson)
-{
+export function getGeoJsonBounds(geojson) {
     let minLon = Infinity;
     let minLat = Infinity;
     let maxLon = -Infinity;
     let maxLat = -Infinity;
 
-    function processCoordinates(coordinates)
-    {
-        if(
-            typeof coordinates[0] === "number" &&
-            typeof coordinates[1] === "number"
-        )
-        {
+    function processCoordinates(coordinates) {
+        if (typeof coordinates[0] === "number" && typeof coordinates[1] === "number") {
             const lon = coordinates[0];
             const lat = coordinates[1];
 
@@ -298,151 +201,85 @@ export function getGeoJsonBounds(geojson)
             return;
         }
 
-        for(const child of coordinates)
-        {
+        for (const child of coordinates) {
             processCoordinates(child);
         }
     }
 
-    if(geojson.type === "FeatureCollection")
-    {
-        for(const feature of geojson.features)
-        {
-            if(feature.geometry)
-            {
-                processCoordinates(
-                    feature.geometry.coordinates
-                );
+    if (geojson.type === "FeatureCollection") {
+        for (const feature of geojson.features) {
+            if (feature.geometry) {
+                processCoordinates(feature.geometry.coordinates);
             }
         }
-    }
-    else if(geojson.type === "Feature")
-    {
-        if(geojson.geometry)
-        {
-            processCoordinates(
-                geojson.geometry.coordinates
-            );
+    } else if (geojson.type === "Feature") {
+        if (geojson.geometry) {
+            processCoordinates(geojson.geometry.coordinates);
         }
-    }
-    else if(geojson.type === "GeometryCollection")
-    {
-        for(const geometry of geojson.geometries)
-        {
-            if(geometry)
-            {
-                processCoordinates(
-                    geometry.coordinates
-                );
+    } else if (geojson.type === "GeometryCollection") {
+        for (const geometry of geojson.geometries) {
+            if (geometry) {
+                processCoordinates(geometry.coordinates);
             }
         }
-    }
-    else if(geojson.coordinates)
-    {
-        processCoordinates(
-            geojson.coordinates
-        );
+    } else if (geojson.coordinates) {
+        processCoordinates(geojson.coordinates);
     }
 
-    if(minLon === Infinity)
-    {
+    if (minLon === Infinity) {
         return null;
     }
 
-    return {
-        minLon,
-        minLat,
-        maxLon,
-        maxLat
-    };
+    return {minLon, minLat, maxLon, maxLat};
 }
 
-
-export function updateLayerVisibility(map)
-{
+export function updateLayerVisibility(map) {
     const zoom = map.getZoom();
 
-    for(const layer of layerConfig)
-    {
-        for(const mapLayer of layer.mapLayers)
-        {
+    for (const layer of layerConfig) {
+        for (const mapLayer of layer.mapLayers) {
             let visible = false;
 
-            if(layer.visible)
-            {
-                if(mapLayer.type === "fill" ||
-                   mapLayer.type === "line")
-                {
-                    visible =
-                        zoom >= layer.display.overview.minZoom &&
-                        zoom < layer.display.detail.minZoom;
+            if (layer.visible) {
+                if (mapLayer.type === "fill" || mapLayer.type === "line") {
+                    visible = zoom >= layer.display.overview.minZoom &&
+                              zoom < layer.display.detail.minZoom;
                 }
 
-                if(mapLayer.type === "raster")
-                {
-                    visible =
-                        zoom >= layer.display.detail.minZoom;
+                if (mapLayer.type === "raster") {
+                    visible = zoom >= layer.display.detail.minZoom;
                 }
 
-		if(layer.type === "poi")
-		{
-    	  	    visible = layer.visible && zoom >= layer.display.overview.minZoom;
-		}
+                if (layer.type === "poi") {
+                    visible = layer.visible && zoom >= layer.display.overview.minZoom;
+                }
             }
 
-            if(map.getLayer(mapLayer.id))
-            {
-                map.setLayoutProperty(
-                    mapLayer.id,
-                    "visibility",
-                    visible ? "visible" : "none"
-                );
+            if (map.getLayer(mapLayer.id)) {
+                map.setLayoutProperty(mapLayer.id, "visibility", visible ? "visible" : "none");
             }
         }
     }
 }
 
-
-export function initZoomHandling(map)
-{
-    map.on(
-        "zoom",
-        () =>
-        {
-            updateLayerVisibility(map);
-        }
-    );
+export function initZoomHandling(map) {
+    map.on("zoom", () => { updateLayerVisibility(map); });
 }
 
 // layer config in template reinmergen
-function deepMerge(base, override)
-{
-    const result = { ...base };
+function deepMerge(base, override) {
+    const result = {...base};
 
-    for(const key of Object.keys(override))
-    {
+    for (const key of Object.keys(override)) {
         const value = override[key];
 
-        if(
-            value &&
-            typeof value === "object" &&
-            !Array.isArray(value) &&
-            base[key] &&
-            typeof base[key] === "object" &&
-            !Array.isArray(base[key])
-        )
-        {
-            result[key] =
-                deepMerge(base[key], value);
-        }
-        else
-        {
+        if (value && typeof value === "object" && !Array.isArray(value) && base[key] &&
+            typeof base[key] === "object" && !Array.isArray(base[key])) {
+            result[key] = deepMerge(base[key], value);
+        } else {
             result[key] = value;
         }
     }
 
     return result;
 }
-
-
-

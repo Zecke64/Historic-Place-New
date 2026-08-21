@@ -1,85 +1,46 @@
-import { loadWikidata } from "./wikidata.js";
-import
-    {
-        getImageInfo,
-        createImage,
-        createImageCredit,
-        installImageHandler
-    }
-    from "./images.js";
-
-import { escapeHTML } from "./utils.js";
-import { getIcon } from "./icons.js";
-import { tr } from "./ui/language.js";
-
+import {getIcon} from "./icons.js";
+import {createImage, createImageCredit, getImageInfo, installImageHandler} from "./images.js";
+import {tr} from "./ui/language.js";
+import {escapeHTML} from "./utils.js";
+import {loadWikidata} from "./wikidata.js";
 
 let currentPopup = null;
 export let currentPopupFeature = null;
 let popupSequence = 0;
 
-
-
-export function initPopup(map)
-{
+export function initPopup(map) {
     // Klick auf einzelne POIs
-    map.on(
-        "click",
-        "osm-pois",
-        async e =>
-        {
-	    console.log( "POI CLICK", e.features);
+    map.on("click", "osm-pois", async e => {
+        console.log("POI CLICK", e.features);
 
-            if(!e.features || !e.features.length)
-                return;
+        if (!e.features || !e.features.length)
+            return;
 
-            const feature = e.features[0];
-            showPopup( map, feature);
-
-        }
-    );
+        const feature = e.features[0];
+        showPopup(map, feature);
+    });
 
     // Mauszeiger über POIs
-    map.on(
-        "mouseenter",
-        "osm-pois",
-        () =>
-        {
-            map.getCanvas().style.cursor = "pointer";
-        }
-    );
+    map.on("mouseenter", "osm-pois", () => { map.getCanvas().style.cursor = "pointer"; });
 
-    map.on(
-        "mouseleave",
-        "osm-pois",
-        () =>
-        {
-            map.getCanvas().style.cursor = "";
-        }
-    );
+    map.on("mouseleave", "osm-pois", () => { map.getCanvas().style.cursor = ""; });
 }
 
-
-
-
-
-export async function showPopup(map, feature)
-{
+export async function showPopup(map, feature) {
 
     console.log("POI Properties:", feature.properties);
-    currentPopupFeature = feature;	// für Permalink
+    currentPopupFeature = feature; // für Permalink
     const properties = feature.properties;
     const thisPopupId = ++popupSequence;
     const coordinates = feature.geometry.coordinates;
 
     // Falls noch ein Popup offen ist, schließen
-    if(currentPopup)
-    {
+    if (currentPopup) {
         currentPopup.remove();
     }
 
     // Grund-Popup sofort anzeigen
-    const html =
-    `
+    const html = `
     <div class="poi-popup">
 
         ${createHeader(properties)}
@@ -102,131 +63,77 @@ export async function showPopup(map, feature)
     `;
 
     currentPopup =
-        new maplibregl.Popup(
-        {
-            maxWidth:"380px"
-        })
-        .setLngLat( coordinates)
-        .setHTML( html)
-        .addTo(map);
+        new maplibregl.Popup({maxWidth : "380px"}).setLngLat(coordinates).setHTML(html).addTo(map);
 
-    currentPopup.on(
-        "close",
-        () =>
-        {
-            currentPopup = null;
-	    currentPopupFeature = null;
-        }
-    );
+    currentPopup.on("close", () => {
+        currentPopup = null;
+        currentPopupFeature = null;
+    });
 
     // Zusatzinformationen laden
     let wikidata = null;
 
-    if(properties.wikidata)
-    {
-        wikidata = await loadWikidata( properties.wikidata);
+    if (properties.wikidata) {
+        wikidata = await loadWikidata(properties.wikidata);
     }
 
     // Bild bestimmen
 
-    const imageInfo =
-        await getImageInfo(
-            properties,
-            wikidata
-        );
+    const imageInfo = await getImageInfo(properties, wikidata);
 
     console.log("IMAGE INFO:", imageInfo);
 
     let imageContent = "";
     let imageCredit = "";
 
-    if(imageInfo?.source === "commons-category")
-    {
+    if (imageInfo?.source === "commons-category") {
+        imageContent = createImageGallery(imageInfo.images, imageInfo.categoryUrl);
+    } else if (imageInfo) {
         imageContent =
-            createImageGallery(
-                imageInfo.images,
-		imageInfo.categoryUrl
-            );
-    }
-    else if(imageInfo)
-    {
-        imageContent =
-            imageInfo.source === "osm-image"
-                ? createImageLink(imageInfo)
-                : createImage(imageInfo);
+            imageInfo.source === "osm-image" ? createImageLink(imageInfo) : createImage(imageInfo);
 
-        imageCredit =
-            imageInfo.source === "osm-image"
-                ? ""
-                : createImageCredit(imageInfo);
+        imageCredit = imageInfo.source === "osm-image" ? "" : createImageCredit(imageInfo);
     }
 
-    const description =
-        selectDescription(
-            properties,
-            wikidata
-        );
+    const description = selectDescription(properties, wikidata);
 
-    const content =
-    `
+    const content = `
         ${imageContent}
         ${imageCredit}
         ${createDescription(description)}
         ${createLinks(properties, wikidata)}
     `;
 
-    const popupElement =
-        currentPopup
-            .getElement();
+    const popupElement = currentPopup.getElement();
 
-    const loading =
-        popupElement.querySelector(
-            "#poi-loading"
-        );
+    const loading = popupElement.querySelector("#poi-loading");
 
-    const container =
-        popupElement.querySelector(
-            "#poi-content"
-        );
+    const container = popupElement.querySelector("#poi-content");
 
-    if(loading)
-    {
+    if (loading) {
         loading.remove();
     }
 
-    if(container && thisPopupId === popupSequence)
-    {
+    if (container && thisPopupId === popupSequence) {
         container.innerHTML = content;
         installImageHandler(container);
-        if(imageInfo?.source === "commons-category")
-        {
-            installImageGalleryHandler(
-                container,
-                imageInfo.images
-            );
+        if (imageInfo?.source === "commons-category") {
+            installImageGalleryHandler(container, imageInfo.images);
         }
     }
 }
 
-
-function createHeader(properties)
-{
+function createHeader(properties) {
     const icon = properties._app_icon;
 
-    console.log(
-        "CREATE HEADER:",
-        "name =", properties.name,
-        "icon =", icon,
-        "properties =", properties
-    );
+    console.log("CREATE HEADER:", "name =", properties.name, "icon =", icon,
+                "properties =", properties);
 
     // Das transparente Icon wird nicht als Popup verwendet
-    if(icon === "null")
+    if (icon === "null")
         return "";
 
-    const title =
-        properties.name ||
-        tr("icon." + icon);
+    const title = properties.name || tr("icon." + icon);
 
     return `
         <h2 class="poi-title">
@@ -235,11 +142,9 @@ function createHeader(properties)
     `;
 }
 
+function createDescription(text) {
 
-function createDescription(text)
-{
-
-    if(!text)
+    if (!text)
         return "";
 
     return `
@@ -251,30 +156,18 @@ function createDescription(text)
     `;
 }
 
-
-
-function createLinks(properties, wikidata)
-{
+function createLinks(properties, wikidata) {
     let html = "";
 
-    html += createLink(
-        "Wikipedia",
-        wikidata?.wikipedia ||
-        createWikipediaUrl( properties.wikipedia)
-    );
+    html +=
+        createLink("Wikipedia", wikidata?.wikipedia || createWikipediaUrl(properties.wikipedia));
 
-    html += createLink(
-        "Wikidata",
-        wikidata?.id ?  "https://www.wikidata.org/wiki/" + wikidata.id : null
-    );
+    html += createLink("Wikidata",
+                       wikidata?.id ? "https://www.wikidata.org/wiki/" + wikidata.id : null);
 
-    html += createLink(
-        tr("popup.website"),
-        wikidata?.website ||
-        properties.website
-    );
+    html += createLink(tr("popup.website"), wikidata?.website || properties.website);
 
-    if(!html)
+    if (!html)
         return "";
 
     return `
@@ -284,14 +177,10 @@ function createLinks(properties, wikidata)
 
     </div>
     `;
-
 }
 
-
-
-function createLink(title, url)
-{
-    if(!url)
+function createLink(title, url) {
+    if (!url)
         return "";
 
     return `
@@ -305,32 +194,22 @@ function createLink(title, url)
         ${title}
     </a>
     `;
-
 }
 
-
-
-function createTagTable(properties)
-{
+function createTagTable(properties) {
     if (!properties)
         return "";
 
     let rows = "";
 
-    const hidden = new Set([
-        "cluster",
-        "cluster_id",
-        "point_count",
-        "point_count_abbreviated"
-    ]);
+    const hidden = new Set([ "cluster", "cluster_id", "point_count", "point_count_abbreviated" ]);
 
-    for (const key of Object.keys(properties).sort())
-    {
+    for (const key of Object.keys(properties).sort()) {
         if (hidden.has(key))
             continue;
 
-	if (key.startsWith("_app_"))
-	    continue;
+        if (key.startsWith("_app_"))
+            continue;
 
         const value = properties[key];
 
@@ -345,7 +224,7 @@ function createTagTable(properties)
     }
 
     if (!rows)
-	return `<div>${tr("popup.noOsmTags")}</div>`;
+        return `<div>${tr("popup.noOsmTags")}</div>`;
 
     return `
     <table class="poi-table">
@@ -353,56 +232,38 @@ function createTagTable(properties)
     </table>`;
 }
 
-
-function selectDescription(properties, wikidata)
-{
-    if(wikidata?.description)
+function selectDescription(properties, wikidata) {
+    if (wikidata?.description)
         return wikidata.description;
 
-    if(properties.description)
+    if (properties.description)
         return properties.description;
 
-    if(properties.note)
+    if (properties.note)
         return properties.note;
 
-    if(wikidata?.label)
+    if (wikidata?.label)
         return wikidata.label;
 
     return null;
 }
 
-
-
-function createWikipediaUrl(value)
-{
-    if(!value)
+function createWikipediaUrl(value) {
+    if (!value)
         return null;
 
     // Format: * de:Artikel
-    let parts =
-        value.split(":");
+    let parts = value.split(":");
 
-    if(parts.length === 2)
-    {
-        return (
-            "https://" +
-            parts[0] +
-            ".wikipedia.org/wiki/" +
-            encodeURIComponent(parts[1])
-        );
+    if (parts.length === 2) {
+        return ("https://" + parts[0] + ".wikipedia.org/wiki/" + encodeURIComponent(parts[1]));
     }
 
-    return (
-        "https://www.wikipedia.org/wiki/" +
-        encodeURIComponent(value)
-    );
+    return ("https://www.wikipedia.org/wiki/" + encodeURIComponent(value));
 }
 
-
-
-function createImageLink(image)
-{
-    if(!image?.url)
+function createImageLink(image) {
+    if (!image?.url)
         return "";
 
     return `
@@ -417,18 +278,13 @@ function createImageLink(image)
     `;
 }
 
-
-
-function createImageGallery(images)
-{
-    if(!images || images.length === 0)
+function createImageGallery(images) {
+    if (!images || images.length === 0)
         return "";
 
-    const count =
-        Math.min(images.length, 5);
+    const count = Math.min(images.length, 5);
 
-    const galleryImages =
-        images.slice(0, count);
+    const galleryImages = images.slice(0, count);
 
     return `
         <div class="poi-image-gallery">
@@ -445,10 +301,7 @@ function createImageGallery(images)
 
                 <img
                     class="poi-gallery-image"
-                    src="${escapeHTML(
-                        galleryImages[0].thumbnail ||
-                        galleryImages[0].url
-                    )}"
+                    src="${escapeHTML(galleryImages[0].thumbnail || galleryImages[0].url)}"
                     alt=""
                 >
 
@@ -479,78 +332,63 @@ function createImageGallery(images)
     `;
 }
 
-
-
-function installImageGalleryHandler( container, images)
-{
-    if(!images || images.length <= 1)
+function installImageGalleryHandler(container, images) {
+    if (!images || images.length <= 1)
         return;
 
     const galleryImages = images.slice(0, 5);
 
     let currentIndex = 0;
 
-    const image       = container.querySelector( ".poi-gallery-image");
-    const counter     = container.querySelector( ".poi-gallery-counter");
-    const galleryInfo = container.querySelector( ".poi-gallery-info");
-    const description = container.querySelector( ".poi-gallery-description");
-    const credit      = container.querySelector( ".poi-gallery-credit");
-    const fileLink    = container.querySelector( ".poi-gallery-file-link");
-    const previous    = container.querySelector( ".poi-gallery-prev");
-    const next        = container.querySelector( ".poi-gallery-next");
+    const image = container.querySelector(".poi-gallery-image");
+    const counter = container.querySelector(".poi-gallery-counter");
+    const galleryInfo = container.querySelector(".poi-gallery-info");
+    const description = container.querySelector(".poi-gallery-description");
+    const credit = container.querySelector(".poi-gallery-credit");
+    const fileLink = container.querySelector(".poi-gallery-file-link");
+    const previous = container.querySelector(".poi-gallery-prev");
+    const next = container.querySelector(".poi-gallery-next");
 
-    function showImage(index)
-    {
+    function showImage(index) {
         currentIndex = index;
         const current = galleryImages[currentIndex];
         image.src = current.thumbnail || current.url;
         counter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
 
-	if(galleryInfo)
-	{
-    	    const currentImage =
-        	galleryImages[currentIndex];
+        if (galleryInfo) {
+            const currentImage = galleryImages[currentIndex];
 
-	    galleryInfo.innerHTML =
-        	`
+            galleryInfo.innerHTML = `
         	${createImageCredit(currentImage)}
 
         	<div class="poi-gallery-description">
             	${currentImage.description || ""}
         	</div>
         	`;
-	}
-        if(description)
-        {
-	    description.innerHTML = cleanCommonsHtml( current.description || "");
+        }
+        if (description) {
+            description.innerHTML = cleanCommonsHtml(current.description || "");
         }
 
-        if(credit)
-        {
+        if (credit) {
             let html = "";
-            if(current.author)
-            {
-                html = "Urheber: " + cleanCommonsHtml( current.author);
+            if (current.author) {
+                html = "Urheber: " + cleanCommonsHtml(current.author);
             }
-            if(current.license)
-            {
-                if(html)
+            if (current.license) {
+                if (html)
                     html += " · ";
 
-                html += escapeHTML( current.license);
+                html += escapeHTML(current.license);
             }
             credit.innerHTML = html;
         }
 
-        if(fileLink)
-        {
-            if(current.commonsUrl)
-            {
+        if (fileLink) {
+            if (current.commonsUrl) {
                 fileLink.href = current.commonsUrl;
                 fileLink.style.display = "";
-            }
-            else
-            {
+            } else {
                 fileLink.style.display = "none";
             }
         }
@@ -558,58 +396,26 @@ function installImageGalleryHandler( container, images)
 
     previous.addEventListener(
         "click",
-        () =>
-        {
-            showImage(
-                (currentIndex - 1 +
-                    galleryImages.length) %
-                    galleryImages.length
-            );
-        }
-    );
+        () => { showImage((currentIndex - 1 + galleryImages.length) % galleryImages.length); });
 
-
-    next.addEventListener(
-        "click",
-        () =>
-        {
-            showImage(
-                (currentIndex + 1) %
-                galleryImages.length
-            );
-        }
-    );
+    next.addEventListener("click", () => { showImage((currentIndex + 1) % galleryImages.length); });
 }
 
-
-
-
-function cleanCommonsHtml(value)
-{
-    if(!value)
+function cleanCommonsHtml(value) {
+    if (!value)
         return "";
 
-    return value
-        .replace(/<script[\s\S]*?<\/script>/gi, "")
+    return value.replace(/<script[\s\S]*?<\/script>/gi, "")
         .replace(/<style[\s\S]*?<\/style>/gi, "")
         .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
         .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
-        .replace(
-            /href\s*=\s*["']([^"']*)["']/gi,
-            (match, url) =>
-            {
-                if(
-                    url.startsWith("https://") ||
-                    url.startsWith("http://")
-                )
-                {
-                    return `href="${escapeHTML(url)}"`;
-                }
-
-                return "";
+        .replace(/href\s*=\s*["']([^"']*)["']/gi, (match, url) => {
+            if (url.startsWith("https://") || url.startsWith("http://")) {
+                return `href="${escapeHTML(url)}"`;
             }
-        );
+
+            return "";
+        });
 
     return value;
 }
-

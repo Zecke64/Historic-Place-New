@@ -1,49 +1,34 @@
-import { CONFIG } from "./config.js";
-
+import {CONFIG} from "./config.js";
 
 let map;
-
 
 /**
  * Karte erzeugen
  */
-export function createMap()
-{
+export function createMap() {
 
     map = new maplibregl.Map({
 
-        container:
-            "map",
+        container : "map",
 
-        style:
-            CONFIG.map.style,
+        style : CONFIG.map.style,
 
-        center:
-            CONFIG.map.center,
+        center : CONFIG.map.center,
 
-        zoom:
-            CONFIG.map.zoom,
+        zoom : CONFIG.map.zoom,
 
-        minZoom:
-            CONFIG.map.minZoom,
+        minZoom : CONFIG.map.minZoom,
 
-        maxZoom:
-            CONFIG.map.maxZoom,
+        maxZoom : CONFIG.map.maxZoom,
 
-	attributionControl: false
+        attributionControl : false
 
     });
 
-
     return map;
-
 }
-
 
 /**
  * Karteninstanz zurückgeben
  */
-export function getMap()
-{
-    return map;
-}
+export function getMap() { return map; }
