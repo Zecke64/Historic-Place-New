@@ -4,6 +4,7 @@
 
 import {layerConfig, layerTemplates} from "../config/layerconf.js";
 
+
 // layer config in template reinmergen
 function deepMerge(base, override) {
     const result = {...base};
@@ -21,6 +22,7 @@ function deepMerge(base, override) {
 
     return result;
 }
+
 
 // template rekursiv auflösen
 function resolveTemplate(templateName, stack = []) {
@@ -44,12 +46,16 @@ function resolveTemplate(templateName, stack = []) {
     return deepMerge(result, template);
 }
 
+
 function createMapLayers(layer) {
+    if (layer.mapLayers) {
+        return layer.mapLayers;
+    }
+
     const result = [];
 
     if (layer.shape) {
         result.push({id : `${layer.id}-fill`, type : "fill"});
-
         result.push({id : `${layer.id}-outline`, type : "line"});
     }
 
@@ -59,6 +65,8 @@ function createMapLayers(layer) {
 
     return result;
 }
+
+
 
 function resolveLayer(layer) {
     let result = {};
@@ -79,6 +87,3 @@ function resolveLayer(layer) {
 
 export const resolvedLayerConfig = layerConfig.map(resolveLayer);
 
-console.log("RESOLVED LAYERS:", resolvedLayerConfig);
-
-console.log("KLIVER:", resolvedLayerConfig.find(layer => layer.id === "kliver"));

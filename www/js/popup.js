@@ -12,7 +12,7 @@ export function initPopup(map) {
     /*
      * Klick auf einzelne POIs und Objekt-Icons
      */
-    for (const layer of [ "osm-pois", "osm-object-icons" ]) {
+    for (const layer of ["osm-pois", "osm-object-icons"]) {
         map.on("click", layer, async e => {
             console.log("FEATURE CLICK", layer, e.features);
 
@@ -27,13 +27,9 @@ export function initPopup(map) {
         /*
          * Mauszeiger
          */
-        map.on("mouseenter", layer, () => {
-            map.getCanvas().style.cursor = "pointer";
-        });
+        map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
 
-        map.on("mouseleave", layer, () => {
-            map.getCanvas().style.cursor = "";
-        });
+        map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
     }
 }
 

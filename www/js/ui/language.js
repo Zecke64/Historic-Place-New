@@ -1,5 +1,5 @@
 
-import { languages } from "../../config/languages.js";
+import {languages} from "../../config/languages.js";
 
 /*
  * Automatische Sprache des Browsers ermitteln.
@@ -14,27 +14,19 @@ import { languages } from "../../config/languages.js";
  * Falls keine passende Sprache gefunden wird:
  *   Englisch als Fallback.
  */
-function detectLanguage()
-{
+function detectLanguage() {
     const browserLanguages =
-        navigator.languages?.length
-            ? navigator.languages
-            : [navigator.language];
+        navigator.languages?.length ? navigator.languages : [ navigator.language ];
 
-    for(const browserLanguage of browserLanguages)
-    {
-        const language =
-            browserLanguage
-                .toLowerCase()
-                .split("-")[0];
+    for (const browserLanguage of browserLanguages) {
+        const language = browserLanguage.toLowerCase().split("-")[0];
 
-        if(languages[language])
+        if (languages[language])
             return language;
     }
 
     return "en";
 }
-
 
 /*
  * Aktuelle Sprache.
@@ -42,51 +34,36 @@ function detectLanguage()
  * Beim Start automatisch aus der
  * Browsersprache ermittelt.
  */
-let currentLanguage =
-    detectLanguage();
-
+let currentLanguage = detectLanguage();
 
 /*
  * Sprache setzen.
  */
-export function setLanguage(language)
-{
-    if(!languages[language])
+export function setLanguage(language) {
+    if (!languages[language])
         return;
 
-    if(currentLanguage === language)
+    if (currentLanguage === language)
         return;
 
-    currentLanguage =
-        language;
+    currentLanguage = language;
 
     /*
      * Alle UI-Komponenten über den
      * Sprachwechsel informieren.
      */
-    window.dispatchEvent(
-        new Event("languagechange")
-    );
+    window.dispatchEvent(new Event("languagechange"));
 }
-
 
 /*
  * Aktuelle Sprache zurückgeben.
  */
-export function getLanguage()
-{
-    return currentLanguage;
-}
-
+export function getLanguage() { return currentLanguage; }
 
 /*
  * Unterstützte Sprachen zurückgeben.
  */
-export function getSupportedLanguages()
-{
-    return Object.keys(languages);
-}
-
+export function getSupportedLanguages() { return Object.keys(languages); }
 
 /*
  * Übersetzung eines Schlüssels.
@@ -94,31 +71,19 @@ export function getSupportedLanguages()
  * Falls kein Schlüssel existiert,
  * wird der Schlüssel selbst zurückgegeben.
  */
-export function tr(key)
-{
-    return languages[currentLanguage]?.[key]
-        ?? key;
-}
-
+export function tr(key) { return languages[currentLanguage]?.[key] ?? key; }
 
 /*
  * Alle mit data-i18n markierten
  * Elemente aktualisieren.
  */
-export function updateLanguage()
-{
-    document
-        .querySelectorAll("[data-i18n]")
-        .forEach(
-            element =>
-            {
-		const text = tr(element.dataset.i18n);
+export function updateLanguage() {
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+        const text = tr(element.dataset.i18n);
 
-                if(element.hasAttribute("title"))
-                    element.title = text;
-		else
-                    element.textContent = text;
-            }
-        );
+        if (element.hasAttribute("title"))
+            element.title = text;
+        else
+            element.textContent = text;
+    });
 }
-

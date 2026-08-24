@@ -5,6 +5,8 @@ import {normalizeTags} from "./utils.js";
 import {prefetchWikidata} from "./wikidata.js";
 import {resolvedZoomClasses as zoomClasses} from "./zoomclasses.js";
 
+const ENABLE_POI_CLUSTERING = false;
+
 const zoomClassState = new Map();
 
 for (const zoomClass of zoomClasses) {
@@ -26,6 +28,8 @@ let loadPOIsRunning = false;
 let loadPOIsPending = false;
 let loadPOIsController = null;
 
+
+
 export function initOverpassLayer(map) {
     /*
      * GeoJSON Source mit aktiviertem Clustering
@@ -33,9 +37,8 @@ export function initOverpassLayer(map) {
     map.addSource(sourceId, {
         type : "geojson",
         data : {type : "FeatureCollection", features : []},
-        cluster : true,
-        clusterRadius : 5,
-        clusterMaxZoom : 16
+
+        ...(ENABLE_POI_CLUSTERING ? {cluster : true, clusterRadius : 30, clusterMaxZoom : 16} : {})
     });
 
     map.addSource("osm-object-polygons",
@@ -44,33 +47,35 @@ export function initOverpassLayer(map) {
     map.addSource("osm-object-lines",
                   {type : "geojson", data : {type : "FeatureCollection", features : []}});
 
-    /*
-     * Cluster-Kreise
-     */
-    map.addLayer({
-        id : "poi-clusters",
-        type : "circle",
-        source : sourceId,
-        filter : [ "has", "point_count" ],
-        paint : {
-            "circle-radius" : [ "step", [ "get", "point_count" ], 18, 20, 24, 50, 32, 100, 40 ],
-            "circle-stroke-width" : 2,
-            "circle-stroke-color" : "#ffffff",
-            "circle-color" : "#3388ff"
-        }
-    });
+    if (ENABLE_POI_CLUSTERING) {
+        /*
+         * Cluster-Kreise
+         */
+        map.addLayer({
+            id : "poi-clusters",
+            type : "circle",
+            source : sourceId,
+            filter : [ "has", "point_count" ],
+            paint : {
+                "circle-radius" : [ "step", [ "get", "point_count" ], 18, 20, 24, 50, 32, 100, 40 ],
+                "circle-stroke-width" : 2,
+                "circle-stroke-color" : "#ffffff",
+                "circle-color" : "#3388ff"
+            }
+        });
 
-    /*
-     * Cluster Anzahl
-     */
-    map.addLayer({
-        id : "poi-cluster-count",
-        type : "symbol",
-        source : sourceId,
-        filter : [ "has", "point_count" ],
-        layout : {"text-field" : "{point_count}", "text-size" : 14},
-        paint : {"text-color" : "#ffffff"}
-    });
+        /*
+         * Cluster Anzahl
+         */
+        map.addLayer({
+            id : "poi-cluster-count",
+            type : "symbol",
+            source : sourceId,
+            filter : [ "has", "point_count" ],
+            layout : {"text-field" : "{point_count}", "text-size" : 14},
+            paint : {"text-color" : "#ffffff"}
+        });
+    }
 
     /*
      * Flächen füllen
@@ -101,8 +106,6 @@ export function initOverpassLayer(map) {
         source : "osm-object-lines",
         paint : {"line-color" : "#3388ff", "line-width" : 3}
     });
-
-    //console.log("OBJECT LAYERS:", map.getLayer("osm-object-fill"), map.getLayer("osm-object-line"));
 
     map.addSource("osm-object-icons",
                   {type : "geojson", data : {type : "FeatureCollection", features : []}});
@@ -171,19 +174,24 @@ export function initOverpassLayer(map) {
     map.on("moveend", () => { loadPOIs(map); });
 }
 
+
 function lon2tileX(lon, zoom) { return Math.floor((lon + 180) / 360 * Math.pow(2, zoom)); }
+
 
 function lat2tileY(lat, zoom) {
     const latRad = lat * Math.PI / 180;
     return Math.floor((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * Math.pow(2, zoom));
 }
 
+
 function tile2lon(x, zoom) { return x / Math.pow(2, zoom) * 360 - 180; }
+
 
 function tile2lat(y, zoom) {
     const n = Math.PI - 2 * Math.PI * y / Math.pow(2, zoom);
     return 180 / Math.PI * Math.atan(Math.sinh(n));
 }
+
 
 function getTilesForBounds(bounds, zoom) {
     const xMin = lon2tileX(bounds.getWest(), zoom);
@@ -202,11 +210,13 @@ function getTilesForBounds(bounds, zoom) {
     return tiles;
 }
 
+
 function getTileBounds(tile) {
     return new maplibregl.LngLatBounds(
         [ tile2lon(tile.x, tile.zoom), tile2lat(tile.y + 1, tile.zoom) ],
         [ tile2lon(tile.x + 1, tile.zoom), tile2lat(tile.y, tile.zoom) ]);
 }
+
 
 function createQueryForZoomClass(zoomClass, bounds) {
     const south = bounds.getSouth();
@@ -235,9 +245,11 @@ out geom qt 500;
 `;
 }
 
+
 function getZoomClass(zoom) {
     return zoomClasses.find(z => zoom >= z.minZoom && zoom <= z.maxZoom);
 }
+
 
 async function loadPOIs(map) {
     if (loadPOIsRunning) {
@@ -354,7 +366,15 @@ async function loadPOIs(map) {
         /*
          * GeoJSON für MapLibre erzeugen.
          */
-        const poiFeatures = features.filter(feature => feature.geometry.type === "Point");
+
+        const allPointFeatures = features.filter(feature => feature.geometry.type === "Point");
+
+        const poiFeatures = features.filter(feature => feature.geometry.type === "Point" &&
+                                                       feature.properties._app_icon !== "null");
+
+        console.log("POINTS GESAMT:", allPointFeatures.length);
+        console.log("POINTS MIT ICON:", poiFeatures.length);
+
         const objectFeatures = features.filter(feature => feature.geometry.type !== "Point" &&
                                                           feature.properties._app_icon !== "null");
 
@@ -407,8 +427,6 @@ async function loadPOIs(map) {
         if (polygonSource) {
             polygonSource.setData(polygonGeoJSON);
 
-            //console.log("POLYGON SOURCE DATA:", polygonGeoJSON);
-            //console.log("POLYGON COUNT:", polygonGeoJSON.features.length);
         } else {
             console.error("POLYGON SOURCE NICHT GEFUNDEN");
         }
@@ -429,19 +447,6 @@ async function loadPOIs(map) {
         } else {
             console.error("OBJECT ICON SOURCE NICHT GEFUNDEN");
         }
-
-        //console.log("POLYGONS:", polygonFeatures.length, "LINES:", lineFeatures.length,
-                    //"OBJECT ICONS:", objectIconFeatures.length);
-
-        //console.log("POLYGONS:", polygonFeatures.length, "LINES:", lineFeatures.length);
-        // console.log("OBJECT SOURCE:", objectSource);
-        // console.log("OBJECT GEOJSON:", objectGeoJSON);
-        // console.log( "OBJECT TYPES:", objectGeoJSON.features.map( feature => ({id :
-        // feature.properties._osm_id, type : feature.properties._geometry_type})));
-        //}
-
-        //console.log("POI FEATURES:", poiFeatures.length);
-        //console.log("OBJECT FEATURES:", objectFeatures.length);
 
         /*
          * Prüfen, ob ein POI aus einem Permalink
@@ -484,6 +489,7 @@ async function loadPOIs(map) {
         }
     }
 }
+
 
 async function loadTile(tile, zoomClass, state, signal) {
     const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
@@ -564,6 +570,7 @@ async function loadTile(tile, zoomClass, state, signal) {
         }
     }
 }
+
 
 function convertToGeoJSON(data, zoomClass) {
 
@@ -766,13 +773,14 @@ function convertToGeoJSON(data, zoomClass) {
 
         /*
          * Maximal 200 Objekte pro Overpass-Abfrage.
-         */
         if (features.length >= 200)
             break;
+         */
     }
 
     return {type : "FeatureCollection", features : features};
 }
+
 
 function clearSource(map) {
     const source = map.getSource(sourceId);
@@ -782,6 +790,7 @@ function clearSource(map) {
     }
 }
 
+
 function createObjectTypeQuery(key, value, lifecycle = false) {
     if (!lifecycle) {
         return `["${key}"="${value}"]`;
@@ -789,6 +798,7 @@ function createObjectTypeQuery(key, value, lifecycle = false) {
 
     return `[ ~"^(disused:|abandoned:|razed:)*${key}$"~"^${value}$" ]`;
 }
+
 
 function getGeometryCenter(coordinates) {
     let minLon = Infinity;

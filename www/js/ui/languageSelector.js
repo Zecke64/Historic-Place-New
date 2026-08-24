@@ -1,15 +1,6 @@
-import
-{
-    getSupportedLanguages,
-    getLanguage,
-    setLanguage
-}
-from "./language.js";
-import { tr } from "./language.js";
+import {getLanguage, getSupportedLanguages, setLanguage, tr} from "./language.js";
 
-
-export function createLanguageSelector(container)
-{
+export function createLanguageSelector(container) {
     const button = document.createElement("button");
     button.id = "language-button";
     button.className = "map-control-button";
@@ -21,96 +12,54 @@ export function createLanguageSelector(container)
     icon.alt = "Sprache";
     button.appendChild(icon);
 
-    const panel =
-        document.createElement("div");
+    const panel = document.createElement("div");
 
-    panel.id =
-        "language-control";
+    panel.id = "language-control";
 
-    panel.style.display =
-        "none";
+    panel.style.display = "none";
 
-    const flagFiles = {
-        de: "de.svg",
-        en: "gb.svg"
-    };
+    const flagFiles = {de : "de.svg", en : "gb.svg"};
 
+    for (const language of getSupportedLanguages()) {
+        const option = document.createElement("div");
 
-    for(const language of getSupportedLanguages())
-    {
-        const option =
-            document.createElement("div");
+        option.className = "language-option";
 
-        option.className =
-            "language-option";
+        const flag = document.createElement("img");
 
-        const flag =
-            document.createElement("img");
+        flag.className = "language-flag";
 
-        flag.className =
-            "language-flag";
+        flag.src = "img/flags/" + flagFiles[language];
 
-	flag.src =
-            "img/flags/" +
-            flagFiles[language];
+        flag.alt = language.toUpperCase();
 
-        flag.alt =
-            language.toUpperCase();
+        const code = document.createElement("span");
 
-        const code =
-            document.createElement("span");
+        code.className = "language-code";
 
-        code.className =
-            "language-code";
+        code.textContent = language.toUpperCase();
 
-        code.textContent =
-            language.toUpperCase();
+        option.appendChild(flag);
+        option.appendChild(code);
 
+        option.addEventListener("click", () => {
+            setLanguage(language);
 
- 	option.appendChild(flag);
-	option.appendChild(code);
+            panel.style.display = "none";
 
-
-        option.addEventListener(
-            "click",
-            () =>
-            {
-                setLanguage(language);
-
-                panel.style.display =
-                    "none";
-
-                updateLanguage();
-            }
-        );
-
+            updateLanguage();
+        });
 
         panel.appendChild(option);
     }
 
-
     button.addEventListener(
         "click",
-        () =>
-        {
-            panel.style.display =
-                panel.style.display === "none"
-                    ? "block"
-                    : "none";
-        }
-    );
-
+        () => { panel.style.display = panel.style.display === "none" ? "block" : "none"; });
 
     const map = container.parentElement;
     map.appendChild(button);
     map.appendChild(panel);
 
-
-    return {
-        button,
-        panel
-    };
+    return {button, panel};
 }
-
-
-

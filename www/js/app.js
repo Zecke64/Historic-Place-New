@@ -28,7 +28,7 @@ map.on("load", async () => {
     initOverpassLayer(map);
     initPopup(map);
 
-    console.log("MapLibre Layer:", map.getStyle().layers.map(l => l.id));
+    //console.log("MapLibre Layer:", map.getStyle().layers.map(l => l.id));
 
     const languageContainer = document.createElement("div");
     languageContainer.className = "language-selector-container";

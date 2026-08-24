@@ -211,7 +211,19 @@ export const iconRules = [
 
     {
         // Kirche
-        match : [ [ "historic", "church" ] ],
+        condition : AND(
+            OR(
+                [ "historic", "church" ],
+                [ "building", "church" ],
+                ),
+            OR([ "historic", "*" ], 
+                [ "disused", "*" ], 
+                [ "abandoned", "*" ], 
+                [ "razed", "*" ],
+                [ "wikipedia", "*" ],
+                [ "wikidata", "*" ]
+            )
+        ),
         icon : "church"
     },
 
@@ -238,11 +250,17 @@ export const iconRules = [
 
     {
         // Religiöse Stätte
-        condition : AND([ "amenity", "place_of_worship" ], OR(
-                                                               [ "historic", "*" ],
-                                                               [ "disused", "*" ],
-                                                               [ "abandoned", "*" ],
-                                                               )),
+        condition : AND(
+                        [ "amenity", "place_of_worship" ], 
+                        OR(
+                            [ "historic", "*" ],
+                            [ "disused", "*" ],
+                            [ "abandoned", "*" ],
+                            [ "razed", "*" ],
+                            [ "wikipedia", "*" ],
+                            [ "wikidata", "*" ]
+                            )
+                        ),
         icon : "worship"
     },
 

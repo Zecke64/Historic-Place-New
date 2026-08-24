@@ -8,6 +8,7 @@ const layers = {};
 export const layerRegistry = {};
 const layerState = {};
 
+
 export async function initLayerManager(map) {
     for (const layer of layerConfig) {
         layerRegistry[layer.id] = layer;
@@ -24,11 +25,11 @@ export async function initLayerManager(map) {
     }
 }
 
+
 /**
  * Rasterlayer hinzufügen
  */
 export function addRasterLayer(map, options) {
-    console.log("addRasterLayer options:", options);
 
     const {id, source, opacity = 1, visible = true} = options;
 
@@ -54,6 +55,7 @@ export function addRasterLayer(map, options) {
     layers[id] =
         {id : id, titleKey : options.titleKey, category : options.category, opacity : opacity};
 }
+
 
 export async function addGeoJsonLayer(map, options) {
     const {id, shape, mapLayers, visible = true} = options;
@@ -113,74 +115,6 @@ export async function addGeoJsonLayer(map, options) {
     }
 }
 
-/*
-export async function addGeoJsonLayer(map, options)
-{
-    const
-    {
-        id,
-        shape,
-        mapLayers,
-    visible = true
-    } = options;
-
-    if(!shape || shape.type !== "geojson")
-    {
-        return;
-    }
-
-    const sourceId = id + "-shape-source";
-
-    map.addSource(
-        sourceId,
-        {
-            type:"geojson",
-            data:shape.url
-        }
-    );
-
-    for(const mapLayer of mapLayers)
-    {
-        if(
-            mapLayer.type !== "fill" &&
-            mapLayer.type !== "line"
-        )
-        {
-            continue;
-        }
-
-        const layer =
-        {
-            id:mapLayer.id,
-            type:mapLayer.type,
-            source:sourceId,
-        layout:
-            {
-                visibility: visible ? "visible" : "none"
-            }
-        };
-
-        if(mapLayer.type === "fill")
-        {
-            layer.paint =
-            {
-                "fill-opacity": options.shape?.style?.fillOpacity ?? 0.3
-            };
-        }
-
-        if(mapLayer.type === "line")
-        {
-            layer.paint =
-            {
-                "line-width":2,
-        "line-opacity": options.shape?.style?.lineOpacity ?? 1
-            };
-        }
-
-        map.addLayer(layer);
-    }
-}
-*/
 
 export function getGeoJsonBounds(geojson) {
     let minLon = Infinity;
@@ -233,14 +167,28 @@ export function getGeoJsonBounds(geojson) {
     return {minLon, minLat, maxLon, maxLat};
 }
 
+
+
 export function updateLayerVisibility(map) {
     const zoom = map.getZoom();
 
     for (const layer of layerConfig) {
+
         for (const mapLayer of layer.mapLayers) {
             let visible = false;
 
             if (layer.visible) {
+
+                if (layer.type === "poi") {
+                    visible = layer.visible && zoom >= layer.display.overview.minZoom;
+                } else if (mapLayer.type === "fill" || mapLayer.type === "line") {
+                    visible = layer.visible && zoom >= layer.display.overview.minZoom &&
+                              zoom < layer.display.detail.minZoom;
+                } else if (mapLayer.type === "raster") {
+                    visible = layer.visible && zoom >= layer.display.detail.minZoom;
+                }
+
+                /*
                 if (mapLayer.type === "fill" || mapLayer.type === "line") {
                     visible = zoom >= layer.display.overview.minZoom &&
                               zoom < layer.display.detail.minZoom;
@@ -253,6 +201,7 @@ export function updateLayerVisibility(map) {
                 if (layer.type === "poi") {
                     visible = layer.visible && zoom >= layer.display.overview.minZoom;
                 }
+                */
             }
 
             if (map.getLayer(mapLayer.id)) {
@@ -262,9 +211,13 @@ export function updateLayerVisibility(map) {
     }
 }
 
+
+
 export function initZoomHandling(map) {
     map.on("zoom", () => { updateLayerVisibility(map); });
 }
+
+
 
 // layer config in template reinmergen
 function deepMerge(base, override) {

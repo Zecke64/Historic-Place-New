@@ -165,7 +165,11 @@ export const layerConfig = [
         mapLayers : [
             {id : "poi-clusters",       type : "circle"}, 
             {id : "poi-cluster-count",  type : "symbol"},
-            {id : "osm-pois",           type : "symbol"}
+            {id : "osm-pois",           type : "symbol"},
+            {id : "osm-object-fill",    type : "fill"},
+            {id : "osm-object-line",    type : "line"},
+            {id : "osm-object-lines",   type : "line"},
+            {id : "osm-object-icons",   type : "symbol"}
         ]
     }
 ];
