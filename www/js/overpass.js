@@ -1,4 +1,5 @@
-import {getIcon} from "./icons.js";
+import {getIconRule} from "./icons.js";
+import {defaultStyle} from "../config/icons.js";
 import {clearPendingPermalinkPoi, getPendingPermalinkPoi} from "./permalink.js";
 import {showPopup} from "./popup.js";
 import {normalizeTags} from "./utils.js";
@@ -84,7 +85,10 @@ export function initOverpassLayer(map) {
         id : "osm-object-fill",
         type : "fill",
         source : "osm-object-polygons",
-        paint : {"fill-color" : "#3388ff", "fill-opacity" : 0.25}
+        paint : {
+            "fill-color" : [ "get", "_fill_color" ],
+            "fill-opacity" : [ "get", "_fill_opacity" ]
+        }
     });
 
     /*
@@ -94,7 +98,10 @@ export function initOverpassLayer(map) {
         id : "osm-object-line",
         type : "line",
         source : "osm-object-polygons",
-        paint : {"line-color" : "#3388ff", "line-width" : 3}
+        paint : {
+            "line-color" : [ "get", "_line_color" ],
+            "line-width" : [ "get", "_line_width" ]
+        }
     });
 
     /*
@@ -104,7 +111,10 @@ export function initOverpassLayer(map) {
         id : "osm-object-lines",
         type : "line",
         source : "osm-object-lines",
-        paint : {"line-color" : "#3388ff", "line-width" : 3}
+        paint : {
+            "line-color" : [ "get", "_line_color" ],
+            "line-width" : [ "get", "_line_width" ]
+        }
     });
 
     map.addSource("osm-object-icons",
@@ -115,7 +125,10 @@ export function initOverpassLayer(map) {
         type : "symbol",
         source : "osm-object-icons",
         layout :
-            {"icon-image" : [ "get", "_app_icon" ], "icon-size" : 0.8, "icon-allow-overlap" : true}
+            {   "icon-image" : [ "get", "_app_icon" ], 
+                "icon-size" : [ "get", "_app_icon_size" ],
+                "icon-allow-overlap" : true
+            }
     });
 
     /*
@@ -127,7 +140,10 @@ export function initOverpassLayer(map) {
         source : sourceId,
         filter : [ "!", [ "has", "point_count" ] ],
         layout :
-            {"icon-image" : [ "get", "_app_icon" ], "icon-size" : 0.8, "icon-allow-overlap" : true}
+            {   "icon-image" : [ "get", "_app_icon" ], 
+                "icon-size" : [ "get", "_app_icon_size" ],
+                "icon-allow-overlap" : true
+            }
     });
 
     /*
@@ -749,6 +765,9 @@ function convertToGeoJSON(data, zoomClass) {
         if (!matchedTags)
             continue;
 
+        const iconRule = getIconRule(matchedTags);
+        const style = { ...defaultStyle, ...iconRule };
+
         features.push({
             type : "Feature",
 
@@ -767,7 +786,12 @@ function convertToGeoJSON(data, zoomClass) {
                 _geometry_type : geometryType,
                 _icon_coordinates : [ iconLon, iconLat ],
 
-                _app_icon : getIcon(matchedTags)
+                _app_icon       : style.icon,
+                _app_icon_size  : style.iconSize,
+                _line_width     : style.lineWidth,
+                _line_color     : style.lineColor,
+                _fill_color     : style.fillColor,
+                _fill_opacity   : style.fillOpacity
             }
         });
 

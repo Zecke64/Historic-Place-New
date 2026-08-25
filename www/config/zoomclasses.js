@@ -192,7 +192,6 @@ export const zoomClasses = [
                     [ "historic", "bomb_crater" ],
                     [ "historic", "bridge" ],
                     [ "historic", "memorial" ],
-                    [ "historic", "memorial" ],
                     [ "historic", "cannon" ],
                     [ "cemetary", "war_cemetary" ],
                     [ "building", "church" ],

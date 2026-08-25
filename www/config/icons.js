@@ -13,6 +13,16 @@ export function AND(...conditions) { return {type : "AND", conditions}; }
 
 export function OR(...conditions) { return {type : "OR", conditions}; }
 
+// Das hier sind die default Style Werte für Icons, Lines und Areas
+export const defaultStyle = {
+    icon :          "null",
+    iconSize :      0.8,
+    lineWidth :     3,
+    lineColor :     "#3388ff",
+    fillColor :     "#3388ff",
+    fillOpacity :   0.25
+};
+
 export const iconRules = [
 
     // *****************************   Zoom 6   *****************************
@@ -35,7 +45,8 @@ export const iconRules = [
             [ "historic", "fort" ],
             [ "historic", "palace" ],
         ],
-        icon : "castle"
+        icon : "castle",
+        iconSize : 2
     },
 
     {
@@ -224,7 +235,10 @@ export const iconRules = [
                 [ "wikidata", "*" ]
             )
         ),
-        icon : "church"
+        icon : "church",
+        lineColor : "#B22222",
+        fillColor : "#B22222",
+        fillOpacity : 0.75
     },
 
     {
