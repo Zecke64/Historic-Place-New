@@ -11,14 +11,19 @@ const ENABLE_POI_CLUSTERING = false;
 const zoomClassState = new Map();
 
 for (const zoomClass of zoomClasses) {
-    zoomClassState.set(zoomClass.id, {loadedTiles : new Set(), features : []});
+    zoomClassState.set(zoomClass.id, {
+        loadedTiles : new Set(), 
+        loadingTiles : new Set(),
+        features : [],
+    });
 }
 
 const OVERPASS_URL =
     //    "https://overpass.maprva.org/api/interpreter";
     //    "https://overpass-api.de/api/interpreter";
     //    "https://overpass.private.coffee/api/interpreter";
-    "https://mystic.historic.place:4443/api/interpreter";
+    //"https://mystic.historic.place:4443/api/interpreter";
+    "https://mystic.historic.place:4444/api/interpreter";
 
 const sourceId = "osm-pois";
 const MAX_PARALLEL_REQUESTS = 8;
@@ -491,6 +496,26 @@ async function loadPOIs(map) {
     } // try
 
     finally {
+        const pending = loadPOIsPending;
+
+        loadPOIsPending = false;
+        loadPOIsRunning = false;
+        loadPOIsController = null;
+
+        console.log("LOAD POIS END");
+
+        if (pending) {
+            console.log("LOAD POIS – vorgemerkten Aufruf starten");
+
+            /*
+             * Erst nach Abschluss des aktuellen Aufrufs
+             * den nächsten Durchlauf starten.
+             */
+            setTimeout(() => loadPOIs(map), 0);
+        }
+    }
+/*
+    finally {
         loadPOIsRunning = false;
         loadPOIsController = null;
 
@@ -504,6 +529,7 @@ async function loadPOIs(map) {
             loadPOIs(map);
         }
     }
+*/
 }
 
 
@@ -517,11 +543,115 @@ async function loadTile(tile, zoomClass, state, signal) {
         return;
     }
 
+    /*
+     * Kachel wird bereits geladen.
+     */
+    if (state.loadingTiles.has(tileId)) {
+        console.log("Kachel bereits in Bearbeitung:", zoomClass.id, tileId);
+        return;
+    }
+
+    state.loadingTiles.add(tileId);
+
+    const tileBounds = getTileBounds(tile);
+    const query = createQueryForZoomClass(zoomClass, tileBounds);
+
+    console.log("OVERPASS REQUEST:", zoomClass.id, tileId,
+                "loaded:", state.loadedTiles.has(tileId),
+                "loading:", state.loadingTiles.has(tileId));
+
+    try {
+        const response = await fetch(OVERPASS_URL, {
+            method : "POST",
+
+            headers : {"Content-Type" : "application/x-www-form-urlencoded"},
+
+            body : "data=" + encodeURIComponent(query),
+
+            signal : signal
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch (error) {
+            console.error("Overpass-Antwort:", text.substring(0, 1000));
+            throw error;
+        }
+
+        /*
+         * Overpass-Daten in GeoJSON umwandeln.
+         */
+        const geojson = convertToGeoJSON(data, zoomClass);
+
+        /*
+         * Bereits vorhandene OSM-Objekte
+         * dieser Zoomklasse nicht doppelt übernehmen.
+         */
+        const existingIds = new Set(
+            state.features.map(
+                feature =>
+                    feature.properties._osm_type + "/" +
+                    feature.properties._osm_id
+            )
+        );
+
+        for (const feature of geojson.features) {
+            const id =
+                feature.properties._osm_type + "/" +
+                feature.properties._osm_id;
+
+            if (!existingIds.has(id)) {
+                state.features.push(feature);
+                existingIds.add(id);
+            }
+        }
+
+        /*
+         * Erst nach erfolgreicher Verarbeitung
+         * gilt die Kachel als geladen.
+         */
+        state.loadedTiles.add(tileId);
+    }
+
+    catch (error) {
+        if (error.name !== "AbortError") {
+            console.error("Overpass Fehler:", error);
+        }
+    }
+
+    finally {
+        state.loadingTiles.delete(tileId);
+    }
+}
+
+/*
+async function loadTile(tile, zoomClass, state, signal) {
+    const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+
+    if (state.loadedTiles.has(tileId)) {
+        return;
+    }
+
+    if (state.loadingTiles.has(tileId)) {
+        return;
+    }
+
+    state.loadingTiles.add(tileId);
+
+
     const tileBounds = getTileBounds(tile);
 
     const query = createQueryForZoomClass(zoomClass, tileBounds);
 
-    console.log("OVERPASS REQUEST:", zoomClass.id, tileId /*, query */);
+    console.log("OVERPASS REQUEST:", zoomClass.id, tileId );
 
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -552,15 +682,8 @@ async function loadTile(tile, zoomClass, state, signal) {
 
         const relation = data.elements.find(e => e.type === "relation" && e.id === 12408798);
 
-        /*
-         * Overpass-Daten in GeoJSON umwandeln.
-         */
         const geojson = convertToGeoJSON(data, zoomClass);
 
-        /*
-         * Bereits vorhandene OSM-Objekte
-         * dieser Zoomklasse nicht doppelt übernehmen.
-         */
         const existingIds = new Set(state.features.map(
             feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
@@ -573,10 +696,6 @@ async function loadTile(tile, zoomClass, state, signal) {
             }
         }
 
-        /*
-         * Erst nach erfolgreicher Verarbeitung
-         * gilt die Kachel als geladen.
-         */
         state.loadedTiles.add(tileId);
     }
 
@@ -586,6 +705,7 @@ async function loadTile(tile, zoomClass, state, signal) {
         }
     }
 }
+*/
 
 
 function convertToGeoJSON(data, zoomClass) {
