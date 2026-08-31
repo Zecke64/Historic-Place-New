@@ -2,7 +2,7 @@ import {addControls} from "./controls.js";
 import {loadIcons} from "./icons.js";
 import {initLayerManager, initZoomHandling, updateLayerVisibility} from "./layers.js";
 import {createMap} from "./map.js";
-import {initOverpassLayer} from "./overpass.js";
+import {initOverpassLayer, initPrefetch} from "./overpass.js";
 import {createPermalinkControl, loadPermalink} from "./permalink.js";
 import {initPopup} from "./popup.js";
 import {updateLanguage} from "./ui/language.js";
@@ -27,6 +27,7 @@ map.on("load", async () => {
     await loadIcons(map);
     initOverpassLayer(map);
     initPopup(map);
+    initPrefetch(map);
 
     //console.log("MapLibre Layer:", map.getStyle().layers.map(l => l.id));
 

@@ -35,6 +35,9 @@ let loadPOIsRunning = false;
 // let zoomAtStart = null;
 let loadPOIsPending = false;
 let loadPOIsController = null;
+let prefetchTimer = null;
+let prefetchController = null;
+let prefetchPending = false;
 
 export function initOverpassLayer(map) {
     /*
@@ -599,9 +602,16 @@ async function loadPOIs(map) {
              * den nächsten Durchlauf starten.
              */
             setTimeout(() => loadPOIs(map), 0);
+        } else if (prefetchPending) {
+            console.log("LOAD POIS END – Prefetch starten");
+
+            prefetchPending = false;
+            prefetchPOIs(map);
         }
     }
 }
+
+
 
 async function loadTile(tile, zoomClass, state, signal) {
     const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
@@ -628,6 +638,7 @@ async function loadTile(tile, zoomClass, state, signal) {
 
     console.log("OVERPASS REQUEST:", zoomClass.id, tileId, "loaded:", state.loadedTiles.has(tileId),
                 "loading:", state.loadingTiles.has(tileId));
+    //console.log( "OVERPASS QUERY:", query);
 
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -718,6 +729,7 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal) {
 
     console.log("OVERPASS RECTANGLE REQUEST:", zoomClass.id, `${rectangle.minX}..${rectangle.maxX}`,
                 `${rectangle.minY}..${rectangle.maxY}`, "tiles:", tiles.length);
+    // console.log( "OVERPASS QUERY:", query);
 
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -1040,3 +1052,190 @@ function getGeometryCenter(coordinates) {
 
     return [ (minLon + maxLon) / 2, (minLat + maxLat) / 2 ];
 }
+
+
+
+function getPrefetchTiles(bounds, zoom) {
+    const xMin = lon2tileX(bounds.getWest(), zoom);
+    const xMax = lon2tileX(bounds.getEast(), zoom);
+    const yMin = lat2tileY(bounds.getNorth(), zoom);
+    const yMax = lat2tileY(bounds.getSouth(), zoom);
+
+    const width  = xMax - xMin + 1;
+    const height = yMax - yMin + 1;
+
+    const marginX = Math.ceil(width / 2);
+    const marginY = Math.ceil(height / 2);
+
+    const tiles = [];
+
+    for (let x = xMin - marginX; x <= xMax + marginX; x++) {
+        for (let y = yMin - marginY; y <= yMax + marginY; y++) {
+
+            // Sichtbaren Bereich auslassen
+            if (x >= xMin && x <= xMax &&
+                y >= yMin && y <= yMax) {
+                continue;
+            }
+
+            tiles.push({
+                x: x,
+                y: y,
+                zoom: zoom
+            });
+        }
+    }
+
+    return tiles;
+}
+
+
+
+
+function schedulePrefetch(map) {
+    if (prefetchTimer) {
+        clearTimeout(prefetchTimer);
+    }
+
+    prefetchPending = true;
+
+    prefetchTimer = setTimeout(() => {
+        prefetchTimer = null;
+
+        if (loadPOIsRunning) {
+            console.log("PREFETCH wartet auf LOAD POIS");
+            return;
+        }
+
+        prefetchPending = false;
+        prefetchPOIs(map);
+
+    }, 1000);
+}
+
+
+
+function cancelPrefetch() {
+    if (prefetchTimer) {
+        clearTimeout(prefetchTimer);
+        prefetchTimer = null;
+    }
+
+    prefetchPending = false;
+
+    if (prefetchController) {
+        prefetchController.abort();
+        prefetchController = null;
+    }
+}
+
+
+
+async function prefetchPOIs(map) {
+    if (prefetchController) {
+        return;
+    }
+
+    const controller = new AbortController();
+    prefetchController = controller;
+
+    try {
+        const bounds = map.getBounds();
+        const zoom = map.getZoom();
+
+        const activeClasses =
+            zoomClasses.filter(
+                zoomClass => zoom >= zoomClass.minZoom
+            );
+
+        for (const zoomClass of activeClasses) {
+
+            const state = zoomClassState.get(zoomClass.id);
+
+            if (!state)
+                continue;
+
+            const tiles =
+                getPrefetchTiles(
+                    bounds,
+                    zoomClass.minZoom
+                );
+
+            const tilesToLoad = tiles.filter(tile => {
+                const tileId =
+                    `${tile.zoom}/${tile.x}/${tile.y}`;
+
+                return !state.loadedTiles.has(tileId) &&
+                       !state.loadingTiles.has(tileId);
+            });
+
+            console.log(
+                "PREFETCH:",
+                zoomClass.id,
+                tilesToLoad.length,
+                "Tiles"
+            );
+
+            for (
+                let i = 0;
+                i < tilesToLoad.length;
+                i += MAX_PARALLEL_REQUESTS
+            ) {
+                const batch =
+                    tilesToLoad.slice(
+                        i,
+                        i + MAX_PARALLEL_REQUESTS
+                    );
+
+                await Promise.all(
+                    batch.map(tile =>
+                        loadTile(
+                            tile,
+                            zoomClass,
+                            state,
+                            controller.signal
+                        )
+                    )
+                );
+            }
+        }
+
+    } catch (error) {
+
+        if (error.name !== "AbortError") {
+            console.error("Prefetch Fehler:", error);
+        }
+
+    } finally {
+
+        /*
+         * Nur den globalen Controller löschen,
+         * wenn er noch unser Controller ist.
+         */
+        if (prefetchController === controller) {
+            prefetchController = null;
+        }
+    }
+}
+
+
+
+export function initPrefetch(map) {
+
+    map.on("movestart", () => {
+        cancelPrefetch();
+    });
+
+    map.on("zoomstart", () => {
+        cancelPrefetch();
+    });
+
+    map.on("moveend", () => {
+        schedulePrefetch(map);
+    });
+}
+
+
+
+
+
