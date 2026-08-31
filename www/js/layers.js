@@ -188,20 +188,6 @@ export function updateLayerVisibility(map) {
                     visible = layer.visible && zoom >= layer.display.detail.minZoom;
                 }
 
-                /*
-                if (mapLayer.type === "fill" || mapLayer.type === "line") {
-                    visible = zoom >= layer.display.overview.minZoom &&
-                              zoom < layer.display.detail.minZoom;
-                }
-
-                if (mapLayer.type === "raster") {
-                    visible = zoom >= layer.display.detail.minZoom;
-                }
-
-                if (layer.type === "poi") {
-                    visible = layer.visible && zoom >= layer.display.overview.minZoom;
-                }
-                */
             }
 
             if (map.getLayer(mapLayer.id)) {

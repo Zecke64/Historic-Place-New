@@ -1,5 +1,6 @@
-import {getIconRule} from "./icons.js";
 import {defaultStyle} from "../config/icons.js";
+
+import {getIconRule} from "./icons.js";
 import {clearPendingPermalinkPoi, getPendingPermalinkPoi} from "./permalink.js";
 import {showPopup} from "./popup.js";
 import {normalizeTags} from "./utils.js";
@@ -12,7 +13,7 @@ const zoomClassState = new Map();
 
 for (const zoomClass of zoomClasses) {
     zoomClassState.set(zoomClass.id, {
-        loadedTiles : new Set(), 
+        loadedTiles : new Set(),
         loadingTiles : new Set(),
         features : [],
     });
@@ -23,7 +24,8 @@ const OVERPASS_URL =
     //    "https://overpass-api.de/api/interpreter";
     //    "https://overpass.private.coffee/api/interpreter";
     //"https://mystic.historic.place:4443/api/interpreter";
-    "https://mystic.historic.place:4444/api/interpreter";
+    //"https://mystic.historic.place:4444/api/interpreter";
+    "https://mystic.historic.place:4446/api/interpreter";
 
 const sourceId = "osm-pois";
 const MAX_PARALLEL_REQUESTS = 8;
@@ -33,8 +35,6 @@ let loadPOIsRunning = false;
 // let zoomAtStart = null;
 let loadPOIsPending = false;
 let loadPOIsController = null;
-
-
 
 export function initOverpassLayer(map) {
     /*
@@ -90,10 +90,8 @@ export function initOverpassLayer(map) {
         id : "osm-object-fill",
         type : "fill",
         source : "osm-object-polygons",
-        paint : {
-            "fill-color" : [ "get", "_fill_color" ],
-            "fill-opacity" : [ "get", "_fill_opacity" ]
-        }
+        paint :
+            {"fill-color" : [ "get", "_fill_color" ], "fill-opacity" : [ "get", "_fill_opacity" ]}
     });
 
     /*
@@ -103,10 +101,7 @@ export function initOverpassLayer(map) {
         id : "osm-object-line",
         type : "line",
         source : "osm-object-polygons",
-        paint : {
-            "line-color" : [ "get", "_line_color" ],
-            "line-width" : [ "get", "_line_width" ]
-        }
+        paint : {"line-color" : [ "get", "_line_color" ], "line-width" : [ "get", "_line_width" ]}
     });
 
     /*
@@ -116,10 +111,7 @@ export function initOverpassLayer(map) {
         id : "osm-object-lines",
         type : "line",
         source : "osm-object-lines",
-        paint : {
-            "line-color" : [ "get", "_line_color" ],
-            "line-width" : [ "get", "_line_width" ]
-        }
+        paint : {"line-color" : [ "get", "_line_color" ], "line-width" : [ "get", "_line_width" ]}
     });
 
     map.addSource("osm-object-icons",
@@ -129,11 +121,11 @@ export function initOverpassLayer(map) {
         id : "osm-object-icons",
         type : "symbol",
         source : "osm-object-icons",
-        layout :
-            {   "icon-image" : [ "get", "_app_icon" ], 
-                "icon-size" : [ "get", "_app_icon_size" ],
-                "icon-allow-overlap" : true
-            }
+        layout : {
+            "icon-image" : [ "get", "_app_icon" ],
+            "icon-size" : [ "get", "_app_icon_size" ],
+            "icon-allow-overlap" : true
+        }
     });
 
     /*
@@ -144,11 +136,11 @@ export function initOverpassLayer(map) {
         type : "symbol",
         source : sourceId,
         filter : [ "!", [ "has", "point_count" ] ],
-        layout :
-            {   "icon-image" : [ "get", "_app_icon" ], 
-                "icon-size" : [ "get", "_app_icon_size" ],
-                "icon-allow-overlap" : true
-            }
+        layout : {
+            "icon-image" : [ "get", "_app_icon" ],
+            "icon-size" : [ "get", "_app_icon_size" ],
+            "icon-allow-overlap" : true
+        }
     });
 
     /*
@@ -195,24 +187,19 @@ export function initOverpassLayer(map) {
     map.on("moveend", () => { loadPOIs(map); });
 }
 
-
 function lon2tileX(lon, zoom) { return Math.floor((lon + 180) / 360 * Math.pow(2, zoom)); }
-
 
 function lat2tileY(lat, zoom) {
     const latRad = lat * Math.PI / 180;
     return Math.floor((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * Math.pow(2, zoom));
 }
 
-
 function tile2lon(x, zoom) { return x / Math.pow(2, zoom) * 360 - 180; }
-
 
 function tile2lat(y, zoom) {
     const n = Math.PI - 2 * Math.PI * y / Math.pow(2, zoom);
     return 180 / Math.PI * Math.atan(Math.sinh(n));
 }
-
 
 function getTilesForBounds(bounds, zoom) {
     const xMin = lon2tileX(bounds.getWest(), zoom);
@@ -231,13 +218,25 @@ function getTilesForBounds(bounds, zoom) {
     return tiles;
 }
 
-
 function getTileBounds(tile) {
     return new maplibregl.LngLatBounds(
         [ tile2lon(tile.x, tile.zoom), tile2lat(tile.y + 1, tile.zoom) ],
         [ tile2lon(tile.x + 1, tile.zoom), tile2lat(tile.y, tile.zoom) ]);
 }
 
+function getRectangleBounds(rectangle) {
+    const zoom = rectangle.tiles[0].zoom;
+
+    const firstTile = {zoom : zoom, x : rectangle.minX, y : rectangle.minY};
+
+    const lastTile = {zoom : zoom, x : rectangle.maxX, y : rectangle.maxY};
+
+    const firstBounds = getTileBounds(firstTile);
+    const lastBounds = getTileBounds(lastTile);
+
+    return new maplibregl.LngLatBounds([ firstBounds.getWest(), lastBounds.getSouth() ],
+                                       [ lastBounds.getEast(), firstBounds.getNorth() ]);
+}
 
 function createQueryForZoomClass(zoomClass, bounds) {
     const south = bounds.getSouth();
@@ -266,11 +265,86 @@ out geom qt 500;
 `;
 }
 
-
 function getZoomClass(zoom) {
     return zoomClasses.find(z => zoom >= z.minZoom && zoom <= z.maxZoom);
 }
 
+function mergeTilesIntoRectangles(tiles) {
+    if (tiles.length === 0)
+        return [];
+
+    const tileMap = new Map(tiles.map(tile => [`${tile.x}/${tile.y}`, tile]));
+    const remaining = new Set(tileMap.keys());
+    const rectangles = [];
+
+    while (remaining.size > 0) {
+        let best = null;
+
+        /*
+         * Jedes noch vorhandene Tile als möglichen
+         * linken oberen/rechten Ausgangspunkt testen.
+         */
+        for (const key of remaining) {
+            const [x0, y0] = key.split("/").map(Number);
+
+            /*
+             * Zunächst maximale Breite in dieser Zeile.
+             */
+            let maxWidth = 0;
+
+            while (remaining.has(`${x0 + maxWidth}/${y0}`)) {
+                maxWidth++;
+            }
+
+            let width = maxWidth;
+            let height = 0;
+
+            /*
+             * Rechteck zeilenweise nach unten erweitern.
+             */
+            while (width > 0) {
+                const y = y0 + height;
+
+                let rowWidth = 0;
+
+                while (rowWidth < width && remaining.has(`${x0 + rowWidth}/${y}`)) {
+                    rowWidth++;
+                }
+                width = rowWidth;
+                if (width === 0)
+                    break;
+                height++;
+                const area = width * height;
+                if (!best || area > best.area) {
+                    best = {minX : x0, minY : y0, width : width, height : height, area : area};
+                }
+            }
+        }
+
+        if (!best)
+            break;
+
+        const rectangleTiles = [];
+
+        for (let y = best.minY; y < best.minY + best.height; y++) {
+            for (let x = best.minX; x < best.minX + best.width; x++) {
+                const key = `${x}/${y}`;
+                rectangleTiles.push(tileMap.get(key));
+                remaining.delete(key);
+            }
+        }
+
+        rectangles.push({
+            minX : best.minX,
+            maxX : best.minX + best.width - 1,
+            minY : best.minY,
+            maxY : best.minY + best.height - 1,
+            tiles : rectangleTiles
+        });
+    }
+
+    return rectangles;
+}
 
 async function loadPOIs(map) {
     if (loadPOIsRunning) {
@@ -305,7 +379,6 @@ async function loadPOIs(map) {
          * Bei z14 sind also z12_13 UND z14 aktiv.
          */
         const activeClasses = zoomClasses.filter(zoomClass => zoom >= zoomClass.minZoom);
-
         const bounds = map.getBounds();
 
         /*
@@ -332,11 +405,38 @@ async function loadPOIs(map) {
              */
             const tiles = getTilesForBounds(bounds, zoomClass.minZoom);
 
-            for (let i = 0; i < tiles.length; i += MAX_PARALLEL_REQUESTS) {
-                const batch = tiles.slice(i, i + MAX_PARALLEL_REQUESTS);
+            /*
+             * Bereits geladene Tiles brauchen keinen Request.
+             */
+            const tilesToLoad = tiles.filter(tile => {
+                const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
-                await Promise.all(
-                    batch.map(tile => loadTile(tile, zoomClass, state, loadPOIsController.signal)));
+                return !state.loadedTiles.has(tileId);
+            });
+
+            console.log("TILES ZU LADEN:", zoomClass.id, tilesToLoad.length);
+
+            /*
+             * Benachbarte Tiles zu möglichst großen
+             * Rechtecken zusammenfassen.
+             */
+            const rectangles = mergeTilesIntoRectangles(tilesToLoad);
+
+            console.log("RECTANGLES:", zoomClass.id, rectangles.length,
+                        rectangles.map(rectangle => ({
+                                           x : `${rectangle.minX}..${rectangle.maxX}`,
+                                           y : `${rectangle.minY}..${rectangle.maxY}`,
+                                           tiles : rectangle.tiles.length
+                                       })));
+
+            /*
+             * Rechtecke laden.
+             *
+             * Vorerst bewusst sequentiell:
+             * Ein Rechteck = ein Overpass-Request.
+             */
+            for (const rectangle of rectangles) {
+                await loadTileRectangle(rectangle, zoomClass, state, loadPOIsController.signal);
             }
         }
 
@@ -352,7 +452,6 @@ async function loadPOIs(map) {
          * => bei Zoom 14 werden 95 Objekte angezeigt.
          */
         const features = [];
-
         const globalIds = new Set();
 
         for (const zoomClass of activeClasses) {
@@ -381,7 +480,6 @@ async function loadPOIs(map) {
          * Wikidata-Daten vorbereiten.
          */
         const ids = features.map(feature => feature.properties.wikidata).filter(Boolean);
-
         prefetchWikidata(ids);
 
         /*
@@ -389,7 +487,6 @@ async function loadPOIs(map) {
          */
 
         const allPointFeatures = features.filter(feature => feature.geometry.type === "Point");
-
         const poiFeatures = features.filter(feature => feature.geometry.type === "Point" &&
                                                        feature.properties._app_icon !== "null");
 
@@ -398,13 +495,10 @@ async function loadPOIs(map) {
 
         const objectFeatures = features.filter(feature => feature.geometry.type !== "Point" &&
                                                           feature.properties._app_icon !== "null");
-
         const polygonFeatures =
             objectFeatures.filter(feature => feature.geometry.type === "Polygon");
-
         const lineFeatures =
             objectFeatures.filter(feature => feature.geometry.type === "LineString");
-
         const objectIconFeatures =
             objectFeatures
                 .map(feature => {
@@ -415,20 +509,15 @@ async function loadPOIs(map) {
 
                     return {
                         type : "Feature",
-
                         geometry : {type : "Point", coordinates : coordinates},
-
                         properties : {...feature.properties}
                     };
                 })
                 .filter(Boolean);
 
         const poiGeoJSON = {type : "FeatureCollection", features : poiFeatures};
-
         const polygonGeoJSON = {type : "FeatureCollection", features : polygonFeatures};
-
         const lineGeoJSON = {type : "FeatureCollection", features : lineFeatures};
-
         const objectIconGeoJSON = {type : "FeatureCollection", features : objectIconFeatures};
 
         /*
@@ -447,7 +536,6 @@ async function loadPOIs(map) {
 
         if (polygonSource) {
             polygonSource.setData(polygonGeoJSON);
-
         } else {
             console.error("POLYGON SOURCE NICHT GEFUNDEN");
         }
@@ -479,7 +567,6 @@ async function loadPOIs(map) {
             console.log("PERMALINK POI gefunden:", pendingPoi);
 
             const [osmType, osmId] = pendingPoi.split("/");
-
             const feature =
                 features.find(feature => feature.properties._osm_type === osmType &&
                                          String(feature.properties._osm_id) === String(osmId));
@@ -514,24 +601,7 @@ async function loadPOIs(map) {
             setTimeout(() => loadPOIs(map), 0);
         }
     }
-/*
-    finally {
-        loadPOIsRunning = false;
-        loadPOIsController = null;
-
-        console.log("LOAD POIS END");
-
-        if (loadPOIsPending) {
-            loadPOIsPending = false;
-
-            console.log("LOAD POIS – vorgemerkten Aufruf starten");
-
-            loadPOIs(map);
-        }
-    }
-*/
 }
-
 
 async function loadTile(tile, zoomClass, state, signal) {
     const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
@@ -556,18 +626,14 @@ async function loadTile(tile, zoomClass, state, signal) {
     const tileBounds = getTileBounds(tile);
     const query = createQueryForZoomClass(zoomClass, tileBounds);
 
-    console.log("OVERPASS REQUEST:", zoomClass.id, tileId,
-                "loaded:", state.loadedTiles.has(tileId),
+    console.log("OVERPASS REQUEST:", zoomClass.id, tileId, "loaded:", state.loadedTiles.has(tileId),
                 "loading:", state.loadingTiles.has(tileId));
 
     try {
         const response = await fetch(OVERPASS_URL, {
             method : "POST",
-
             headers : {"Content-Type" : "application/x-www-form-urlencoded"},
-
             body : "data=" + encodeURIComponent(query),
-
             signal : signal
         });
 
@@ -595,18 +661,11 @@ async function loadTile(tile, zoomClass, state, signal) {
          * Bereits vorhandene OSM-Objekte
          * dieser Zoomklasse nicht doppelt übernehmen.
          */
-        const existingIds = new Set(
-            state.features.map(
-                feature =>
-                    feature.properties._osm_type + "/" +
-                    feature.properties._osm_id
-            )
-        );
+        const existingIds = new Set(state.features.map(
+            feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
         for (const feature of geojson.features) {
-            const id =
-                feature.properties._osm_type + "/" +
-                feature.properties._osm_id;
+            const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
 
             if (!existingIds.has(id)) {
                 state.features.push(feature);
@@ -632,35 +691,39 @@ async function loadTile(tile, zoomClass, state, signal) {
     }
 }
 
-/*
-async function loadTile(tile, zoomClass, state, signal) {
-    const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+async function loadTileRectangle(rectangle, zoomClass, state, signal) {
+    const tileIds = rectangle.tiles.map(tile => `${tile.zoom}/${tile.x}/${tile.y}`);
 
-    if (state.loadedTiles.has(tileId)) {
+    /*
+     * Nur tatsächlich noch benötigte Tiles berücksichtigen.
+     */
+    const tiles = rectangle.tiles.filter(tile => {
+        const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+        return !state.loadedTiles.has(tileId);
+    });
+
+    if (tiles.length === 0)
         return;
+
+    /*
+     * Alle Tiles des Requests als "loading" markieren.
+     */
+    for (const tile of tiles) {
+        const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+        state.loadingTiles.add(tileId);
     }
 
-    if (state.loadingTiles.has(tileId)) {
-        return;
-    }
+    const bounds = getRectangleBounds({...rectangle, tiles : tiles});
+    const query = createQueryForZoomClass(zoomClass, bounds);
 
-    state.loadingTiles.add(tileId);
-
-
-    const tileBounds = getTileBounds(tile);
-
-    const query = createQueryForZoomClass(zoomClass, tileBounds);
-
-    console.log("OVERPASS REQUEST:", zoomClass.id, tileId );
+    console.log("OVERPASS RECTANGLE REQUEST:", zoomClass.id, `${rectangle.minX}..${rectangle.maxX}`,
+                `${rectangle.minY}..${rectangle.maxY}`, "tiles:", tiles.length);
 
     try {
         const response = await fetch(OVERPASS_URL, {
             method : "POST",
-
             headers : {"Content-Type" : "application/x-www-form-urlencoded"},
-
             body : "data=" + encodeURIComponent(query),
-
             signal : signal
         });
 
@@ -680,10 +743,14 @@ async function loadTile(tile, zoomClass, state, signal) {
             throw error;
         }
 
-        const relation = data.elements.find(e => e.type === "relation" && e.id === 12408798);
-
+        /*
+         * Overpass-Daten in GeoJSON umwandeln.
+         */
         const geojson = convertToGeoJSON(data, zoomClass);
 
+        /*
+         * Bereits vorhandene OSM-Objekte nicht doppelt übernehmen.
+         */
         const existingIds = new Set(state.features.map(
             feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
@@ -696,7 +763,17 @@ async function loadTile(tile, zoomClass, state, signal) {
             }
         }
 
-        state.loadedTiles.add(tileId);
+        /*
+         * GANZ WICHTIG:
+         * Erst wenn der komplette Request erfolgreich
+         * verarbeitet wurde, alle enthaltenen Tiles als
+         * geladen markieren.
+         */
+        for (const tile of tiles) {
+            const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+
+            state.loadedTiles.add(tileId);
+        }
     }
 
     catch (error) {
@@ -704,9 +781,20 @@ async function loadTile(tile, zoomClass, state, signal) {
             console.error("Overpass Fehler:", error);
         }
     }
-}
-*/
 
+    finally {
+        /*
+         * loading immer entfernen.
+         *
+         * Bei Fehler bleiben die Tiles bewusst NICHT
+         * in loadedTiles und können später erneut geladen werden.
+         */
+        for (const tile of tiles) {
+            const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+            state.loadingTiles.delete(tileId);
+        }
+    }
+}
 
 function convertToGeoJSON(data, zoomClass) {
 
@@ -724,7 +812,6 @@ function convertToGeoJSON(data, zoomClass) {
         if (e.type === "node") {
             iconLon = e.lon;
             iconLat = e.lat;
-
             geometry = {type : "Point", coordinates : [ e.lon, e.lat ]};
         }
 
@@ -738,16 +825,13 @@ function convertToGeoJSON(data, zoomClass) {
             const coordinates = e.geometry.map(point => [point.lon, point.lat]);
 
             iconLon = (e.bounds.minlon + e.bounds.maxlon) / 2;
-
             iconLat = (e.bounds.minlat + e.bounds.maxlat) / 2;
 
             /*
              * Geschlossener Way
              */
             const first = coordinates[0];
-
             const last = coordinates[coordinates.length - 1];
-
             const isClosed =
                 coordinates.length >= 4 && first[0] === last[0] && first[1] === last[1];
 
@@ -886,7 +970,7 @@ function convertToGeoJSON(data, zoomClass) {
             continue;
 
         const iconRule = getIconRule(matchedTags);
-        const style = { ...defaultStyle, ...iconRule };
+        const style = {...defaultStyle, ...iconRule};
 
         features.push({
             type : "Feature",
@@ -906,12 +990,12 @@ function convertToGeoJSON(data, zoomClass) {
                 _geometry_type : geometryType,
                 _icon_coordinates : [ iconLon, iconLat ],
 
-                _app_icon       : style.icon,
-                _app_icon_size  : style.iconSize,
-                _line_width     : style.lineWidth,
-                _line_color     : style.lineColor,
-                _fill_color     : style.fillColor,
-                _fill_opacity   : style.fillOpacity
+                _app_icon : style.icon,
+                _app_icon_size : style.iconSize,
+                _line_width : style.lineWidth,
+                _line_color : style.lineColor,
+                _fill_color : style.fillColor,
+                _fill_opacity : style.fillOpacity
             }
         });
 
@@ -925,7 +1009,6 @@ function convertToGeoJSON(data, zoomClass) {
     return {type : "FeatureCollection", features : features};
 }
 
-
 function clearSource(map) {
     const source = map.getSource(sourceId);
 
@@ -934,7 +1017,6 @@ function clearSource(map) {
     }
 }
 
-
 function createObjectTypeQuery(key, value, lifecycle = false) {
     if (!lifecycle) {
         return `["${key}"="${value}"]`;
@@ -942,7 +1024,6 @@ function createObjectTypeQuery(key, value, lifecycle = false) {
 
     return `[ ~"^(disused:|abandoned:|razed:)*${key}$"~"^${value}$" ]`;
 }
-
 
 function getGeometryCenter(coordinates) {
     let minLon = Infinity;
