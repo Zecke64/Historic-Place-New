@@ -24,39 +24,12 @@ function evaluateCondition(condition, tags) {
 }
 
 
-// Icon aus den iconrules bestimmen
-export function getIcon(tags) {
-    return getIconRule(tags).icon;
-}
 
-/*
-export function getIcon(tags) {
-    for (const rule of iconRules) {
-        // neue Syntax mit condition:
-        if (rule.condition) {
-            if (evaluateCondition(rule.condition, tags))
-                return rule.icon;
-        }
-        // alte Syntx: OR
-        else if (rule.match) {
-            const matches = rule.match.some(
-                ([ key, value ]) => value === "*" ? tags[key] !== undefined : tags[key] === value);
-
-            if (matches)
-                return rule.icon;
-        }
-    }
-
-    return "null";
-}
-*/
-
-
-export function getIconRule(tags) {
+export function getIconRule(tags, zoom) {
     for (const rule of iconRules) {
         if (rule.condition) {
             if (evaluateCondition(rule.condition, tags))
-                return rule;
+                return applyZoomStyle(rule, zoom);
         }
         else if (rule.match) {
             const matches = rule.match.some(
@@ -67,57 +40,40 @@ export function getIconRule(tags) {
             );
 
             if (matches)
-                return rule;
+                return applyZoomStyle(rule, zoom);
         }
     }
 
-    return {
-        icon : "null"
-    };
+    return { ...defaultStyle };
 }
 
 
-export function getIconStyle(tags) {
-    for (const rule of iconRules) {
 
-        let matches = false;
+function applyZoomStyle(rule, zoom) {
+    const style = {
+        ...defaultStyle,
+        ...rule
+    };
 
-        // Neue Syntax mit condition
-        if (rule.condition) {
-            matches = evaluateCondition(rule.condition, tags);
-        }
+    delete style.match;
+    delete style.condition;
+    delete style.zoom;
 
-        // Alte Syntax mit match
-        else if (rule.match) {
-            matches = rule.match.some(
-                ([ key, value ]) =>
-                    value === "*"
-                        ? tags[key] !== undefined
-                        : tags[key] === value
-            );
-        }
+    if (rule.zoom) {
+        const levels = Object.keys(rule.zoom)
+            .map(Number)
+            .filter(level => level <= zoom)
+            .sort((a, b) => a - b);
 
-        if (matches) {
-            return {
-                icon : rule.icon,
-                iconSize : rule.iconSize,
-                lineWidth : rule.lineWidth,
-                lineColor : rule.lineColor,
-                fillColor : rule.fillColor,
-                fillOpacity : rule.fillOpacity
-            };
+        for (const level of levels) {
+            Object.assign(style, rule.zoom[level]);
         }
     }
 
-    return {
-        icon : "null",
-        iconSize : undefined,
-        lineWidth : undefined,
-        lineColor : undefined,
-        fillColor : undefined,
-        fillOpacity : undefined
-    };
+    //console.log("ZOOM STYLE", zoom, rule.icon, style.icon);
+    return style;
 }
+
 
 
 export async function loadIcons(map) {

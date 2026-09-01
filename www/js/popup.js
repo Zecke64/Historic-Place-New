@@ -1,4 +1,3 @@
-import {getIcon} from "./icons.js";
 import {createImage, createImageCredit, getImageInfo, installImageHandler} from "./images.js";
 import {tr} from "./language.js";
 import {escapeHTML} from "./utils.js";
@@ -28,110 +27,9 @@ export function initPopup(map) {
          * Mauszeiger
          */
         map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
-
         map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
     }
 }
-
-
-/*
-export async function showPopup(map, feature) {
-
-    console.log("POI Properties:", feature.properties);
-    currentPopupFeature = feature; // für Permalink
-    const properties = feature.properties;
-    const thisPopupId = ++popupSequence;
-    const coordinates = feature.geometry.coordinates;
-
-    // Falls noch ein Popup offen ist, schließen
-    if (currentPopup) {
-        currentPopup.remove();
-    }
-
-    // Grund-Popup sofort anzeigen
-    const html = `
-    <div class="poi-popup">
-
-        ${createHeader(properties)}
-
-        <div id="poi-loading">
-	    ${tr("popup.loadingAdditionalInfo")}
-        </div>
-
-        <div id="poi-content">
-        </div>
-
-        <details class="poi-details">
-            <summary>
-                OSM-Tags
-            </summary>
-            ${createTagTable(properties)}
-        </details>
-
-    </div>
-    `;
-
-    currentPopup =
-        new maplibregl.Popup({maxWidth : "380px"}).setLngLat(coordinates).setHTML(html).addTo(map);
-
-    currentPopup.on("close", () => {
-        currentPopup = null;
-        currentPopupFeature = null;
-    });
-
-    // Zusatzinformationen laden
-    let wikidata = null;
-
-    if (properties.wikidata) {
-        wikidata = await loadWikidata(properties.wikidata);
-    }
-
-    // Bild bestimmen
-
-    const imageInfo = await getImageInfo(properties, wikidata);
-
-    console.log("IMAGE INFO:", imageInfo);
-
-    let imageContent = "";
-    let imageCredit = "";
-
-    if (imageInfo?.source === "commons-category") {
-        imageContent = createImageGallery(imageInfo.images, imageInfo.categoryUrl);
-    } else if (imageInfo) {
-        imageContent =
-            imageInfo.source === "osm-image" ? createImageLink(imageInfo) : createImage(imageInfo);
-
-        imageCredit = imageInfo.source === "osm-image" ? "" : createImageCredit(imageInfo);
-    }
-
-    const description = selectDescription(properties, wikidata);
-
-    const content = `
-        ${imageContent}
-        ${imageCredit}
-        ${createDescription(description)}
-        ${createLinks(properties, wikidata)}
-    `;
-
-    const popupElement = currentPopup.getElement();
-
-    const loading = popupElement.querySelector("#poi-loading");
-
-    const container = popupElement.querySelector("#poi-content");
-
-    if (loading) {
-        loading.remove();
-    }
-
-    if (container && thisPopupId === popupSequence) {
-        container.innerHTML = content;
-        installImageHandler(container);
-        if (imageInfo?.source === "commons-category") {
-            installImageGalleryHandler(container, imageInfo.images);
-        }
-    }
-}
-*/
 
 
 

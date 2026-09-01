@@ -30,9 +30,7 @@ const OVERPASS_URL =
 const sourceId = "osm-pois";
 const MAX_PARALLEL_REQUESTS = 8;
 
-// let currentRequest = null;
 let loadPOIsRunning = false;
-// let zoomAtStart = null;
 let loadPOIsPending = false;
 let loadPOIsController = null;
 let prefetchTimer = null;
@@ -182,6 +180,13 @@ export function initOverpassLayer(map) {
             console.log("ZOOM START – laufende Requests abbrechen");
             loadPOIsController.abort();
         }
+    });
+
+    map.on("zoomend", () => {
+        updateFeatureStyles(map.getZoom());
+
+        // Hier müssen die drei/vier GeoJSON-Sources
+        // mit den aktualisierten Features neu gesetzt werden.
     });
 
     /*
@@ -616,7 +621,7 @@ async function loadPOIs(map) {
 
 
 
-async function loadTile(tile, zoomClass, state, signal) {
+async function loadTile(tile, zoomClass, state, signal, zoom) {
     const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
     /*
@@ -669,7 +674,7 @@ async function loadTile(tile, zoomClass, state, signal) {
         /*
          * Overpass-Daten in GeoJSON umwandeln.
          */
-        const geojson = convertToGeoJSON(data, zoomClass);
+        const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
         /*
          * Bereits vorhandene OSM-Objekte
@@ -984,8 +989,7 @@ function convertToGeoJSON(data, zoomClass) {
         if (!matchedTags)
             continue;
 
-        const iconRule = getIconRule(matchedTags);
-        const style = {...defaultStyle, ...iconRule};
+        const style = getIconRule(matchedTags, zoom);
 
         features.push({
             type : "Feature",
@@ -1196,7 +1200,8 @@ async function prefetchPOIs(map) {
                             tile,
                             zoomClass,
                             state,
-                            controller.signal
+                            controller.signal,
+                            zoom
                         )
                     )
                 );
@@ -1241,4 +1246,22 @@ export function initPrefetch(map) {
 
 
 
+function updateFeatureStyles(zoom) {
+    for (const zoomClass of zoomClasses) {
+        const state = zoomClassState.get(zoomClass.id);
 
+        if (!state)
+            continue;
+
+        for (const feature of state.features) {
+            const style = getIconRule(feature.properties, zoom);
+
+            feature.properties._app_icon = style.icon;
+            feature.properties._app_icon_size = style.iconSize;
+            feature.properties._line_width = style.lineWidth;
+            feature.properties._line_color = style.lineColor;
+            feature.properties._fill_color = style.fillColor;
+            feature.properties._fill_opacity = style.fillOpacity;
+        }
+    }
+}

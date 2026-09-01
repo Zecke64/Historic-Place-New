@@ -1,6 +1,5 @@
 import {resolvedLayerConfig as layerConfig} from "./layerconfig.js";
 import {layerRegistry, updateLayerVisibility} from "./layers.js";
-
 import {tr} from "./language.js";
 
 let activeCredits = [];
@@ -27,7 +26,6 @@ export function createLayerControl(map) {
     createHistObjSection(control, map);
 
     map.on("moveend", () => { updateOverlaySection(overlaySection, map); });
-
     map.on("zoomend", () => { updateOverlaySection(overlaySection, map); });
 
     button.addEventListener(
@@ -40,7 +38,6 @@ export function createLayerControl(map) {
     mapContainer.appendChild(control);
 
     creditElement = document.createElement("div");
-
     creditElement.id = "map-credits";
 
     mapContainer.appendChild(creditElement);
@@ -307,9 +304,7 @@ function createHeading(i18nKey) {
     const heading = document.createElement("div");
 
     heading.className = "layer-heading";
-
     heading.dataset.i18n = i18nKey;
-
     heading.textContent = tr(i18nKey);
 
     return heading;
@@ -321,9 +316,7 @@ function createLayerRow(layer, className) {
     row.className = "layer-row " + className;
 
     const label = document.createElement("span");
-
     label.dataset.i18n = layer.titleKey;
-
     label.textContent = tr(layer.titleKey);
 
     return {row, label};
@@ -332,7 +325,6 @@ function createLayerRow(layer, className) {
 
 function createBaseEntry(layer, map) {
     const {row, label} = createLayerRow(layer, "layer-base");
-
     const radio = document.createElement("input");
 
     radio.type = "radio";

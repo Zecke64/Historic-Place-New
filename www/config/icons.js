@@ -46,7 +46,22 @@ export const iconRules = [
             [ "historic", "palace" ],
         ],
         icon : "castle",
-        iconSize : 2
+        iconSize : 2,
+
+        zoom : {
+            14 : {
+                iconSize : 1.5,
+                lineWidth : 4,
+                fillOpacity : 0.35
+            },
+
+            16 : {
+                icon: "manor",
+                iconSize : 1.5,
+                lineWidth : 2,
+                fillOpacity : 0.2
+            }
+        }
     },
 
     {
