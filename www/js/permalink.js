@@ -1,8 +1,8 @@
 import {layerConfig} from "../config/layerconf.js";
 
 import {currentPopupFeature} from "./popup.js";
-import {tr} from "./ui/language.js";
-import {refreshLayerControl} from "./ui/layerControl.js";
+import {tr} from "./language.js";
+import {refreshLayerControl} from "./layerControl.js";
 
 let pendingPermalinkPoi = null;
 

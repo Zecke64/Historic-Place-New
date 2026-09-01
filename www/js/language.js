@@ -1,5 +1,5 @@
 
-import {languages} from "../../config/languages.js";
+import {languages} from "../config/languages.js";
 
 /*
  * Automatische Sprache des Browsers ermitteln.

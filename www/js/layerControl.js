@@ -1,5 +1,5 @@
-import {resolvedLayerConfig as layerConfig} from "../layerconfig.js";
-import {layerRegistry, updateLayerVisibility} from "../layers.js";
+import {resolvedLayerConfig as layerConfig} from "./layerconfig.js";
+import {layerRegistry, updateLayerVisibility} from "./layers.js";
 
 import {tr} from "./language.js";
 

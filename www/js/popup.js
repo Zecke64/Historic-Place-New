@@ -1,6 +1,6 @@
 import {getIcon} from "./icons.js";
 import {createImage, createImageCredit, getImageInfo, installImageHandler} from "./images.js";
-import {tr} from "./ui/language.js";
+import {tr} from "./language.js";
 import {escapeHTML} from "./utils.js";
 import {loadWikidata} from "./wikidata.js";
 

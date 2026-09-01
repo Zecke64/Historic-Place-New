@@ -5,9 +5,9 @@ import {createMap} from "./map.js";
 import {initOverpassLayer, initPrefetch} from "./overpass.js";
 import {createPermalinkControl, loadPermalink} from "./permalink.js";
 import {initPopup} from "./popup.js";
-import {updateLanguage} from "./ui/language.js";
-import {createLanguageSelector} from "./ui/languageSelector.js";
-import {createLayerControl} from "./ui/layerControl.js";
+import {updateLanguage} from "./language.js";
+import {createLanguageSelector} from "./languageSelector.js";
+import {createLayerControl} from "./layerControl.js";
 
 window.addEventListener("languagechange", updateLanguage);
 

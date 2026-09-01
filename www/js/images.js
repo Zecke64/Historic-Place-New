@@ -4,7 +4,7 @@
  * Hilfsfunktionen für Bilder
  */
 
-import {tr} from "./ui/language.js";
+import {tr} from "./language.js";
 import {cleanCommonsHTML, escapeHTML, stripHTML} from "./utils.js";
 
 const commonsCache = new Map();
