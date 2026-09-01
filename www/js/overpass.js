@@ -349,6 +349,9 @@ function mergeTilesIntoRectangles(tiles) {
     return rectangles;
 }
 
+
+
+
 async function loadPOIs(map) {
     if (loadPOIsRunning) {
         console.log("LOAD POIS bereits aktiv – neuer Aufruf vorgemerkt");
@@ -481,9 +484,9 @@ async function loadPOIs(map) {
 
         /*
          * Wikidata-Daten vorbereiten.
-         */
         const ids = features.map(feature => feature.properties.wikidata).filter(Boolean);
         prefetchWikidata(ids);
+         */
 
         /*
          * GeoJSON für MapLibre erzeugen.

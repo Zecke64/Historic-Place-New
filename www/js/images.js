@@ -23,9 +23,7 @@ async function loadCommonsImageInfo(fileName) {
                    });
 
     const response = await fetch(apiUrl);
-
     const data = await response.json();
-
     const page = Object.values(data.query.pages)[0];
 
     if (!page.imageinfo)
@@ -34,19 +32,12 @@ async function loadCommonsImageInfo(fileName) {
     const info = page.imageinfo[0];
 
     return {
-
         url : info.url,
-
         thumbnail : info.thumburl,
-
         source : "commons",
-
         original : "File:" + fileName,
-
         commonsUrl : "https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(fileName),
-
         author : info.extmetadata?.Artist?.value ?? null,
-
         license : info.extmetadata?.LicenseShortName?.value ?? null
     };
 }
@@ -57,17 +48,14 @@ async function getCommonsImageInfo(fileName) {
     /*
      * 1. Cache prüfen
      */
-
     if (commonsCache.has(cacheKey)) {
         console.log("Commons Cache:", cacheKey);
-
         return commonsCache.get(cacheKey);
     }
 
     /*
      * 2. Commons API laden
      */
-
     console.log("Commons API:", cacheKey);
 
     const imageInfo = await loadCommonsImageInfo(fileName);
@@ -79,9 +67,7 @@ async function getCommonsImageInfo(fileName) {
      * Damit werden nicht vorhandene
      * Dateien nicht immer erneut abgefragt.
      */
-
     addCommonsCache(cacheKey, imageInfo);
-
     return imageInfo;
 }
 
@@ -134,7 +120,21 @@ export async function getImageInfo(properties, wikidata) {
 
         const url = normalizeImageUrl(properties.image);
 
-        return {url, thumbnail : url, source : "osm-image", original : properties.image};
+        if (url && /^https?:\/\/upload\.wikimedia\.org\//i.test(url)) {
+            return {
+                url,
+                thumbnail : url,
+                source : "commons",
+                original : url
+            };
+        }
+
+        return {
+            url,
+            thumbnail : url,
+            source : "osm-image",
+            original : properties.image
+        };
     }
 
     // 2. OSM wikimedia_commons
@@ -259,100 +259,50 @@ export function installImageHandler(container) {
 
 function getImageSourceText(image) {
     switch (image.source) {
-    case "osm-image":
-        return tr("popup.source") + ": OSM image=*";
-
-    case "commons":
-        return tr("popup.source") + ": Wikimedia Commons";
-
-    case "wikidata":
-        return tr("popup.source") + ": Wikidata (P18)";
-
+    case "osm-image": return tr("popup.source") + ": OSM image=*";
+    case "commons": return tr("popup.source") + ": Wikimedia Commons";
+    case "wikidata": return tr("popup.source") + ": Wikidata (P18)";
     default:
         return "";
     }
 }
 
+
+
 function getCommonsFileName(value) {
     if (!value)
         return null;
 
-    /*
-     * File:Name.jpg
-     *
-     * Case-insensitiv, damit auch
-     * file:Name.jpg funktioniert.
-     */
+    value = value.trim();
+
+    try {
+        value = decodeURIComponent(value);
+    } catch {
+        return null;
+    }
+
+    // https://commons.wikimedia.org/wiki/File:Name.jpg
+    const fileMatch = value.match(/\/wiki\/File:(.+)$/i);
+
+    if (fileMatch) {
+        return fileMatch[1];
+    }
+
+    // Direkter Commons-Dateiname: File:Name.jpg
     if (/^File:/i.test(value)) {
         return value.substring(5);
     }
 
-    /*
-     * https://commons.wikimedia.org/wiki/File:Name.jpg
-     *
-     * Case-insensitiv.
-     */
-    const fileMatch = value.match(/\/wiki\/File:([^?]+)/i);
-
-    if (fileMatch) {
-        return decodeURIComponent(fileMatch[1]);
-    }
-
-    /*
-     * https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
-     *
-     * Ebenfalls case-insensitiv.
-     */
-    const pathMatch = value.match(/\/wiki\/Special:FilePath\/([^?]+)/i);
+    // https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
+    const pathMatch = value.match(/\/wiki\/Special:FilePath\/(.+)$/i);
 
     if (pathMatch) {
-        return decodeURIComponent(pathMatch[1]);
+        return pathMatch[1];
     }
 
     return null;
 }
 
-/*
-function getCommonsFileName(value)
-{
-    if (!value)
-        return null;
-
-    // File:Name.jpg
-    if(value.startsWith("File:"))
-    {
-        return value.substring(5);
-    }
-
-    // https://commons.wikimedia.org/wiki/File:Name.jpg
-    const fileMarker =
-        "/wiki/File:";
-
-    if(value.includes(fileMarker))
-    {
-        return decodeURIComponent(
-            value
-                .split(fileMarker)[1]
-                .split("?")[0]
-        );
-    }
-
-    // https://commons.wikimedia.org/wiki/Special:FilePath/Name.jpg
-    const pathMarker =
-        "/wiki/Special:FilePath/";
-
-    if(value.includes(pathMarker))
-    {
-        return decodeURIComponent(
-            value
-                .split(pathMarker)[1]
-                .split("?")[0]
-        );
-    }
-
-    return null;
-}
-*/
 
 function normalizeCacheKey(fileName) {
     return decodeURIComponent(fileName.trim().replaceAll("_", " "));
@@ -413,22 +363,14 @@ export async function getCommonsCategoryImages(category) {
 
                 return {
                     thumbnail : info.thumburl || info.url,
-
                     url : info.url,
-
                     original : info.url,
-
                     fileName : page.title,
-
                     description : metadata.ImageDescription?.value || "",
-
                     author : metadata.Artist?.value || "",
-
                     license : metadata.LicenseShortName?.value || "",
-
                     commonsUrl : "https://commons.wikimedia.org/wiki/" +
                                      encodeURIComponent(page.title.replace(/ /g, "_")),
-
                     categoryUrl : categoryUrl
                 };
             })
@@ -436,7 +378,6 @@ export async function getCommonsCategoryImages(category) {
 
     } catch (error) {
         console.error("Commons Category Fehler:", category, error);
-
         return [];
     }
 }

@@ -45,6 +45,7 @@
     font-size: 0.75em;
     line-height: 1.4;
     color: #666;
+    overflow-wrap:anywhere;
 }
 
 .poi-image-credit a
@@ -83,6 +84,11 @@
     flex-wrap:wrap;
     gap:6px;
     margin-bottom:10px;
+}
+
+.poi-links a
+{
+    overflow-wrap:anywhere;
 }
 
 .poi-button
