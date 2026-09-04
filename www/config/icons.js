@@ -114,7 +114,9 @@ export const iconRules = [
                 [ "man_made", "mineshaft" ],
                 ),
             OR([ "historic", "*" ], [ "disused", "*" ], [ "abandoned", "*" ], [ "razed", "*" ])),
-        icon : "mine"
+        icon : "mine",
+        fillColor : "#FF0000",
+        lineColor : "#FF0000"
     },
 
     {

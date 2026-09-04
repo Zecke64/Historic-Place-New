@@ -447,7 +447,7 @@ async function loadPOIs(map) {
              * Ein Rechteck = ein Overpass-Request.
              */
             for (const rectangle of rectangles) {
-                await loadTileRectangle(rectangle, zoomClass, state, loadPOIsController.signal);
+                await loadTileRectangle(rectangle, zoomClass, state, loadPOIsController.signal, zoom);
             }
         }
 
@@ -462,6 +462,33 @@ async function loadPOIs(map) {
          *
          * => bei Zoom 14 werden 95 Objekte angezeigt.
          */
+
+
+        for (const [zoomClassId, state] of zoomClassState) {
+    const relationFeature = state.features.find(
+        f =>
+            f.properties._osm_type === "relation" &&
+            f.properties._osm_id === 6044859
+    );
+
+    if (relationFeature) {
+        console.log(
+            "SITE 6044859 IN STATE:",
+            zoomClassId,
+            relationFeature,
+        );
+    }
+        }
+
+    const member = [...zoomClassState.values()]
+    .flatMap(state => state.features)
+    .find(f =>
+        f.properties._osm_type === "way" &&
+        f.properties._osm_id === 381211460
+    );
+
+console.log("SITE MEMBER 381211460:", member);
+
         const features = [];
         const globalIds = new Set();
 
@@ -504,14 +531,14 @@ async function loadPOIs(map) {
         console.log("POINTS GESAMT:", allPointFeatures.length);
         console.log("POINTS MIT ICON:", poiFeatures.length);
 
-        const objectFeatures = features.filter(feature => feature.geometry.type !== "Point" &&
-                                                          feature.properties._app_icon !== "null");
+        const objectFeatures = features.filter(feature => feature.geometry.type !== "Point");
         const polygonFeatures =
             objectFeatures.filter(feature => feature.geometry.type === "Polygon");
         const lineFeatures =
             objectFeatures.filter(feature => feature.geometry.type === "LineString");
         const objectIconFeatures =
             objectFeatures
+                .filter(feature => feature.properties._app_icon !== "null")
                 .map(feature => {
                     const coordinates = feature.properties._icon_coordinates;
 
@@ -543,10 +570,42 @@ async function loadPOIs(map) {
         /*
          * Linien und Flächen aktualisieren.
          */
+
+
+
+        const feature55800462 =
+    polygonFeatures.find(
+        feature => String(feature.properties._osm_id) === "55800462"
+    );
+
+console.log("POLYGON 55800462 BEFORE setData", {
+    found: !!feature55800462,
+    geometry: feature55800462?.geometry,
+    properties: feature55800462?.properties
+});
+
         const polygonSource = map.getSource("osm-object-polygons");
 
         if (polygonSource) {
             polygonSource.setData(polygonGeoJSON);
+
+            //debug
+            map.once("idle", () => {
+    const features = map.queryRenderedFeatures({
+        layers: [ "osm-object-fill" ]
+    });
+
+    const feature55800462 = features.find(
+        feature => String(feature.properties._osm_id) === "55800462"
+    );
+
+    console.log("RENDERED 55800462", {
+        found: !!feature55800462,
+        properties: feature55800462?.properties
+    });
+});
+// end debug
+
         } else {
             console.error("POLYGON SOURCE NICHT GEFUNDEN");
         }
@@ -671,11 +730,42 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
             throw error;
         }
 
+        if (data.elements.some(e => e.type === "relation" && e.id === 6044859)) {
+    console.log(
+        "Site-Member in data.elements:",
+        data.elements
+            .filter(e =>
+                [28925900, 55800462, 3844486025, 381211460, 55800896]
+                    .includes(e.id)
+            )
+            .map(e => `${e.type}/${e.id}`)
+    );
+}
+
         /*
          * Overpass-Daten in GeoJSON umwandeln.
          */
         const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
+        //debug
+        const relation = data.elements.find(
+    e => e.type === "relation" && e.id === 6044859
+);
+
+if (relation) {
+    console.log(
+        "RELATION 6044859 IN TILE:",
+        zoomClass.id,
+        tileId,
+        "members:",
+        relation.members?.length,
+        "bounds:",
+        relation.bounds
+    );
+}
+//debug ende
+
+        ///console.log( "Relation 6044859:", geojson.features.find( feature => feature.properties._osm_type === "relation" && feature.properties._osm_id === 6044859));
         /*
          * Bereits vorhandene OSM-Objekte
          * dieser Zoomklasse nicht doppelt übernehmen.
@@ -710,7 +800,7 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
     }
 }
 
-async function loadTileRectangle(rectangle, zoomClass, state, signal) {
+async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
     const tileIds = rectangle.tiles.map(tile => `${tile.zoom}/${tile.x}/${tile.y}`);
 
     /*
@@ -737,7 +827,7 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal) {
 
     console.log("OVERPASS RECTANGLE REQUEST:", zoomClass.id, `${rectangle.minX}..${rectangle.maxX}`,
                 `${rectangle.minY}..${rectangle.maxY}`, "tiles:", tiles.length);
-    // console.log( "OVERPASS QUERY:", query);
+    //console.log( "OVERPASS QUERY:", query);
 
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -763,11 +853,44 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal) {
             throw error;
         }
 
+        if (data.elements.some(e => e.type === "relation" && e.id === 6044859)) {
+    console.log(
+        "Relation 6044859:",
+        data.elements.find(e => e.type === "relation" && e.id === 6044859)
+    );
+
+    console.log(
+        "Site-Member in data.elements:",
+        data.elements
+            .filter(e =>
+                [28925900, 55800462, 3844486025, 381211460, 55800896]
+                    .includes(e.id)
+            )
+            .map(e => `${e.type}/${e.id}`)
+    );
+}
+
         /*
          * Overpass-Daten in GeoJSON umwandeln.
          */
-        const geojson = convertToGeoJSON(data, zoomClass);
+        const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
+        if (data.elements.some(e => e.type === "relation" && e.id === 6044859)) {
+    console.log(
+        "GENERATED SITE MEMBERS:",
+        geojson.features
+            .filter(f => f.properties._site_member)
+            .map(f => ({
+                id : `${f.properties._osm_type}/${f.properties._osm_id}`,
+                geometry : f.geometry.type,
+                icon : f.properties._app_icon,
+                fill : f.properties._fill_color,
+                opacity : f.properties._fill_opacity,
+                line : f.properties._line_color,
+                width : f.properties._line_width
+            }))
+    );
+}
         /*
          * Bereits vorhandene OSM-Objekte nicht doppelt übernehmen.
          */
@@ -782,6 +905,7 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal) {
                 existingIds.add(id);
             }
         }
+
 
         /*
          * GANZ WICHTIG:
@@ -820,24 +944,41 @@ function convertToGeoJSON(data, zoomClass) {
 
     const features = [];
 
+    const siteMembers = new Map();
+
+    for (const relation of data.elements) {
+        if (relation.type !== "relation" || relation.tags?.type !== "site")
+            continue;
+
+        for (const member of relation.members || []) {
+            const key = `${member.type}/${member.ref}`;
+
+            if (!siteMembers.has(key))
+                siteMembers.set(key, []);
+
+            siteMembers.get(key).push(relation.id);
+        }
+    }
+
+    const existingElements = new Set(
+        data.elements.map(e => `${e.type}/${e.id}`)
+    );
+
+
     for (const e of data.elements) {
 
         let geometry = null;
         let iconLon;
         let iconLat;
 
-        /*
-         * Node
-         */
+        // Node
         if (e.type === "node") {
             iconLon = e.lon;
             iconLat = e.lat;
             geometry = {type : "Point", coordinates : [ e.lon, e.lat ]};
         }
 
-        /*
-         * Way
-         */
+        // Way
         else if (e.type === "way") {
             if (!e.geometry || e.geometry.length < 2)
                 continue;
@@ -847,9 +988,7 @@ function convertToGeoJSON(data, zoomClass) {
             iconLon = (e.bounds.minlon + e.bounds.maxlon) / 2;
             iconLat = (e.bounds.minlat + e.bounds.maxlat) / 2;
 
-            /*
-             * Geschlossener Way
-             */
+            // Geschlossener Way
             const first = coordinates[0];
             const last = coordinates[coordinates.length - 1];
             const isClosed =
@@ -862,118 +1001,186 @@ function convertToGeoJSON(data, zoomClass) {
             }
         }
 
-        /*
-         * Relation:
-         * zunächst nur den vorhandenen Center-Punkt
-         */
-
+        // Relation: zunächst nur den vorhandenen Center-Punkt
         else if (e.type === "relation") {
-            if (!e.bounds || !e.members)
-                continue;
 
-            /*
-             * Iconposition = Mittelpunkt der Bounds
-             */
-            iconLon = (e.bounds.minlon + e.bounds.maxlon) / 2;
-            iconLat = (e.bounds.minlat + e.bounds.maxlat) / 2;
+            if (e.tags?.type === "site") {
 
-            /*
-             * Member-Ringe sammeln
-             */
-            const outerRings = [];
-            const innerRings = [];
+                const memberCoordinates = [];
 
-            for (const member of e.members) {
-                if (!member.geometry || member.geometry.length < 4)
+                for (const member of e.members || []) {
+                    if (!member.geometry)
+                        continue;
+
+                    for (const point of member.geometry) {
+                        memberCoordinates.push([ point.lon, point.lat ]);
+                    }
+                }
+
+                if (memberCoordinates.length === 0)
                     continue;
 
-                const coordinates = member.geometry.map(point => [point.lon, point.lat]);
+                const [ lon, lat ] = getGeometryCenter(memberCoordinates);
 
-                if (member.role === "outer") {
-                    outerRings.push(coordinates);
-                } else if (member.role === "inner") {
-                    innerRings.push(coordinates);
+                iconLon = lon;
+                iconLat = lat;
+
+                // Eine Site-Relation wird zunächst als Punkt dargestellt. 
+                // Die Geometrien der Member werden später separat behandelt.
+                geometry = {
+                    type : "Point",
+                    coordinates : [ lon, lat ]
+                };
+
+                /*
+                 * Fehlende Way-Member als eigene Features erzeugen.
+                 */
+                const existingElements = new Set(
+                    data.elements.map(e => `${e.type}/${e.id}`)
+                );
+
+                for (const member of e.members || []) {
+
+                    if (member.type !== "way")
+                        continue;
+
+                    const memberKey = `${member.type}/${member.ref}`;
+
+                    // Bereits separat vorhandener Way wird normal verarbeitet.
+                    if (existingElements.has(memberKey))
+                        continue;
+
+                    if (!member.geometry || member.geometry.length < 2)
+                        continue;
+
+                    const coordinates = member.geometry.map(
+                        point => [ point.lon, point.lat ]
+                    );
+
+                    const first = coordinates[0];
+                    const last = coordinates[coordinates.length - 1];
+
+                    const isClosed =
+                        coordinates.length >= 4 &&
+                        first[0] === last[0] &&
+                        first[1] === last[1];
+
+                    const memberGeometry = isClosed
+                        ? {
+                            type : "Polygon",
+                            coordinates : [ coordinates ]
+                        }
+                        : {
+                            type : "LineString",
+                            coordinates
+                        };
+
+                    const [ memberLon, memberLat ] =
+                        getGeometryCenter(coordinates);
+
+                    features.push({
+                        type : "Feature",
+                        geometry : memberGeometry,
+                        properties : {
+                            _osm_type : "way",
+                            _osm_id : member.ref,
+                            _geometry_type : memberGeometry.type,
+                            _icon_coordinates : [ memberLon, memberLat ],
+                            _site_member : true,
+                            _site_relations : [ e.id ],
+                            _app_icon : defaultStyle.icon,
+                            _app_icon_size : defaultStyle.iconSize,
+                            _line_width : defaultStyle.lineWidth,
+                            _line_color : defaultStyle.lineColor,
+                            _fill_color : "#ff0000",
+                            _fill_opacity : 1,
+                        }
+                    });
+                }
+
+
+            }
+
+            else {
+                // bisherige Relation-Behandlung
+                if (!e.bounds || !e.members)
+                    continue;
+
+                // Iconposition = Mittelpunkt der Bounds
+                iconLon = (e.bounds.minlon + e.bounds.maxlon) / 2;
+                iconLat = (e.bounds.minlat + e.bounds.maxlat) / 2;
+
+                // Member-Ringe sammeln
+                const outerRings = [];
+                const innerRings = [];
+
+                for (const member of e.members) {
+                    if (!member.geometry || member.geometry.length < 4)
+                        continue;
+
+                    const coordinates = member.geometry.map(point => [point.lon, point.lat]);
+
+                    if (member.role === "outer") {
+                        outerRings.push(coordinates);
+                    } else if (member.role === "inner") {
+                        innerRings.push(coordinates);
+                    }
+                }
+
+                // Noch keine brauchbare Geometrie
+                if (outerRings.length === 0)
+                    continue;
+
+                if (e.id === 6044859) console.log("NACH outerRings ===0 check");
+
+                // Einfacher Fall: genau ein Outer-Ring.
+                // Weitere Inner-Ringe werden als Löcher hinzugefügt.
+                if (outerRings.length === 1) {
+                    geometry = {type : "Polygon", coordinates : [ outerRings[0], ...innerRings ]};
+                }
+
+                // Mehrere Outer-Ringe: zunächst als MultiPolygon behandeln.
+                //
+                // Die Zuordnung von Inner-Ringen zu den jeweiligen Outer-Ringen ist später
+                // noch zu verfeinern.
+                else {
+                    geometry = {type : "MultiPolygon", coordinates : outerRings.map(ring => [ring])};
                 }
             }
-
-            /*
-             * Noch keine brauchbare Geometrie
-             */
-            if (outerRings.length === 0)
-                continue;
-
-            /*
-             * Einfacher Fall:
-             * genau ein Outer-Ring.
-             *
-             * Weitere Inner-Ringe werden als Löcher
-             * hinzugefügt.
-             */
-            if (outerRings.length === 1) {
-                geometry = {type : "Polygon", coordinates : [ outerRings[0], ...innerRings ]};
-            }
-
-            /*
-             * Mehrere Outer-Ringe:
-             * zunächst als MultiPolygon behandeln.
-             *
-             * Die Zuordnung von Inner-Ringen zu
-             * den jeweiligen Outer-Ringen ist später
-             * noch zu verfeinern.
-             */
-            else {
-                geometry = {type : "MultiPolygon", coordinates : outerRings.map(ring => [ring])};
-            }
         }
+
         if (iconLon === undefined || iconLat === undefined || !geometry) {
             continue;
         }
 
         const geometryType = geometry.type;
 
-        /*
-         * Original-Tags unverändert erhalten.
-         */
+        // Original-Tags unverändert erhalten.
         const originalTags = e.tags || {};
 
         let matchedTags = null;
 
-        /*
-         * Prüfen, ob das Objekt mindestens eine
-         * Gruppe der Zoomklasse erfüllt.
-         */
+        // Prüfen, ob das Objekt mindestens eine Gruppe der Zoomklasse erfüllt.
         for (const group of zoomClass.groups) {
-            /*
-             * Für Lifecycle-Gruppen eine normalisierte
-             * Sicht der Tags verwenden.
-             *
-             * Für alle anderen Gruppen die
-             * Original-Tags.
-             */
+
+            // Für Lifecycle-Gruppen eine normalisierte Sicht der Tags verwenden.
+            // Für alle anderen Gruppen die Original-Tags.
             const tags = group.lifecycle ? normalizeTags(originalTags) : originalTags;
 
-            /*
-             * Passt der OSM-Typ?
-             */
+            // Passt der OSM-Typ?
             const matchesObjectType =
                 group.objectTypes.some(([ key, value ]) => tags[key] === value);
 
             if (!matchesObjectType)
                 continue;
 
-            /*
-             * Keine requiredTags:
-             * Objekt ist zugelassen.
-             */
+            // Keine requiredTags: Objekt ist zugelassen.
             if (!group.requiredTags || group.requiredTags.length === 0) {
                 matchedTags = tags;
                 break;
             }
 
-            /*
-             * Mindestens eines der requiredTags
-             * muss vorhanden und nicht leer sein.
-             */
+            // Mindestens eines der requiredTags muss vorhanden und nicht leer sein.
             const matchesRequiredTags = group.requiredTags.some(
                 tag => tags[tag] !== undefined && tags[tag] !== null && tags[tag] !== "");
 
@@ -983,32 +1190,27 @@ function convertToGeoJSON(data, zoomClass) {
             }
         }
 
-        /*
-         * Keine passende Gruppe.
-         */
-        if (!matchedTags)
+        // Keine passende Gruppe und nicht member einer Relation -> verwerfen
+        const memberSites = siteMembers.get(`${e.type}/${e.id}`);
+
+        if (!matchedTags && !memberSites)
             continue;
 
-        const style = getIconRule(matchedTags, zoom);
+        const style = matchedTags
+            ? getIconRule(matchedTags, zoom)
+            : defaultStyle;                     // für relationen, evtl ändern
 
-        features.push({
+        const feature = {
             type : "Feature",
-
             geometry : geometry,
-
             properties : {
-                /*
-                 * Ausschließlich die originalen
-                 * OSM-Tags ins Feature übernehmen.
-                 */
+                // Ausschließlich die originalen OSM-Tags ins Feature übernehmen.
                 ...originalTags,
-
                 _osm_type : e.type,
                 _osm_id : e.id,
-
                 _geometry_type : geometryType,
                 _icon_coordinates : [ iconLon, iconLat ],
-
+                _matched_tags : matchedTags,
                 _app_icon : style.icon,
                 _app_icon_size : style.iconSize,
                 _line_width : style.lineWidth,
@@ -1016,7 +1218,14 @@ function convertToGeoJSON(data, zoomClass) {
                 _fill_color : style.fillColor,
                 _fill_opacity : style.fillOpacity
             }
-        });
+        };
+
+        if (memberSites) {
+            feature.properties._site_member = true;
+            feature.properties._site_relations = memberSites;
+        }
+
+        features.push(feature);
 
         /*
          * Maximal 200 Objekte pro Overpass-Abfrage.
@@ -1027,6 +1236,8 @@ function convertToGeoJSON(data, zoomClass) {
 
     return {type : "FeatureCollection", features : features};
 }
+
+
 
 function clearSource(map) {
     const source = map.getSource(sourceId);
@@ -1254,7 +1465,17 @@ function updateFeatureStyles(zoom) {
             continue;
 
         for (const feature of state.features) {
-            const style = getIconRule(feature.properties, zoom);
+
+                if (String(feature.properties._osm_id) === "55800462") {
+        console.log("BEFORE STYLE 55800462", {
+            zoom,
+            properties: { ...feature.properties }
+        });
+    }
+            const style = getIconRule(
+                feature.properties._matched_tags ?? feature.properties, 
+                zoom
+            );
 
             feature.properties._app_icon = style.icon;
             feature.properties._app_icon_size = style.iconSize;
@@ -1262,6 +1483,19 @@ function updateFeatureStyles(zoom) {
             feature.properties._line_color = style.lineColor;
             feature.properties._fill_color = style.fillColor;
             feature.properties._fill_opacity = style.fillOpacity;
+
+            if (
+    feature.properties._osm_type === "relation" &&
+    feature.properties._osm_id === 6044859
+) {
+    console.log(
+        "STYLE SITE 6044859:",
+        "zoom =", zoom,
+        "properties =", feature.properties,
+        "style =", getIconRule(feature.properties, zoom)
+    );
+}
+
         }
     }
 }

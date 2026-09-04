@@ -99,6 +99,7 @@ export const zoomClasses = [
         groups : [
             {
                 id : "gr_13a",
+                lifecycle : true,
                 objectTypes : [
                     [ "man_made", "mine" ],
                     [ "man_made", "mineshaft" ],
