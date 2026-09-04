@@ -1,5 +1,4 @@
 import {defaultStyle} from "../config/icons.js";
-
 import {getIconRule} from "./icons.js";
 import {clearPendingPermalinkPoi, getPendingPermalinkPoi} from "./permalink.js";
 import {showPopup} from "./popup.js";
@@ -464,31 +463,6 @@ async function loadPOIs(map) {
          */
 
 
-        for (const [zoomClassId, state] of zoomClassState) {
-    const relationFeature = state.features.find(
-        f =>
-            f.properties._osm_type === "relation" &&
-            f.properties._osm_id === 6044859
-    );
-
-    if (relationFeature) {
-        console.log(
-            "SITE 6044859 IN STATE:",
-            zoomClassId,
-            relationFeature,
-        );
-    }
-        }
-
-    const member = [...zoomClassState.values()]
-    .flatMap(state => state.features)
-    .find(f =>
-        f.properties._osm_type === "way" &&
-        f.properties._osm_id === 381211460
-    );
-
-console.log("SITE MEMBER 381211460:", member);
-
         const features = [];
         const globalIds = new Set();
 
@@ -571,41 +545,10 @@ console.log("SITE MEMBER 381211460:", member);
          * Linien und Flächen aktualisieren.
          */
 
-
-
-        const feature55800462 =
-    polygonFeatures.find(
-        feature => String(feature.properties._osm_id) === "55800462"
-    );
-
-console.log("POLYGON 55800462 BEFORE setData", {
-    found: !!feature55800462,
-    geometry: feature55800462?.geometry,
-    properties: feature55800462?.properties
-});
-
         const polygonSource = map.getSource("osm-object-polygons");
 
         if (polygonSource) {
             polygonSource.setData(polygonGeoJSON);
-
-            //debug
-            map.once("idle", () => {
-    const features = map.queryRenderedFeatures({
-        layers: [ "osm-object-fill" ]
-    });
-
-    const feature55800462 = features.find(
-        feature => String(feature.properties._osm_id) === "55800462"
-    );
-
-    console.log("RENDERED 55800462", {
-        found: !!feature55800462,
-        properties: feature55800462?.properties
-    });
-});
-// end debug
-
         } else {
             console.error("POLYGON SOURCE NICHT GEFUNDEN");
         }
@@ -730,42 +673,11 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
             throw error;
         }
 
-        if (data.elements.some(e => e.type === "relation" && e.id === 6044859)) {
-    console.log(
-        "Site-Member in data.elements:",
-        data.elements
-            .filter(e =>
-                [28925900, 55800462, 3844486025, 381211460, 55800896]
-                    .includes(e.id)
-            )
-            .map(e => `${e.type}/${e.id}`)
-    );
-}
-
         /*
          * Overpass-Daten in GeoJSON umwandeln.
          */
         const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
-        //debug
-        const relation = data.elements.find(
-    e => e.type === "relation" && e.id === 6044859
-);
-
-if (relation) {
-    console.log(
-        "RELATION 6044859 IN TILE:",
-        zoomClass.id,
-        tileId,
-        "members:",
-        relation.members?.length,
-        "bounds:",
-        relation.bounds
-    );
-}
-//debug ende
-
-        ///console.log( "Relation 6044859:", geojson.features.find( feature => feature.properties._osm_type === "relation" && feature.properties._osm_id === 6044859));
         /*
          * Bereits vorhandene OSM-Objekte
          * dieser Zoomklasse nicht doppelt übernehmen.
@@ -853,44 +765,11 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
             throw error;
         }
 
-        if (data.elements.some(e => e.type === "relation" && e.id === 6044859)) {
-    console.log(
-        "Relation 6044859:",
-        data.elements.find(e => e.type === "relation" && e.id === 6044859)
-    );
-
-    console.log(
-        "Site-Member in data.elements:",
-        data.elements
-            .filter(e =>
-                [28925900, 55800462, 3844486025, 381211460, 55800896]
-                    .includes(e.id)
-            )
-            .map(e => `${e.type}/${e.id}`)
-    );
-}
-
         /*
          * Overpass-Daten in GeoJSON umwandeln.
          */
         const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
-        if (data.elements.some(e => e.type === "relation" && e.id === 6044859)) {
-    console.log(
-        "GENERATED SITE MEMBERS:",
-        geojson.features
-            .filter(f => f.properties._site_member)
-            .map(f => ({
-                id : `${f.properties._osm_type}/${f.properties._osm_id}`,
-                geometry : f.geometry.type,
-                icon : f.properties._app_icon,
-                fill : f.properties._fill_color,
-                opacity : f.properties._fill_opacity,
-                line : f.properties._line_color,
-                width : f.properties._line_width
-            }))
-    );
-}
         /*
          * Bereits vorhandene OSM-Objekte nicht doppelt übernehmen.
          */
@@ -971,6 +850,45 @@ function convertToGeoJSON(data, zoomClass) {
         let iconLon;
         let iconLat;
 
+        // Original-Tags unverändert erhalten.
+        const originalTags = e.tags || {};
+
+        let matchedTags = null;
+
+        // Prüfen, ob das Objekt mindestens eine Gruppe der Zoomklasse erfüllt.
+        for (const group of zoomClass.groups) {
+
+            const tags = group.lifecycle
+                ? normalizeTags(originalTags)
+                : originalTags;
+
+            const matchesObjectType =
+                group.objectTypes.some(([ key, value ]) => tags[key] === value);
+
+            if (!matchesObjectType)
+                continue;
+
+            if (!group.requiredTags || group.requiredTags.length === 0) {
+                matchedTags = tags;
+                break;
+            }
+
+            const matchesRequiredTags = group.requiredTags.some(
+                tag => tags[tag] !== undefined &&
+                       tags[tag] !== null &&
+                       tags[tag] !== ""
+            );
+
+            if (matchesRequiredTags) {
+                matchedTags = tags;
+                break;
+            }
+        }
+
+        const style = matchedTags
+            ? getIconRule(matchedTags, zoom)
+            : defaultStyle;
+
         // Node
         if (e.type === "node") {
             iconLon = e.lon;
@@ -1005,6 +923,10 @@ function convertToGeoJSON(data, zoomClass) {
         else if (e.type === "relation") {
 
             if (e.tags?.type === "site") {
+
+                // Relation ohne passende Iconm rules fliegen raus
+                if (!matchedTags)
+                    continue;
 
                 const memberCoordinates = [];
 
@@ -1082,18 +1004,19 @@ function convertToGeoJSON(data, zoomClass) {
                         type : "Feature",
                         geometry : memberGeometry,
                         properties : {
-                            _osm_type : "way",
+                            _osm_type : member.type,
                             _osm_id : member.ref,
                             _geometry_type : memberGeometry.type,
                             _icon_coordinates : [ memberLon, memberLat ],
                             _site_member : true,
                             _site_relations : [ e.id ],
-                            _app_icon : defaultStyle.icon,
-                            _app_icon_size : defaultStyle.iconSize,
-                            _line_width : defaultStyle.lineWidth,
-                            _line_color : defaultStyle.lineColor,
-                            _fill_color : "#ff0000",
-                            _fill_opacity : 1,
+                            _matched_tags : matchedTags,
+                            _app_icon : style.icon,
+                            _app_icon_size : style.iconSize,
+                            _line_width : style.lineWidth,
+                            _line_color : style.lineColor,
+                            _fill_color : style.fillColor,
+                            _fill_opacity : style.fillOpacity,
                         }
                     });
                 }
@@ -1131,8 +1054,6 @@ function convertToGeoJSON(data, zoomClass) {
                 if (outerRings.length === 0)
                     continue;
 
-                if (e.id === 6044859) console.log("NACH outerRings ===0 check");
-
                 // Einfacher Fall: genau ein Outer-Ring.
                 // Weitere Inner-Ringe werden als Löcher hinzugefügt.
                 if (outerRings.length === 1) {
@@ -1155,50 +1076,10 @@ function convertToGeoJSON(data, zoomClass) {
 
         const geometryType = geometry.type;
 
-        // Original-Tags unverändert erhalten.
-        const originalTags = e.tags || {};
-
-        let matchedTags = null;
-
-        // Prüfen, ob das Objekt mindestens eine Gruppe der Zoomklasse erfüllt.
-        for (const group of zoomClass.groups) {
-
-            // Für Lifecycle-Gruppen eine normalisierte Sicht der Tags verwenden.
-            // Für alle anderen Gruppen die Original-Tags.
-            const tags = group.lifecycle ? normalizeTags(originalTags) : originalTags;
-
-            // Passt der OSM-Typ?
-            const matchesObjectType =
-                group.objectTypes.some(([ key, value ]) => tags[key] === value);
-
-            if (!matchesObjectType)
-                continue;
-
-            // Keine requiredTags: Objekt ist zugelassen.
-            if (!group.requiredTags || group.requiredTags.length === 0) {
-                matchedTags = tags;
-                break;
-            }
-
-            // Mindestens eines der requiredTags muss vorhanden und nicht leer sein.
-            const matchesRequiredTags = group.requiredTags.some(
-                tag => tags[tag] !== undefined && tags[tag] !== null && tags[tag] !== "");
-
-            if (matchesRequiredTags) {
-                matchedTags = tags;
-                break;
-            }
-        }
-
-        // Keine passende Gruppe und nicht member einer Relation -> verwerfen
         const memberSites = siteMembers.get(`${e.type}/${e.id}`);
 
         if (!matchedTags && !memberSites)
             continue;
-
-        const style = matchedTags
-            ? getIconRule(matchedTags, zoom)
-            : defaultStyle;                     // für relationen, evtl ändern
 
         const feature = {
             type : "Feature",
@@ -1466,12 +1347,6 @@ function updateFeatureStyles(zoom) {
 
         for (const feature of state.features) {
 
-                if (String(feature.properties._osm_id) === "55800462") {
-        console.log("BEFORE STYLE 55800462", {
-            zoom,
-            properties: { ...feature.properties }
-        });
-    }
             const style = getIconRule(
                 feature.properties._matched_tags ?? feature.properties, 
                 zoom
@@ -1483,18 +1358,6 @@ function updateFeatureStyles(zoom) {
             feature.properties._line_color = style.lineColor;
             feature.properties._fill_color = style.fillColor;
             feature.properties._fill_opacity = style.fillOpacity;
-
-            if (
-    feature.properties._osm_type === "relation" &&
-    feature.properties._osm_id === 6044859
-) {
-    console.log(
-        "STYLE SITE 6044859:",
-        "zoom =", zoom,
-        "properties =", feature.properties,
-        "style =", getIconRule(feature.properties, zoom)
-    );
-}
 
         }
     }
