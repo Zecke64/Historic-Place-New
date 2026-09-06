@@ -37,9 +37,8 @@ let prefetchController = null;
 let prefetchPending = false;
 
 export function initOverpassLayer(map) {
-    /*
-     * GeoJSON Source mit aktiviertem Clustering
-     */
+
+    // GeoJSON Source mit aktiviertem Clustering
     map.addSource(sourceId, {
         type : "geojson",
         data : {type : "FeatureCollection", features : []},
@@ -54,9 +53,7 @@ export function initOverpassLayer(map) {
                   {type : "geojson", data : {type : "FeatureCollection", features : []}});
 
     if (ENABLE_POI_CLUSTERING) {
-        /*
-         * Cluster-Kreise
-         */
+        // Cluster-Kreise
         map.addLayer({
             id : "poi-clusters",
             type : "circle",
@@ -70,9 +67,7 @@ export function initOverpassLayer(map) {
             }
         });
 
-        /*
-         * Cluster Anzahl
-         */
+        // Cluster Anzahl
         map.addLayer({
             id : "poi-cluster-count",
             type : "symbol",
@@ -83,9 +78,7 @@ export function initOverpassLayer(map) {
         });
     }
 
-    /*
-     * Flächen füllen
-     */
+    // Flächen füllen
     map.addLayer({
         id : "osm-object-fill",
         type : "fill",
@@ -94,9 +87,7 @@ export function initOverpassLayer(map) {
             {"fill-color" : [ "get", "_fill_color" ], "fill-opacity" : [ "get", "_fill_opacity" ]}
     });
 
-    /*
-     * Polygonumrisse
-     */
+    // Polygonumrisse
     map.addLayer({
         id : "osm-object-line",
         type : "line",
@@ -104,9 +95,7 @@ export function initOverpassLayer(map) {
         paint : {"line-color" : [ "get", "_line_color" ], "line-width" : [ "get", "_line_width" ]}
     });
 
-    /*
-     * Linienobjekte
-     */
+    // Linienobjekte
     map.addLayer({
         id : "osm-object-lines",
         type : "line",
@@ -128,9 +117,7 @@ export function initOverpassLayer(map) {
         }
     });
 
-    /*
-     * Einzelne POIs
-     */
+    // Einzelne POIs
     map.addLayer({
         id : "osm-pois",
         type : "symbol",
@@ -143,9 +130,7 @@ export function initOverpassLayer(map) {
         }
     });
 
-    /*
-     * Cluster anklicken
-     */
+    // Cluster anklicken
     map.on("click", "poi-clusters", async e => {
         const feature = e.features[0];
         const clusterId = feature.properties.cluster_id;
@@ -159,21 +144,15 @@ export function initOverpassLayer(map) {
         }
     });
 
-    /*
-     * Cursor
-     */
+    // Cursor
     map.on("mouseenter", "poi-clusters", () => { map.getCanvas().style.cursor = "pointer"; });
 
     map.on("mouseleave", "poi-clusters", () => { map.getCanvas().style.cursor = ""; });
 
-    /*
-     * POIs laden
-     */
+    // POIs laden
     loadPOIs(map);
 
-    /*
-     * Zoomvorgang merken
-     */
+    // Zoomvorgang merken
     map.on("zoomstart", () => {
         if (loadPOIsRunning && loadPOIsController) {
             console.log("ZOOM START – laufende Requests abbrechen");
@@ -183,14 +162,11 @@ export function initOverpassLayer(map) {
 
     map.on("zoomend", () => {
         updateFeatureStyles(map.getZoom());
-
         // Hier müssen die drei/vier GeoJSON-Sources
         // mit den aktualisierten Features neu gesetzt werden.
     });
 
-    /*
-     * Nach Kartenbewegung neu laden
-     */
+    // Nach Kartenbewegung neu laden
     map.on("moveend", () => { loadPOIs(map); });
 }
 
@@ -287,16 +263,14 @@ function mergeTilesIntoRectangles(tiles) {
     while (remaining.size > 0) {
         let best = null;
 
-        /*
-         * Jedes noch vorhandene Tile als möglichen
-         * linken oberen/rechten Ausgangspunkt testen.
-         */
+        // Jedes noch vorhandene Tile als möglichen
+        // linken oberen/rechten Ausgangspunkt testen.
+
         for (const key of remaining) {
             const [x0, y0] = key.split("/").map(Number);
 
-            /*
-             * Zunächst maximale Breite in dieser Zeile.
-             */
+            // Zunächst maximale Breite in dieser Zeile.
+
             let maxWidth = 0;
 
             while (remaining.has(`${x0 + maxWidth}/${y0}`)) {
@@ -306,9 +280,8 @@ function mergeTilesIntoRectangles(tiles) {
             let width = maxWidth;
             let height = 0;
 
-            /*
-             * Rechteck zeilenweise nach unten erweitern.
-             */
+            // Rechteck zeilenweise nach unten erweitern.
+
             while (width > 0) {
                 const y = y0 + height;
 
@@ -373,31 +346,27 @@ async function loadPOIs(map) {
     try {
         const zoom = map.getZoom();
 
-        /*
-         * Unterhalb der ersten Zoomklasse
-         */
+        // Unterhalb der ersten Zoomklasse
+
         if (zoom < 6) {
             clearSource(map);
             return;
         }
 
-        /*
-         * Alle Zoomklassen ermitteln, die bei diesem
-         * Zoom aktiv sind.
-         *
-         * Die Klassen sind kumulativ:
-         * Bei z14 sind also z12_13 UND z14 aktiv.
-         */
+        // Alle Zoomklassen ermitteln, die bei diesem Zoom aktiv sind.
+        //
+        // Die Klassen sind kumulativ:
+        // Bei z14 sind also z12_13 UND z14 aktiv.
+
         const activeClasses = zoomClasses.filter(zoomClass => zoom >= zoomClass.minZoom);
         const bounds = map.getBounds();
 
-        /*
-         * Aktive Zoomklassen laden
-         */
+        // Aktive Zoomklassen laden
+
         for (const zoomClass of activeClasses) {
-            /*
-             * Laufzeitdaten dieser Zoomklasse holen.
-             */
+
+            // Laufzeitdaten dieser Zoomklasse holen.
+
             const state = zoomClassState.get(zoomClass.id);
 
             if (!state) {
@@ -406,18 +375,15 @@ async function loadPOIs(map) {
                 continue;
             }
 
-            /*
-             * Kacheln für diese Zoomklasse bestimmen.
-             *
-             * Wichtig:
-             * Die Kachelgröße richtet sich nach dem minZoom
-             * der jeweiligen Zoomklasse.
-             */
+            // Kacheln für diese Zoomklasse bestimmen.
+            //
+            // Wichtig:
+            // Die Kachelgröße richtet sich nach dem minZoom der jeweiligen Zoomklasse.
+
             const tiles = getTilesForBounds(bounds, zoomClass.minZoom);
 
-            /*
-             * Bereits geladene Tiles brauchen keinen Request.
-             */
+            // Bereits geladene Tiles brauchen keinen Request.
+
             const tilesToLoad = tiles.filter(tile => {
                 const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
@@ -426,10 +392,8 @@ async function loadPOIs(map) {
 
             console.log("TILES ZU LADEN:", zoomClass.id, tilesToLoad.length);
 
-            /*
-             * Benachbarte Tiles zu möglichst großen
-             * Rechtecken zusammenfassen.
-             */
+            // Benachbarte Tiles zu möglichst großen Rechtecken zusammenfassen.
+
             const rectangles = mergeTilesIntoRectangles(tilesToLoad);
 
             console.log("RECTANGLES:", zoomClass.id, rectangles.length,
@@ -439,29 +403,24 @@ async function loadPOIs(map) {
                                            tiles : rectangle.tiles.length
                                        })));
 
-            /*
-             * Rechtecke laden.
-             *
-             * Vorerst bewusst sequentiell:
-             * Ein Rechteck = ein Overpass-Request.
-             */
+            // Rechtecke laden.
+            //
+            // Vorerst bewusst sequentiell:
+            // Ein Rechteck = ein Overpass-Request.
+
             for (const rectangle of rectangles) {
                 await loadTileRectangle(rectangle, zoomClass, state, loadPOIsController.signal, zoom);
             }
         }
 
-        /*
-         * Alle Features der momentan aktiven Zoomklassen
-         * zusammenführen.
-         *
-         * Beispiel:
-         *
-         * z12_13:  70 Objekte
-         * z14:     25 Objekte
-         *
-         * => bei Zoom 14 werden 95 Objekte angezeigt.
-         */
-
+        // Alle Features der momentan aktiven Zoomklassen zusammenführen.
+        //
+        // Beispiel:
+        //
+        // z12_13:  70 Objekte
+        // z14:     25 Objekte
+        //
+        // => bei Zoom 14 werden 95 Objekte angezeigt.
 
         const features = [];
         const globalIds = new Set();
@@ -475,10 +434,8 @@ async function loadPOIs(map) {
             for (const feature of state.features) {
                 const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
 
-                /*
-                 * Sicherheitshalber auch zoomklassenübergreifend
-                 * doppelte OSM-Objekte vermeiden.
-                 */
+                // Sicherheitshalber auch zoomklassenübergreifend
+                // doppelte OSM-Objekte vermeiden.
                 if (!globalIds.has(id)) {
                     globalIds.add(id);
                     features.push(feature);
@@ -488,15 +445,7 @@ async function loadPOIs(map) {
 
         console.log("Gesamt POIs:", features.length);
 
-        /*
-         * Wikidata-Daten vorbereiten.
-        const ids = features.map(feature => feature.properties.wikidata).filter(Boolean);
-        prefetchWikidata(ids);
-         */
-
-        /*
-         * GeoJSON für MapLibre erzeugen.
-         */
+        // GeoJSON für MapLibre erzeugen.
 
         const allPointFeatures = features.filter(feature => feature.geometry.type === "Point");
         const poiFeatures = features.filter(feature => feature.geometry.type === "Point" &&
@@ -532,18 +481,14 @@ async function loadPOIs(map) {
         const lineGeoJSON = {type : "FeatureCollection", features : lineFeatures};
         const objectIconGeoJSON = {type : "FeatureCollection", features : objectIconFeatures};
 
-        /*
-         * POIs aktualisieren.
-         */
+        // POIs aktualisieren.
         const poiSource = map.getSource(sourceId);
 
         if (poiSource) {
             poiSource.setData(poiGeoJSON);
         }
 
-        /*
-         * Linien und Flächen aktualisieren.
-         */
+        // Linien und Flächen aktualisieren.
 
         const polygonSource = map.getSource("osm-object-polygons");
 
@@ -559,9 +504,7 @@ async function loadPOIs(map) {
             lineSource.setData(lineGeoJSON);
         }
 
-        /*
-         * Objekt-Icons aktualisieren.
-         */
+        // Objekt-Icons aktualisieren.
         const objectIconSource = map.getSource("osm-object-icons");
 
         if (objectIconSource) {
@@ -570,10 +513,7 @@ async function loadPOIs(map) {
             console.error("OBJECT ICON SOURCE NICHT GEFUNDEN");
         }
 
-        /*
-         * Prüfen, ob ein POI aus einem Permalink
-         * geöffnet werden soll.
-         */
+        // Prüfen, ob ein POI aus einem Permalink geöffnet werden soll.
         const pendingPoi = getPendingPermalinkPoi();
 
         if (pendingPoi) {
@@ -607,10 +547,7 @@ async function loadPOIs(map) {
         if (pending) {
             console.log("LOAD POIS – vorgemerkten Aufruf starten");
 
-            /*
-             * Erst nach Abschluss des aktuellen Aufrufs
-             * den nächsten Durchlauf starten.
-             */
+            // Erst nach Abschluss des aktuellen Aufrufs den nächsten Durchlauf starten.
             setTimeout(() => loadPOIs(map), 0);
         } else if (prefetchPending) {
             console.log("LOAD POIS END – Prefetch starten");
@@ -626,16 +563,12 @@ async function loadPOIs(map) {
 async function loadTile(tile, zoomClass, state, signal, zoom) {
     const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
-    /*
-     * Kachel wurde bereits erfolgreich geladen.
-     */
+    // Kachel wurde bereits erfolgreich geladen.
     if (state.loadedTiles.has(tileId)) {
         return;
     }
 
-    /*
-     * Kachel wird bereits geladen.
-     */
+    // Kachel wird bereits geladen.
     if (state.loadingTiles.has(tileId)) {
         console.log("Kachel bereits in Bearbeitung:", zoomClass.id, tileId);
         return;
@@ -673,15 +606,10 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
             throw error;
         }
 
-        /*
-         * Overpass-Daten in GeoJSON umwandeln.
-         */
+        // Overpass-Daten in GeoJSON umwandeln.
         const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
-        /*
-         * Bereits vorhandene OSM-Objekte
-         * dieser Zoomklasse nicht doppelt übernehmen.
-         */
+        // Bereits vorhandene OSM-Objekte dieser Zoomklasse nicht doppelt übernehmen.
         const existingIds = new Set(state.features.map(
             feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
@@ -694,10 +622,7 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
             }
         }
 
-        /*
-         * Erst nach erfolgreicher Verarbeitung
-         * gilt die Kachel als geladen.
-         */
+        // Erst nach erfolgreicher Verarbeitung gilt die Kachel als geladen.
         state.loadedTiles.add(tileId);
     }
 
@@ -715,9 +640,7 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
 async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
     const tileIds = rectangle.tiles.map(tile => `${tile.zoom}/${tile.x}/${tile.y}`);
 
-    /*
-     * Nur tatsächlich noch benötigte Tiles berücksichtigen.
-     */
+    // Nur tatsächlich noch benötigte Tiles berücksichtigen.
     const tiles = rectangle.tiles.filter(tile => {
         const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
         return !state.loadedTiles.has(tileId);
@@ -726,9 +649,7 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
     if (tiles.length === 0)
         return;
 
-    /*
-     * Alle Tiles des Requests als "loading" markieren.
-     */
+    // Alle Tiles des Requests als "loading" markieren.
     for (const tile of tiles) {
         const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
         state.loadingTiles.add(tileId);
@@ -765,14 +686,10 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
             throw error;
         }
 
-        /*
-         * Overpass-Daten in GeoJSON umwandeln.
-         */
+        // Overpass-Daten in GeoJSON umwandeln.
         const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
-        /*
-         * Bereits vorhandene OSM-Objekte nicht doppelt übernehmen.
-         */
+        // Bereits vorhandene OSM-Objekte nicht doppelt übernehmen.
         const existingIds = new Set(state.features.map(
             feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
@@ -786,12 +703,10 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
         }
 
 
-        /*
-         * GANZ WICHTIG:
-         * Erst wenn der komplette Request erfolgreich
-         * verarbeitet wurde, alle enthaltenen Tiles als
-         * geladen markieren.
-         */
+         // GANZ WICHTIG:
+         // Erst wenn der komplette Request erfolgreich
+         // verarbeitet wurde, alle enthaltenen Tiles als
+         // geladen markieren.
         for (const tile of tiles) {
             const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
@@ -806,12 +721,9 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
     }
 
     finally {
-        /*
-         * loading immer entfernen.
-         *
-         * Bei Fehler bleiben die Tiles bewusst NICHT
-         * in loadedTiles und können später erneut geladen werden.
-         */
+        // loading immer entfernen.
+        // Bei Fehler bleiben die Tiles bewusst NICHT
+        // in loadedTiles und können später erneut geladen werden.
         for (const tile of tiles) {
             const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
             state.loadingTiles.delete(tileId);
@@ -924,7 +836,7 @@ function convertToGeoJSON(data, zoomClass) {
 
             if (e.tags?.type === "site") {
 
-                // Relation ohne passende Iconm rules fliegen raus
+                // Relation ohne passende Icon rules fliegen raus
                 if (!matchedTags)
                     continue;
 
@@ -954,9 +866,7 @@ function convertToGeoJSON(data, zoomClass) {
                     coordinates : [ lon, lat ]
                 };
 
-                /*
-                 * Fehlende Way-Member als eigene Features erzeugen.
-                 */
+                // Fehlende Way-Member als eigene Features erzeugen.
                 const existingElements = new Set(
                     data.elements.map(e => `${e.type}/${e.id}`)
                 );
@@ -1012,7 +922,7 @@ function convertToGeoJSON(data, zoomClass) {
                             _site_relations : [ e.id ],
                             _matched_tags : matchedTags,
                             _app_icon : style.icon,
-                            _app_icon_size : style.iconSize,
+                            _app_icon_size : style.iconSize/2,  // member icons halbe Größe
                             _line_width : style.lineWidth,
                             _line_color : style.lineColor,
                             _fill_color : style.fillColor,
@@ -1308,10 +1218,7 @@ async function prefetchPOIs(map) {
 
     } finally {
 
-        /*
-         * Nur den globalen Controller löschen,
-         * wenn er noch unser Controller ist.
-         */
+        // Nur den globalen Controller löschen, wenn er noch unser Controller ist.
         if (prefetchController === controller) {
             prefetchController = null;
         }

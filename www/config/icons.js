@@ -118,6 +118,19 @@ export const iconRules = [
         fillColor : "#FF0000",
         lineColor : "#FF0000"
     },
+    {
+        // Schacht oder Bergwerk - relation member
+        condition : AND(
+            OR(
+                [ "man_made", "mine" ],
+                [ "man_made", "mineshaft" ],
+                ),
+            OR([ "historic", "*" ], [ "disused", "*" ], [ "abandoned", "*" ], [ "razed", "*" ]),
+            [ "_site_member", "*" ]),
+        icon : "null",
+        fillColor : "#FF0000",
+        lineColor : "#FF0000"
+    },
 
     {
         // Bergbaustollen
