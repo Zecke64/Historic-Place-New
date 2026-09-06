@@ -929,12 +929,12 @@ function convertToGeoJSON(data, zoomClass) {
                             _site_relations : [ e.id ],
                             _matched_tags : matchedTags,
                             _app_icon : style.icon,
-                            _app_icon_size : style.iconSize/2,  // member icons halbe Größe
+                            _app_icon_size : style.iconSize * style.membersIconSize,
                             _app_icon_rotate : iconRotation,
-                            _line_width : style.lineWidth,
-                            _line_color : style.lineColor,
-                            _fill_color : style.fillColor,
-                            _fill_opacity : style.fillOpacity,
+                            _line_width : style.membersLine ? style.lineWidth : 0,
+                            _line_color : style.membersLine ? style.lineColor : null,
+                            _fill_color : style.membersLine ? style.fillColor : null,
+                            _fill_opacity : style.membersLine ? style.fillOpacity : 0,
                         }
                     });
                 }
@@ -1272,17 +1272,24 @@ function updateFeatureStyles(zoom) {
             const direction = parseFloat(tags?.direction);
 
             feature.properties._app_icon = style.icon;
-            feature.properties._app_icon_size = style.iconSize;
             feature.properties._app_icon_rotate =
                 style.rotation && Number.isFinite(direction)
                     ? direction
                     : 0;
 
-            feature.properties._line_width = style.lineWidth;
-            feature.properties._line_color = style.lineColor;
-            feature.properties._fill_color = style.fillColor;
-            feature.properties._fill_opacity = style.fillOpacity;
-
+            if (feature.properties._site_member) {
+                feature.properties._app_icon_size = style.iconSize * style.membersIconSize;
+                feature.properties._line_width = style.membersLine ? style.lineWidth : 0;
+                feature.properties._line_color = style.membersLine ? style.lineColor : null;
+                feature.properties._fill_color = style.membersLine ? style.fillColor : null;
+                feature.properties._fill_opacity = style.membersLine ? style.fillOpacity : 0;
+            } else {
+                feature.properties._app_icon_size = style.iconSize;
+                feature.properties._line_width = style.lineWidth;
+                feature.properties._line_color = style.lineColor;
+                feature.properties._fill_color = style.fillColor;
+                feature.properties._fill_opacity = style.fillOpacity;
+            }
         }
     }
 }

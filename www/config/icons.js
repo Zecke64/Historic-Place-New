@@ -15,13 +15,15 @@ export function OR(...conditions) { return {type : "OR", conditions}; }
 
 // Das hier sind die default Style Werte für Icons, Lines und Areas
 export const defaultStyle = {
-    icon :          "null",
-    iconSize :      0.8,
-    rotation:       false,
-    lineWidth :     3,
-    lineColor :     "#3388ff",
-    fillColor :     "#3388ff",
-    fillOpacity :   0.25
+    icon :              "null",
+    iconSize :          0.8,
+    rotation:           false,
+    lineWidth :         3,
+    lineColor :         "#3388ff",
+    fillColor :         "#3388ff",
+    fillOpacity :       0.25,
+    membersLine :       true,       // Lines/Fill bei site relation member anzeigen
+    membersIconSize :   0,          // Size bezogen auf IconSize der Relation (0=unsichtbar, 1=identisch)
 };
 
 export const iconRules = [
@@ -116,23 +118,12 @@ export const iconRules = [
                 ),
             OR([ "historic", "*" ], [ "disused", "*" ], [ "abandoned", "*" ], [ "razed", "*" ])),
         icon : "mine",
-        fillColor : "#FF0000",
-        lineColor : "#FF0000"
+        fillColor : "#00FF00",
+        lineColor : "#0000FF",
+        membersLine : true,
+        membersIconSize : 0
     },
-    {
-        // Schacht oder Bergwerk - relation member
-        condition : AND(
-            OR(
-                [ "man_made", "mine" ],
-                [ "man_made", "mineshaft" ],
-                ),
-            OR([ "historic", "*" ], [ "disused", "*" ], [ "abandoned", "*" ], [ "razed", "*" ]),
-            [ "_site_member", "*" ]),
-        icon : "null",
-        fillColor : "#FF0000",
-        lineColor : "#FF0000"
-    },
-
+    
     {
         // Bergbaustollen
         condition : AND(
