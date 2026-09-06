@@ -5,6 +5,8 @@ import {tr} from "./language.js";
 let activeCredits = [];
 let creditElement = null;
 
+const osmCredit = "© OpenStreetmap Contributors";
+
 
 export function createLayerControl(map) {
     const button = document.createElement("button");
@@ -388,7 +390,7 @@ function updateLayerCredits() {
     if (!creditElement)
         return;
 
-    const credits = [];
+    const credits = [ osmCredit ];
 
     for (const layerId of activeCredits) {
         const layer = layerConfig.find(layer => layer.id === layerId);
