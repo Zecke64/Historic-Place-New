@@ -17,6 +17,7 @@ export function OR(...conditions) { return {type : "OR", conditions}; }
 export const defaultStyle = {
     icon :          "null",
     iconSize :      0.8,
+    rotation:       false,
     lineWidth :     3,
     lineColor :     "#3388ff",
     fillColor :     "#3388ff",
@@ -137,14 +138,16 @@ export const iconRules = [
         condition : AND(
             AND([ "man_made", "adit" ], [ "resource", "*" ]),
             OR([ "historic", "*" ], [ "disused", "*" ], [ "abandoned", "*" ], [ "razed", "*" ])),
-        icon : "stollen"
+        icon : "stollen",
+        rotation : true
     },
 
     {
         // Stollen allgemein
         condition : AND([ "man_made", "adit" ], OR([ "historic", "*" ], [ "disused", "*" ],
                                                    [ "abandoned", "*" ], [ "razed", "*" ])),
-        icon : "stollen2"
+        icon : "stollen2",
+        rotation : true
     },
 
     {

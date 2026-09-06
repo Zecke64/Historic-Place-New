@@ -94,3 +94,12 @@ export async function loadIcons(map) {
         }
     }
 }
+
+
+/*
+export function getIconRotation(tags) {
+    const direction = parseFloat(tags?.direction);
+
+    return Number.isFinite(direction) ? direction : 0;
+}
+*/

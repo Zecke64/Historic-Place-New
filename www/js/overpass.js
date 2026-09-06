@@ -126,6 +126,7 @@ export function initOverpassLayer(map) {
         layout : {
             "icon-image" : [ "get", "_app_icon" ],
             "icon-size" : [ "get", "_app_icon_size" ],
+            "icon-rotate": ["get", "_app_icon_rotate"],
             "icon-allow-overlap" : true
         }
     });
@@ -801,6 +802,12 @@ function convertToGeoJSON(data, zoomClass) {
             ? getIconRule(matchedTags, zoom)
             : defaultStyle;
 
+        // Drehung des Icons nur, wenn rotation explizit auf true gesetzt ist
+        const direction = parseFloat(originalTags?.direction);
+        const iconRotation = style.rotation && Number.isFinite(direction)
+            ? direction-180     // wir drehen um 180° damit wir in Richtung des Objekts schauen
+            : 0;
+
         // Node
         if (e.type === "node") {
             iconLon = e.lon;
@@ -923,6 +930,7 @@ function convertToGeoJSON(data, zoomClass) {
                             _matched_tags : matchedTags,
                             _app_icon : style.icon,
                             _app_icon_size : style.iconSize/2,  // member icons halbe Größe
+                            _app_icon_rotate : iconRotation,
                             _line_width : style.lineWidth,
                             _line_color : style.lineColor,
                             _fill_color : style.fillColor,
@@ -1004,6 +1012,7 @@ function convertToGeoJSON(data, zoomClass) {
                 _matched_tags : matchedTags,
                 _app_icon : style.icon,
                 _app_icon_size : style.iconSize,
+                _app_icon_rotate : iconRotation,
                 _line_width : style.lineWidth,
                 _line_color : style.lineColor,
                 _fill_color : style.fillColor,
@@ -1259,8 +1268,16 @@ function updateFeatureStyles(zoom) {
                 zoom
             );
 
+            const tags = feature.properties._matched_tags ?? feature.properties;
+            const direction = parseFloat(tags?.direction);
+
             feature.properties._app_icon = style.icon;
             feature.properties._app_icon_size = style.iconSize;
+            feature.properties._app_icon_rotate =
+                style.rotation && Number.isFinite(direction)
+                    ? direction
+                    : 0;
+
             feature.properties._line_width = style.lineWidth;
             feature.properties._line_color = style.lineColor;
             feature.properties._fill_color = style.fillColor;
