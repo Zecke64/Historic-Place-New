@@ -9,6 +9,7 @@ const osmCredit = "© OpenStreetmap Contributors";
 
 
 export function createLayerControl(map) {
+
     const button = document.createElement("button");
     button.className = "map-control-button";
     button.id = "layer-button";
@@ -61,6 +62,7 @@ export function createLayerControl(map) {
 
 
 async function copyPermalink(map) {
+
     const center = map.getCenter();
     const zoom = map.getZoom();
     const bearing = map.getBearing();
@@ -116,6 +118,7 @@ async function copyPermalink(map) {
 
 // Basiskarten
 function createBaseSection(parent, map) {
+
     const section = document.createElement("div");
     section.className = "layer-section";
     section.id = "base-layer-section";
@@ -134,6 +137,7 @@ function createBaseSection(parent, map) {
 
 // Overlays
 function createOverlaySection(parent, map) {
+
     const section = document.createElement("div");
     section.className = "layer-section";
     section.id = "overlay-layer-section";
@@ -171,6 +175,7 @@ function updateOverlaySection(section, map) {
 
 // Historische Objekte
 function createHistObjSection(parent, map) {
+
     const section = document.createElement("div");
     section.className = "layer-section";
 
@@ -188,13 +193,12 @@ function createHistObjSection(parent, map) {
 
 
 function createOpacityControl(layer, map) {
+
     if (layer.opacityControl === false)
         return null;
 
     const container = document.createElement("span");
-
     const slider = document.createElement("input");
-
     container.className = "layer-opacity-container";
 
     slider.type = "range";
@@ -202,33 +206,25 @@ function createOpacityControl(layer, map) {
     slider.max = 100;
     slider.className = "layer-opacity";
 
-    /*
-     * Aktuelle Transparenz aus MapLibre lesen.
-     */
+    // Aktuelle Transparenz aus MapLibre lesen.
     let opacity = layer.opacity;
 
     const rasterId = `${layer.id}-raster`;
 
     if (map.getLayer(rasterId)) {
         const mapOpacity = map.getPaintProperty(rasterId, "raster-opacity");
-
         if (mapOpacity != null)
             opacity = mapOpacity;
     }
 
     slider.value = Math.round(opacity * 100);
-
     const value = document.createElement("span");
-
     value.className = "layer-opacity-value";
-
     value.textContent = Math.round(opacity * 100) + "%";
 
     slider.addEventListener("input", () => {
         const percent = slider.value;
-
         value.textContent = percent + "%";
-
         setLayerOpacity(map, layer, percent / 100);
     });
 
@@ -240,6 +236,7 @@ function createOpacityControl(layer, map) {
 
 // eine Zeile erzeugen
 function createOverlayEntry(layer, map) {
+
     const {row, label} = createLayerRow(layer, "layer-base");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -262,6 +259,7 @@ function createOverlayEntry(layer, map) {
 
     const opacityControl = createOpacityControl(layer, map);
     row.append(checkbox, label);
+
     if (opacityControl) {
         row.append(opacityControl);
     }
@@ -271,6 +269,7 @@ function createOverlayEntry(layer, map) {
 
 
 function setLayerOpacity(map, layer, opacity) {
+
     layer.opacity = opacity;
 
     for (const mapLayer of layer.mapLayers) {
@@ -303,6 +302,7 @@ function setLayerOpacity(map, layer, opacity) {
 
 
 function createHeading(i18nKey) {
+
     const heading = document.createElement("div");
 
     heading.className = "layer-heading";
@@ -314,6 +314,7 @@ function createHeading(i18nKey) {
 
 
 function createLayerRow(layer, className) {
+
     const row = document.createElement("div");
     row.className = "layer-row " + className;
 
@@ -326,15 +327,14 @@ function createLayerRow(layer, className) {
 
 
 function createBaseEntry(layer, map) {
+
     const {row, label} = createLayerRow(layer, "layer-base");
     const radio = document.createElement("input");
 
     radio.type = "radio";
     radio.name = "base-layer";
 
-    /*
-     * Aktuelle Sichtbarkeit aus MapLibre lesen.
-     */
+    // Aktuelle Sichtbarkeit aus MapLibre lesen.
     const rasterId = `${layer.id}-raster`;
 
     if (map.getLayer(rasterId)) {
@@ -362,6 +362,7 @@ function createBaseEntry(layer, map) {
 
 
 function setBaseLayer(map, selectedLayer) {
+
     for (const layer of layerConfig) {
         if (layer.category !== "base")
             continue;
@@ -387,6 +388,7 @@ function setBaseLayer(map, selectedLayer) {
 
 
 function updateLayerCredits() {
+
     if (!creditElement)
         return;
 
@@ -409,6 +411,7 @@ function updateLayerCredits() {
 
 
 function layerIsInView(map, layer) {
+
     if (!layer._shapeBounds) {
         return false;
     }
@@ -429,6 +432,7 @@ function layerIsInView(map, layer) {
 
 // Zoom >= minZoom(layer)?
 function layerIsAvailable(map, layer) {
+
     if (layer.category !== "overlay")
         return true;
 
@@ -454,6 +458,7 @@ function layerIsAvailable(map, layer) {
 
 
 export function refreshLayerControl(map) {
+
     const overlaySection = document.getElementById("overlay-layer-section");
 
     if (overlaySection) {

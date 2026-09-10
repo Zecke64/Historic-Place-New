@@ -181,7 +181,7 @@ export const zoomClasses = [
 
         groups : [
             {
-                id : "gr_14a",
+                id : "gr_15",
                 objectTypes : [
                     [ "amenity", "place_of_worship" ],
                     [ "historic", "church" ],
@@ -204,4 +204,18 @@ export const zoomClasses = [
         ]
     },
 
+    {
+        // ***************************   Zoom 15   ******************************
+        id : "z16",
+        minZoom : 16,
+
+        groups : [
+            {
+                id : "gr_wke",
+                objectTypes : [
+                    [ "heritage", "0" ],
+                ]
+            } 
+        ]
+    },
 ];

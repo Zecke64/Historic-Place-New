@@ -10,6 +10,7 @@ const layerState = {};
 
 
 export async function initLayerManager(map) {
+
     for (const layer of layerConfig) {
         layerRegistry[layer.id] = layer;
 
@@ -64,9 +65,7 @@ export async function addGeoJsonLayer(map, options) {
         return;
     }
 
-    /*
-     * Shape laden
-     */
+    // Shape laden
     const response = await fetch(shape.url);
 
     if (!response.ok) {
@@ -75,12 +74,9 @@ export async function addGeoJsonLayer(map, options) {
 
     const shapeData = await response.json();
 
-    /*
-     * Shape-Daten im Layer selbst ablegen.
-     *
-     * Das brauchen wir später für die Prüfung,
-     * ob die Shape den Kartenausschnitt schneidet.
-     */
+    // Shape-Daten im Layer selbst ablegen.
+    // Das brauchen wir später für die Prüfung,
+    // ob die Shape den Kartenausschnitt schneidet.
     options._shapeData = shapeData;
     options._shapeBounds = getGeoJsonBounds(shapeData);
 
@@ -117,6 +113,7 @@ export async function addGeoJsonLayer(map, options) {
 
 
 export function getGeoJsonBounds(geojson) {
+
     let minLon = Infinity;
     let minLat = Infinity;
     let maxLon = -Infinity;
@@ -170,6 +167,7 @@ export function getGeoJsonBounds(geojson) {
 
 
 export function updateLayerVisibility(map) {
+
     const zoom = map.getZoom();
 
     for (const layer of layerConfig) {
@@ -200,6 +198,7 @@ export function updateLayerVisibility(map) {
 
 
 export function initZoomHandling(map) {
+
     map.on("zoom", () => { updateLayerVisibility(map); });
 }
 
@@ -207,6 +206,7 @@ export function initZoomHandling(map) {
 
 // layer config in template reinmergen
 function deepMerge(base, override) {
+
     const result = {...base};
 
     for (const key of Object.keys(override)) {

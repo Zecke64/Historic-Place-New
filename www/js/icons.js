@@ -1,4 +1,8 @@
-import {iconRules, defaultStyle} from "../config/icons.js";
+import {
+    iconRules, 
+    defaultStyle,
+    invisibleStyle
+} from "../config/icons.js";
 
 
 // AND/OR Logik in den Icon conditions
@@ -44,12 +48,16 @@ export function getIconRule(tags, zoom) {
         }
     }
 
-    return { ...defaultStyle };
+    return { ...invisibleStyle };
 }
 
 
 
 function applyZoomStyle(rule, zoom) {
+
+    if (zoom < (rule.minZoom ?? 0))
+        return { ...invisibleStyle };
+
     const style = {
         ...defaultStyle,
         ...rule
@@ -58,19 +66,26 @@ function applyZoomStyle(rule, zoom) {
     delete style.match;
     delete style.condition;
     delete style.zoom;
+    delete style.minZoom;
 
+    // bei der Rule werden explizit zoom-abhängige settings gemacht
     if (rule.zoom) {
         const levels = Object.keys(rule.zoom)
             .map(Number)
             .filter(level => level <= zoom)
             .sort((a, b) => a - b);
+        // die für die rule relevanten zoomlevels sind jetzt ermittelt und aufsteigend sortiert
 
+        // kein relevanter zoomlevel in den rules --> Objekt unsichtbar
+        if (levels.length === 0)
+            return { ...invisibleStyle };
+
+        // jetzt werden die rules von kleinem bis zu <= zoom angewendet
         for (const level of levels) {
             Object.assign(style, rule.zoom[level]);
         }
     }
 
-    //console.log("ZOOM STYLE", zoom, rule.icon, style.icon);
     return style;
 }
 
@@ -95,11 +110,3 @@ export async function loadIcons(map) {
     }
 }
 
-
-/*
-export function getIconRotation(tags) {
-    const direction = parseFloat(tags?.direction);
-
-    return Number.isFinite(direction) ? direction : 0;
-}
-*/

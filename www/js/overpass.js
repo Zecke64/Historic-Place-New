@@ -1,4 +1,4 @@
-import {defaultStyle} from "../config/icons.js";
+import {iconRules, invisibleStyle} from "../config/icons.js";
 import {getIconRule} from "./icons.js";
 import {clearPendingPermalinkPoi, getPendingPermalinkPoi} from "./permalink.js";
 import {showPopup} from "./popup.js";
@@ -7,6 +7,19 @@ import {prefetchWikidata} from "./wikidata.js";
 import {resolvedZoomClasses as zoomClasses} from "./zoomclasses.js";
 
 const ENABLE_POI_CLUSTERING = false;
+
+// diese Werte werden für members von site-Relationen benötigt
+const iconCheckMinZoom = Math.min(
+    ...zoomClasses.map(zoomClass => zoomClass.min_zoom)
+);
+const iconCheckMaxZoom = Math.max(
+    ...iconRules.flatMap(rule =>
+        Object.keys(rule.zoom || {}).map(Number)
+    )
+);
+
+const loadedFeatureIds = new Set();
+const loadedFeatures = new Map();
 
 const zoomClassState = new Map();
 
@@ -28,6 +41,24 @@ const OVERPASS_URL =
 
 const sourceId = "osm-pois";
 const MAX_PARALLEL_REQUESTS = 8;
+
+//const DEBUG_WAY = "way/24606979";   // Nikolaikirche Leipzig
+
+// reine Hilfsfunktion für's debuggen
+function debugWay(featureOrElement, message, data = null) {
+    const type = featureOrElement.type ?? featureOrElement.properties?._osm_type;
+    const id = featureOrElement.id ?? featureOrElement.properties?._osm_id;
+
+    if (`${type}/${id}` !== DEBUG_WAY)
+        return;
+
+    if (data !== null)
+        console.log(`[DEBUG ${DEBUG_WAY}] ${message}`, data);
+    else
+        console.log(`[DEBUG ${DEBUG_WAY}] ${message}`);
+}
+
+
 
 let loadPOIsRunning = false;
 let loadPOIsPending = false;
@@ -163,6 +194,7 @@ export function initOverpassLayer(map) {
 
     map.on("zoomend", () => {
         updateFeatureStyles(map.getZoom());
+        updateMapSources(map);
         // Hier müssen die drei/vier GeoJSON-Sources
         // mit den aktualisierten Features neu gesetzt werden.
     });
@@ -201,6 +233,82 @@ function getTilesForBounds(bounds, zoom) {
 
     return tiles;
 }
+
+
+
+
+function updateMapSources(map) {
+
+    const features = [];
+
+    for (const state of zoomClassState.values()) {
+        features.push(...state.features);
+    }
+
+    const poiFeatures =
+        features.filter(feature =>
+            feature.geometry.type === "Point" &&
+            feature.properties._app_icon !== "null");
+
+    const objectFeatures =
+        features.filter(feature =>
+            feature.geometry.type !== "Point");
+
+    const polygonFeatures =
+        objectFeatures.filter(feature =>
+            feature.geometry.type === "Polygon");
+
+    const lineFeatures =
+        objectFeatures.filter(feature =>
+            feature.geometry.type === "LineString");
+
+    const objectIconFeatures =
+        objectFeatures
+            .filter(feature =>
+                feature.properties._app_icon !== "null")
+            .map(feature => {
+
+                const coordinates =
+                    feature.properties._icon_coordinates;
+
+                if (!coordinates)
+                    return null;
+
+                return {
+                    type : "Feature",
+                    geometry : {
+                        type : "Point",
+                        coordinates : coordinates
+                    },
+                    properties : {
+                        ...feature.properties
+                    }
+                };
+            })
+            .filter(Boolean);
+
+    map.getSource(sourceId)?.setData({
+        type : "FeatureCollection",
+        features : poiFeatures
+    });
+
+    map.getSource("osm-object-polygons")?.setData({
+        type : "FeatureCollection",
+        features : polygonFeatures
+    });
+
+    map.getSource("osm-object-lines")?.setData({
+        type : "FeatureCollection",
+        features : lineFeatures
+    });
+
+    map.getSource("osm-object-icons")?.setData({
+        type : "FeatureCollection",
+        features : objectIconFeatures
+    });
+}
+
+
 
 function getTileBounds(tile) {
     return new maplibregl.LngLatBounds(
@@ -249,9 +357,15 @@ out geom qt 500;
 `;
 }
 
+
+
+/*
+// anscheinend unused
 function getZoomClass(zoom) {
     return zoomClasses.find(z => zoom >= z.minZoom && zoom <= z.maxZoom);
 }
+*/
+
 
 function mergeTilesIntoRectangles(tiles) {
     if (tiles.length === 0)
@@ -331,6 +445,7 @@ function mergeTilesIntoRectangles(tiles) {
 
 
 async function loadPOIs(map) {
+    
     if (loadPOIsRunning) {
         console.log("LOAD POIS bereits aktiv – neuer Aufruf vorgemerkt");
 
@@ -367,24 +482,17 @@ async function loadPOIs(map) {
         for (const zoomClass of activeClasses) {
 
             // Laufzeitdaten dieser Zoomklasse holen.
-
             const state = zoomClassState.get(zoomClass.id);
-
-            if (!state) {
-                console.error("Kein Zustand für Zoomklasse:", zoomClass.id);
-
+            if (!state)
                 continue;
-            }
 
             // Kacheln für diese Zoomklasse bestimmen.
             //
             // Wichtig:
             // Die Kachelgröße richtet sich nach dem minZoom der jeweiligen Zoomklasse.
-
             const tiles = getTilesForBounds(bounds, zoomClass.minZoom);
 
             // Bereits geladene Tiles brauchen keinen Request.
-
             const tilesToLoad = tiles.filter(tile => {
                 const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
@@ -394,7 +502,6 @@ async function loadPOIs(map) {
             console.log("TILES ZU LADEN:", zoomClass.id, tilesToLoad.length);
 
             // Benachbarte Tiles zu möglichst großen Rechtecken zusammenfassen.
-
             const rectangles = mergeTilesIntoRectangles(tilesToLoad);
 
             console.log("RECTANGLES:", zoomClass.id, rectangles.length,
@@ -408,7 +515,6 @@ async function loadPOIs(map) {
             //
             // Vorerst bewusst sequentiell:
             // Ein Rechteck = ein Overpass-Request.
-
             for (const rectangle of rectangles) {
                 await loadTileRectangle(rectangle, zoomClass, state, loadPOIsController.signal, zoom);
             }
@@ -455,64 +561,7 @@ async function loadPOIs(map) {
         console.log("POINTS GESAMT:", allPointFeatures.length);
         console.log("POINTS MIT ICON:", poiFeatures.length);
 
-        const objectFeatures = features.filter(feature => feature.geometry.type !== "Point");
-        const polygonFeatures =
-            objectFeatures.filter(feature => feature.geometry.type === "Polygon");
-        const lineFeatures =
-            objectFeatures.filter(feature => feature.geometry.type === "LineString");
-        const objectIconFeatures =
-            objectFeatures
-                .filter(feature => feature.properties._app_icon !== "null")
-                .map(feature => {
-                    const coordinates = feature.properties._icon_coordinates;
-
-                    if (!coordinates)
-                        return null;
-
-                    return {
-                        type : "Feature",
-                        geometry : {type : "Point", coordinates : coordinates},
-                        properties : {...feature.properties}
-                    };
-                })
-                .filter(Boolean);
-
-        const poiGeoJSON = {type : "FeatureCollection", features : poiFeatures};
-        const polygonGeoJSON = {type : "FeatureCollection", features : polygonFeatures};
-        const lineGeoJSON = {type : "FeatureCollection", features : lineFeatures};
-        const objectIconGeoJSON = {type : "FeatureCollection", features : objectIconFeatures};
-
-        // POIs aktualisieren.
-        const poiSource = map.getSource(sourceId);
-
-        if (poiSource) {
-            poiSource.setData(poiGeoJSON);
-        }
-
-        // Linien und Flächen aktualisieren.
-
-        const polygonSource = map.getSource("osm-object-polygons");
-
-        if (polygonSource) {
-            polygonSource.setData(polygonGeoJSON);
-        } else {
-            console.error("POLYGON SOURCE NICHT GEFUNDEN");
-        }
-
-        const lineSource = map.getSource("osm-object-lines");
-
-        if (lineSource) {
-            lineSource.setData(lineGeoJSON);
-        }
-
-        // Objekt-Icons aktualisieren.
-        const objectIconSource = map.getSource("osm-object-icons");
-
-        if (objectIconSource) {
-            objectIconSource.setData(objectIconGeoJSON);
-        } else {
-            console.error("OBJECT ICON SOURCE NICHT GEFUNDEN");
-        }
+        updateMapSources(map);
 
         // Prüfen, ob ein POI aus einem Permalink geöffnet werden soll.
         const pendingPoi = getPendingPermalinkPoi();
@@ -580,8 +629,6 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
     const tileBounds = getTileBounds(tile);
     const query = createQueryForZoomClass(zoomClass, tileBounds);
 
-    console.log("OVERPASS REQUEST:", zoomClass.id, tileId, "loaded:", state.loadedTiles.has(tileId),
-                "loading:", state.loadingTiles.has(tileId));
     //console.log( "OVERPASS QUERY:", query);
 
     try {
@@ -615,11 +662,34 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
             feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
         for (const feature of geojson.features) {
+            
             const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
+            const existing = loadedFeatures.get(id);
 
-            if (!existingIds.has(id)) {
+            // das aktuelle feature ist noch nirgendwo vorhanden
+            if (!existing) {
+
                 state.features.push(feature);
-                existingIds.add(id);
+                loadedFeatureIds.add(id);
+
+                // in loadedFeatures merken, ob ein feature real oder synthetisch ist
+                loadedFeatures.set(id, {
+                    real: feature.properties._site_synthetic
+                        ? null
+                        : { state, feature },
+                    synthetic: feature.properties._site_synthetic
+                        ? { state, feature }
+                        : null
+                });
+                continue;
+            }
+
+            // Reales Feature kommt nach einem synthetischen.
+            if (!feature.properties._site_synthetic && !existing.real) {
+
+                state.features.push(feature);
+                existing.real = { state, feature };
+                continue;
             }
         }
 
@@ -638,7 +708,10 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
     }
 }
 
+
+
 async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
+
     const tileIds = rectangle.tiles.map(tile => `${tile.zoom}/${tile.x}/${tile.y}`);
 
     // Nur tatsächlich noch benötigte Tiles berücksichtigen.
@@ -658,10 +731,6 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
 
     const bounds = getRectangleBounds({...rectangle, tiles : tiles});
     const query = createQueryForZoomClass(zoomClass, bounds);
-
-    console.log("OVERPASS RECTANGLE REQUEST:", zoomClass.id, `${rectangle.minX}..${rectangle.maxX}`,
-                `${rectangle.minY}..${rectangle.maxY}`, "tiles:", tiles.length);
-    //console.log( "OVERPASS QUERY:", query);
 
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -695,19 +764,41 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
             feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
 
         for (const feature of geojson.features) {
-            const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
 
-            if (!existingIds.has(id)) {
+            const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
+            const existing = loadedFeatures.get(id);
+
+            // das aktuelle feature ist noch nirgendwo vorhanden
+            if (!existing) {
+
                 state.features.push(feature);
-                existingIds.add(id);
+                loadedFeatureIds.add(id);
+
+                // in loadedFeatures merken, ob ein feature real oder synthetisch ist
+                loadedFeatures.set(id, {
+                    real: feature.properties._site_synthetic
+                        ? null
+                        : { state, feature },
+                    synthetic: feature.properties._site_synthetic
+                        ? { state, feature }
+                        : null
+                });
+
+                continue;
+            }
+
+            // Reales Feature kommt nach einem synthetischen.
+            if (!feature.properties._site_synthetic && !existing.real) {
+
+                state.features.push(feature);
+                existing.real = { state, feature };
+
+                continue;
             }
         }
 
-
-         // GANZ WICHTIG:
-         // Erst wenn der komplette Request erfolgreich
-         // verarbeitet wurde, alle enthaltenen Tiles als
-         // geladen markieren.
+        // Erst wenn der komplette Request erfolgreich verarbeitet wurde, 
+        // alle enthaltenen Tiles als geladen markieren.
         for (const tile of tiles) {
             const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
 
@@ -732,12 +823,15 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
     }
 }
 
+
+
 function convertToGeoJSON(data, zoomClass) {
 
     const features = [];
 
     const siteMembers = new Map();
 
+    // Baue für Site-Relationen einen Index, den Members eine oder mehrere Relationen zuordnet
     for (const relation of data.elements) {
         if (relation.type !== "relation" || relation.tags?.type !== "site")
             continue;
@@ -756,7 +850,6 @@ function convertToGeoJSON(data, zoomClass) {
         data.elements.map(e => `${e.type}/${e.id}`)
     );
 
-
     for (const e of data.elements) {
 
         let geometry = null;
@@ -771,6 +864,7 @@ function convertToGeoJSON(data, zoomClass) {
         // Prüfen, ob das Objekt mindestens eine Gruppe der Zoomklasse erfüllt.
         for (const group of zoomClass.groups) {
 
+            // lifecycle tags (disused etc.): aus Präfix tag machen
             const tags = group.lifecycle
                 ? normalizeTags(originalTags)
                 : originalTags;
@@ -781,6 +875,7 @@ function convertToGeoJSON(data, zoomClass) {
             if (!matchesObjectType)
                 continue;
 
+            // die erste matching group gewinnt
             if (!group.requiredTags || group.requiredTags.length === 0) {
                 matchedTags = tags;
                 break;
@@ -792,15 +887,17 @@ function convertToGeoJSON(data, zoomClass) {
                        tags[tag] !== ""
             );
 
+            // die Group hat required Tags und auch damit passt es
             if (matchesRequiredTags) {
                 matchedTags = tags;
                 break;
             }
-        }
+
+        } //end of loop über alle groups
 
         const style = matchedTags
             ? getIconRule(matchedTags, zoom)
-            : defaultStyle;
+            : invisibleStyle;
 
         // Drehung des Icons nur, wenn rotation explizit auf true gesetzt ist
         const direction = parseFloat(originalTags?.direction);
@@ -847,6 +944,7 @@ function convertToGeoJSON(data, zoomClass) {
                 if (!matchedTags)
                     continue;
 
+                // Mittelpunkt der Summe aller members finden
                 const memberCoordinates = [];
 
                 for (const member of e.members || []) {
@@ -863,6 +961,7 @@ function convertToGeoJSON(data, zoomClass) {
 
                 const [ lon, lat ] = getGeometryCenter(memberCoordinates);
 
+                // dorthin kommt das Relationsicon
                 iconLon = lon;
                 iconLat = lat;
 
@@ -873,11 +972,13 @@ function convertToGeoJSON(data, zoomClass) {
                     coordinates : [ lon, lat ]
                 };
 
-                // Fehlende Way-Member als eigene Features erzeugen.
+                /*
                 const existingElements = new Set(
                     data.elements.map(e => `${e.type}/${e.id}`)
                 );
+                */
 
+                // Fehlende Way-Member als eigene Features erzeugen.
                 for (const member of e.members || []) {
 
                     if (member.type !== "way")
@@ -885,8 +986,10 @@ function convertToGeoJSON(data, zoomClass) {
 
                     const memberKey = `${member.type}/${member.ref}`;
 
-                    // Bereits separat vorhandener Way wird normal verarbeitet.
-                    if (existingElements.has(memberKey))
+                    // Bereits separat vorhandener Way wird ignoriert
+                    if (existingElements.has(memberKey))    // im Datensatz der zoom-Klasse
+                        continue;
+                    if (loadedFeatureIds.has(memberKey))    // in den bereits fertig geladenen
                         continue;
 
                     if (!member.geometry || member.geometry.length < 2)
@@ -926,6 +1029,7 @@ function convertToGeoJSON(data, zoomClass) {
                             _geometry_type : memberGeometry.type,
                             _icon_coordinates : [ memberLon, memberLat ],
                             _site_member : true,
+                            _site_synthetic : true,
                             _site_relations : [ e.id ],
                             _matched_tags : matchedTags,
                             _app_icon : style.icon,
@@ -1253,43 +1357,131 @@ export function initPrefetch(map) {
 
 
 
+function applyFeatureStyle(feature, style) {
+
+    const isSynthetic =
+        feature.properties._site_synthetic === true;
+
+    feature.properties._app_icon =
+        style.icon;
+
+    feature.properties._app_icon_size =
+        isSynthetic
+            ? style.iconSize * style.membersIconSize
+            : style.iconSize;
+
+    const tags =
+        feature.properties._matched_tags ??
+        feature.properties;
+
+    const direction = parseFloat(tags?.direction);
+
+    feature.properties._app_icon_rotate =
+        style.rotation && Number.isFinite(direction)
+            ? direction
+            : 0;
+
+    feature.properties._line_width =
+        isSynthetic && !style.membersLine
+            ? 0
+            : style.lineWidth;
+
+    feature.properties._line_color =
+        isSynthetic && !style.membersLine
+            ? null
+            : style.lineColor;
+
+    feature.properties._fill_color =
+        isSynthetic && !style.membersLine
+            ? null
+            : style.fillColor;
+
+    feature.properties._fill_opacity =
+        isSynthetic && !style.membersLine
+            ? 0
+            : style.fillOpacity;
+}
+
+
 
 function updateFeatureStyles(zoom) {
-    for (const zoomClass of zoomClasses) {
-        const state = zoomClassState.get(zoomClass.id);
 
-        if (!state)
-            continue;
+    for (const entry of loadedFeatures.values()) {
 
-        for (const feature of state.features) {
+        // --------------------------------------------------------
+        // Reales Feature
+        // --------------------------------------------------------
 
-            const style = getIconRule(
-                feature.properties._matched_tags ?? feature.properties, 
-                zoom
-            );
+        if (entry.real) {
 
-            const tags = feature.properties._matched_tags ?? feature.properties;
-            const direction = parseFloat(tags?.direction);
+            const feature = entry.real.feature;
 
-            feature.properties._app_icon = style.icon;
-            feature.properties._app_icon_rotate =
-                style.rotation && Number.isFinite(direction)
-                    ? direction
-                    : 0;
+            const tags =
+                feature.properties._matched_tags ??
+                feature.properties;
 
-            if (feature.properties._site_member) {
-                feature.properties._app_icon_size = style.iconSize * style.membersIconSize;
-                feature.properties._line_width = style.membersLine ? style.lineWidth : 0;
-                feature.properties._line_color = style.membersLine ? style.lineColor : null;
-                feature.properties._fill_color = style.membersLine ? style.fillColor : null;
-                feature.properties._fill_opacity = style.membersLine ? style.fillOpacity : 0;
+            const style =
+                getIconRule(tags, zoom);
+
+            applyFeatureStyle(feature, style);
+
+            // Kein synthetisches Gegenstück vorhanden.
+            if (!entry.synthetic)
+                continue;
+
+            const syntheticFeature =
+                entry.synthetic.feature;
+
+            if (style.visible) {
+
+                // Real sichtbar → Synthetic unsichtbar.
+                applyFeatureStyle(
+                    syntheticFeature,
+                    invisibleStyle
+                );
+
             } else {
-                feature.properties._app_icon_size = style.iconSize;
-                feature.properties._line_width = style.lineWidth;
-                feature.properties._line_color = style.lineColor;
-                feature.properties._fill_color = style.fillColor;
-                feature.properties._fill_opacity = style.fillOpacity;
+
+                // Real unsichtbar → Synthetic bekommt
+                // seinen eigenen Style.
+                const syntheticTags =
+                    syntheticFeature.properties._matched_tags ??
+                    syntheticFeature.properties;
+
+                const syntheticStyle =
+                    getIconRule(syntheticTags, zoom);
+
+                applyFeatureStyle(
+                    syntheticFeature,
+                    syntheticStyle
+                );
             }
+
+            continue;
+        }
+
+        // --------------------------------------------------------
+        // Nur synthetisches Feature vorhanden
+        // --------------------------------------------------------
+
+        if (entry.synthetic) {
+
+            const feature =
+                entry.synthetic.feature;
+
+            const tags =
+                feature.properties._matched_tags ??
+                feature.properties;
+
+            const style =
+                getIconRule(tags, zoom);
+
+            applyFeatureStyle(
+                feature,
+                style
+            );
         }
     }
 }
+
+
