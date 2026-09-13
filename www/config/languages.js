@@ -5,6 +5,9 @@ export const languages = {
         "button.layers" :                   "Ebenenauswahl",
         "button.language" :                 "Sprache",
         "button.permalink" :                "Permalink speichern",
+        "button.search" :                   "Suchen",
+
+        "input.search" :                    "Ort suchen ...",
 
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",
@@ -84,6 +87,9 @@ export const languages = {
         "button.layers" :                   "Layers",
         "button.language" :                 "Language",
         "button.permalink" :                "Save permalink",
+        "button.search" :                   "Search",
+
+        "input.search" :                    "Search location ...",
 
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",

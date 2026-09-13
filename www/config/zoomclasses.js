@@ -13,6 +13,7 @@ export const zoomClasses = [
             id : "gr_wke",
             objectTypes : [
                 [ "heritage", "1" ],
+                [ "boundary", "protected_area" ]
             ]
         } ]
     },

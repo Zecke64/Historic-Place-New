@@ -1,4 +1,4 @@
-import {getLanguage, getSupportedLanguages, setLanguage, tr} from "./language.js";
+import {getLanguage, getSupportedLanguages, setLanguage, tr, updateLanguage} from "./language.js";
 
 export function createLanguageSelector(container) {
     const button = document.createElement("button");

@@ -8,6 +8,7 @@ import {initPopup} from "./popup.js";
 import {updateLanguage} from "./language.js";
 import {createLanguageSelector} from "./languageSelector.js";
 import {createLayerControl} from "./layerControl.js";
+import {createSearchControl} from "./search.js";
 
 window.addEventListener("languagechange", updateLanguage);
 
@@ -15,6 +16,7 @@ const map = createMap();
 window.mapLibreMap = map;
 
 addControls(map);
+map.addControl(createSearchControl(), "top-left");
 
 // Karte geladen
 map.on("load", async () => {

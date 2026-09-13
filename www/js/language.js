@@ -77,13 +77,21 @@ export function tr(key) { return languages[currentLanguage]?.[key] ?? key; }
  * Alle mit data-i18n markierten
  * Elemente aktualisieren.
  */
+
 export function updateLanguage() {
+
     document.querySelectorAll("[data-i18n]").forEach(element => {
+
         const text = tr(element.dataset.i18n);
 
-        if (element.hasAttribute("title"))
+        if (element.hasAttribute("placeholder")) {
+            element.placeholder = text;
+        }
+        else if (element.hasAttribute("title")) {
             element.title = text;
-        else
+        }
+        else {
             element.textContent = text;
+        }
     });
 }

@@ -359,6 +359,183 @@ out geom qt 500;
 
 
 
+//möglichst wenige Rechtecke bilden
+function mergeTilesIntoRectangles(tiles) {
+
+    if (tiles.length === 0)
+        return [];
+
+    const tileMap = new Map(
+        tiles.map(tile => [`${tile.x}/${tile.y}`, tile])
+    );
+
+    const rectangles = [];
+
+    // ------------------------------------------------------------
+    // 1. Horizontale Segmente bilden
+    // ------------------------------------------------------------
+
+    const rows = new Map();
+
+    for (const tile of tiles) {
+
+        if (!rows.has(tile.y))
+            rows.set(tile.y, []);
+
+        rows.get(tile.y).push(tile.x);
+    }
+
+    for (const [y, xs] of rows) {
+
+        xs.sort((a, b) => a - b);
+
+        let start = xs[0];
+        let previous = xs[0];
+
+        for (let i = 1; i <= xs.length; i++) {
+
+            const x = xs[i];
+
+            if (x === previous + 1) {
+                previous = x;
+                continue;
+            }
+
+            rectangles.push({
+                minX : start,
+                maxX : previous,
+                minY : y,
+                maxY : y
+            });
+
+            start = x;
+            previous = x;
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 2. Identische Segmente über mehrere Zeilen zusammenfassen
+    // ------------------------------------------------------------
+
+    rectangles.sort((a, b) =>
+        a.minY - b.minY ||
+        a.minX - b.minX
+    );
+
+    let merged = [];
+
+    for (const rectangle of rectangles) {
+
+        const previous = merged[merged.length - 1];
+
+        if (
+            previous &&
+            previous.minX === rectangle.minX &&
+            previous.maxX === rectangle.maxX &&
+            previous.maxY + 1 === rectangle.minY
+        ) {
+            previous.maxY = rectangle.maxY;
+        }
+        else {
+            merged.push({...rectangle});
+        }
+    }
+
+    rectangles.length = 0;
+    rectangles.push(...merged);
+
+    // ------------------------------------------------------------
+    // 3. Rechtecke horizontal oder vertikal zusammenführen
+    // ------------------------------------------------------------
+
+    let changed = true;
+
+    while (changed) {
+
+        changed = false;
+
+        outer:
+        for (let i = 0; i < rectangles.length; i++) {
+
+            for (let j = i + 1; j < rectangles.length; j++) {
+
+                const a = rectangles[i];
+                const b = rectangles[j];
+
+                // Vertikal direkt übereinander und gleiche Breite.
+                if (
+                    a.minX === b.minX &&
+                    a.maxX === b.maxX &&
+                    (
+                        a.maxY + 1 === b.minY ||
+                        b.maxY + 1 === a.minY
+                    )
+                ) {
+                    rectangles[i] = {
+                        minX : a.minX,
+                        maxX : a.maxX,
+                        minY : Math.min(a.minY, b.minY),
+                        maxY : Math.max(a.maxY, b.maxY)
+                    };
+
+                    rectangles.splice(j, 1);
+
+                    changed = true;
+                    break outer;
+                }
+
+                // Horizontal direkt nebeneinander und gleiche Höhe.
+                if (
+                    a.minY === b.minY &&
+                    a.maxY === b.maxY &&
+                    (
+                        a.maxX + 1 === b.minX ||
+                        b.maxX + 1 === a.minX
+                    )
+                ) {
+                    rectangles[i] = {
+                        minX : Math.min(a.minX, b.minX),
+                        maxX : Math.max(a.maxX, b.maxX),
+                        minY : a.minY,
+                        maxY : a.maxY
+                    };
+
+                    rectangles.splice(j, 1);
+
+                    changed = true;
+                    break outer;
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 4. Tiles der Rechtecke wieder zuordnen
+    // ------------------------------------------------------------
+
+    for (const rectangle of rectangles) {
+
+        rectangle.tiles = [];
+
+        for (let y = rectangle.minY; y <= rectangle.maxY; y++) {
+
+            for (let x = rectangle.minX; x <= rectangle.maxX; x++) {
+
+                const tile = tileMap.get(`${x}/${y}`);
+
+                if (tile)
+                    rectangle.tiles.push(tile);
+            }
+        }
+    }
+
+    return rectangles;
+}
+
+
+
+/*
+   Variante klassisch
 
 function mergeTilesIntoRectangles(tiles) {
     if (tiles.length === 0)
@@ -433,8 +610,7 @@ function mergeTilesIntoRectangles(tiles) {
 
     return rectangles;
 }
-
-
+*/
 
 
 async function loadPOIs(map) {
