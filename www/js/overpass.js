@@ -36,8 +36,8 @@ const OVERPASS_URL =
     //    "https://overpass-api.de/api/interpreter";
     //    "https://overpass.private.coffee/api/interpreter";
     //"https://mystic.historic.place:4443/api/interpreter";
-    //"https://mystic.historic.place:4444/api/interpreter";
-    "https://mystic.historic.place:4446/api/interpreter";
+    "https://mystic.historic.place:4445/api/interpreter";
+    //"https://mystic.historic.place:4446/api/interpreter";
 
 const sourceId = "osm-pois";
 const MAX_PARALLEL_REQUESTS = 8;
@@ -359,13 +359,6 @@ out geom qt 500;
 
 
 
-/*
-// anscheinend unused
-function getZoomClass(zoom) {
-    return zoomClasses.find(z => zoom >= z.minZoom && zoom <= z.maxZoom);
-}
-*/
-
 
 function mergeTilesIntoRectangles(tiles) {
     if (tiles.length === 0)
@@ -610,118 +603,7 @@ async function loadPOIs(map) {
 
 
 
-async function loadTile(tile, zoomClass, state, signal, zoom) {
-    const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
-
-    // Kachel wurde bereits erfolgreich geladen.
-    if (state.loadedTiles.has(tileId)) {
-        return;
-    }
-
-    // Kachel wird bereits geladen.
-    if (state.loadingTiles.has(tileId)) {
-        console.log("Kachel bereits in Bearbeitung:", zoomClass.id, tileId);
-        return;
-    }
-
-    state.loadingTiles.add(tileId);
-
-    const tileBounds = getTileBounds(tile);
-    const query = createQueryForZoomClass(zoomClass, tileBounds);
-
-    //console.log( "OVERPASS QUERY:", query);
-
-    try {
-        const response = await fetch(OVERPASS_URL, {
-            method : "POST",
-            headers : {"Content-Type" : "application/x-www-form-urlencoded"},
-            body : "data=" + encodeURIComponent(query),
-            signal : signal
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        const text = await response.text();
-
-        let data;
-
-        try {
-            data = JSON.parse(text);
-        } catch (error) {
-            console.error("Overpass-Antwort:", text.substring(0, 1000));
-            throw error;
-        }
-
-        // Overpass-Daten in GeoJSON umwandeln.
-        const geojson = convertToGeoJSON(data, zoomClass, zoom);
-
-        // Bereits vorhandene OSM-Objekte dieser Zoomklasse nicht doppelt übernehmen.
-        const existingIds = new Set(state.features.map(
-            feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
-
-        for (const feature of geojson.features) {
-            
-            const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
-            const existing = loadedFeatures.get(id);
-
-            // das aktuelle feature ist noch nirgendwo vorhanden
-            if (!existing) {
-
-                state.features.push(feature);
-                loadedFeatureIds.add(id);
-
-                // in loadedFeatures merken, ob ein feature real oder synthetisch ist
-                loadedFeatures.set(id, {
-                    real: feature.properties._site_synthetic
-                        ? null
-                        : { state, feature },
-                    synthetic: feature.properties._site_synthetic
-                        ? { state, feature }
-                        : null
-                });
-                continue;
-            }
-
-            // Reales Feature kommt nach einem synthetischen.
-            if (!feature.properties._site_synthetic && !existing.real) {
-
-                state.features.push(feature);
-                existing.real = { state, feature };
-                continue;
-            }
-        }
-
-        // Erst nach erfolgreicher Verarbeitung gilt die Kachel als geladen.
-        state.loadedTiles.add(tileId);
-    }
-
-    catch (error) {
-        if (error.name !== "AbortError") {
-            console.error("Overpass Fehler:", error);
-        }
-    }
-
-    finally {
-        state.loadingTiles.delete(tileId);
-    }
-}
-
-
-
-async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
-
-    const tileIds = rectangle.tiles.map(tile => `${tile.zoom}/${tile.x}/${tile.y}`);
-
-    // Nur tatsächlich noch benötigte Tiles berücksichtigen.
-    const tiles = rectangle.tiles.filter(tile => {
-        const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
-        return !state.loadedTiles.has(tileId);
-    });
-
-    if (tiles.length === 0)
-        return;
+async function loadTiles(tiles, bounds, zoomClass, state, signal, zoom) {
 
     // Alle Tiles des Requests als "loading" markieren.
     for (const tile of tiles) {
@@ -729,7 +611,6 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
         state.loadingTiles.add(tileId);
     }
 
-    const bounds = getRectangleBounds({...rectangle, tiles : tiles});
     const query = createQueryForZoomClass(zoomClass, bounds);
 
     try {
@@ -752,35 +633,36 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
             data = JSON.parse(text);
         } catch (error) {
             console.error("Overpass-Antwort:", text.substring(0, 1000));
-
             throw error;
         }
 
         // Overpass-Daten in GeoJSON umwandeln.
         const geojson = convertToGeoJSON(data, zoomClass, zoom);
 
-        // Bereits vorhandene OSM-Objekte nicht doppelt übernehmen.
-        const existingIds = new Set(state.features.map(
-            feature => feature.properties._osm_type + "/" + feature.properties._osm_id));
-
+        // Features übernehmen.
         for (const feature of geojson.features) {
 
-            const id = feature.properties._osm_type + "/" + feature.properties._osm_id;
+            const id =
+                feature.properties._osm_type + "/" +
+                feature.properties._osm_id;
+
             const existing = loadedFeatures.get(id);
 
-            // das aktuelle feature ist noch nirgendwo vorhanden
+            // Das aktuelle Feature ist noch nirgendwo vorhanden.
             if (!existing) {
 
                 state.features.push(feature);
                 loadedFeatureIds.add(id);
 
-                // in loadedFeatures merken, ob ein feature real oder synthetisch ist
+                // In loadedFeatures merken, ob ein Feature real oder
+                // synthetisch ist.
                 loadedFeatures.set(id, {
-                    real: feature.properties._site_synthetic
+                    real : feature.properties._site_synthetic
                         ? null
-                        : { state, feature },
-                    synthetic: feature.properties._site_synthetic
-                        ? { state, feature }
+                        : {state, feature},
+
+                    synthetic : feature.properties._site_synthetic
+                        ? {state, feature}
                         : null
                 });
 
@@ -791,17 +673,14 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
             if (!feature.properties._site_synthetic && !existing.real) {
 
                 state.features.push(feature);
-                existing.real = { state, feature };
-
-                continue;
+                existing.real = {state, feature};
             }
         }
 
-        // Erst wenn der komplette Request erfolgreich verarbeitet wurde, 
-        // alle enthaltenen Tiles als geladen markieren.
+        // Erst nach erfolgreicher Verarbeitung gilt der Request
+        // als geladen.
         for (const tile of tiles) {
             const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
-
             state.loadedTiles.add(tileId);
         }
     }
@@ -813,15 +692,89 @@ async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
     }
 
     finally {
-        // loading immer entfernen.
-        // Bei Fehler bleiben die Tiles bewusst NICHT
-        // in loadedTiles und können später erneut geladen werden.
+        // Bei Fehler bleiben die Tiles bewusst NICHT in
+        // loadedTiles und können später erneut geladen werden.
         for (const tile of tiles) {
             const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
             state.loadingTiles.delete(tileId);
         }
     }
 }
+
+
+
+function getTilesToLoad(tiles, state, zoomClass) {
+
+    return tiles.filter(tile => {
+        const tileId = `${tile.zoom}/${tile.x}/${tile.y}`;
+
+        if (state.loadedTiles.has(tileId))
+            return false;
+
+        if (state.loadingTiles.has(tileId)) {
+            console.log("Kachel bereits in Bearbeitung:",
+                        zoomClass.id, tileId);
+            return false;
+        }
+
+        return true;
+    });
+}
+
+
+
+async function loadTile(tile, zoomClass, state, signal, zoom) {
+
+    const tiles = getTilesToLoad(
+        [tile],
+        state,
+        zoomClass
+    );
+
+    if (tiles.length === 0)
+        return;
+
+    const bounds = getTileBounds(tile);
+
+    await loadTiles(
+        tiles,
+        bounds,
+        zoomClass,
+        state,
+        signal,
+        zoom
+    );
+}
+
+
+
+
+async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
+
+    const tiles = getTilesToLoad(
+        rectangle.tiles,
+        state,
+        zoomClass
+    );
+
+    if (tiles.length === 0)
+        return;
+
+    const bounds = getRectangleBounds({
+        ...rectangle,
+        tiles
+    });
+
+    await loadTiles(
+        tiles,
+        bounds,
+        zoomClass,
+        state,
+        signal,
+        zoom
+    );
+}
+
 
 
 
