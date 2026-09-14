@@ -159,6 +159,11 @@ export async function showPopup(map, feature) {
         if (imageInfo?.source === "commons-category") {
             installImageGalleryHandler(container, imageInfo.images);
         }
+
+        requestAnimationFrame(() => {
+            if (thisPopupId === popupSequence && currentPopup)
+                currentPopup._update();
+        });
     }
 }
 
