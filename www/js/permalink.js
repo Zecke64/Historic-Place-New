@@ -1,8 +1,8 @@
 import {layerConfig} from "../config/layerconf.js";
 
 import {currentPopupFeature} from "./popup.js";
-import {tr} from "./language.js";
 import {refreshLayerControl} from "./layerControl.js";
+import {tr, getLanguage, setLanguage, updateLanguage } from "./language.js";
 
 let pendingPermalinkPoi = null;
 
@@ -24,9 +24,7 @@ export function createPermalinkControl(map) {
         const bearing = map.getBearing();
         const pitch = map.getPitch();
 
-        /*
-         * Sichtbare Layer ermitteln.
-         */
+        // Sichtbare Layer ermitteln.
         const layers = [];
 
         for (const layer of layerConfig) {
@@ -35,9 +33,7 @@ export function createPermalinkControl(map) {
 
             let opacity = 1;
 
-            /*
-             * Der sichtbare MapLibre-Layer.
-             */
+            // Der sichtbare MapLibre-Layer.
             let mapLayerId;
 
             if (layer.id === "osm-pois") {
@@ -52,10 +48,7 @@ export function createPermalinkControl(map) {
                 if (type === "raster") {
                     opacity = map.getPaintProperty(mapLayerId, "raster-opacity");
 
-                    /*
-                     * Sicherheitshalber:
-                     * falls MapLibre keinen Wert liefert.
-                     */
+                    // Sicherheitshalber: falls MapLibre keinen Wert liefert.
                     if (opacity == null)
                         opacity = 1;
                 }
@@ -64,13 +57,12 @@ export function createPermalinkControl(map) {
             layers.push(`${layer.id}:${opacity}`);
         }
 
-        /*
-         * Zustand in URL-Parameter schreiben.
-         */
+        // Zustand in URL-Parameter schreiben.
         const params = new URLSearchParams();
         params.set("lon", center.lng.toFixed(6));
         params.set("lat", center.lat.toFixed(6));
         params.set("z", zoom.toFixed(2));
+        params.set("lang", getLanguage());
 
         if (bearing !== 0) {
             params.set("b", bearing.toFixed(2));
@@ -98,10 +90,7 @@ export function createPermalinkControl(map) {
             await navigator.clipboard.writeText(url);
             console.log("Permalink kopiert:", url);
 
-            /*
-             * Vorübergehend den Titel ändern,
-             * damit man eine optische Rückmeldung bekommt.
-             */
+            // Vorübergehend den Titel ändern, damit man eine optische Rückmeldung bekommt.
             const oldTitle = button.title;
             button.title = "Link kopiert";
 
@@ -114,10 +103,11 @@ export function createPermalinkControl(map) {
     map.getContainer().appendChild(button);
 }
 
+
+
+
 function isLayerVisible(map, layer) {
-    /*
-     * Dynamischer POI-Layer
-     */
+    // Dynamischer POI-Layer
     if (layer.id === "osm-pois") {
         if (!map.getLayer("osm-pois"))
             return false;
@@ -125,9 +115,7 @@ function isLayerVisible(map, layer) {
         return (map.getLayoutProperty("osm-pois", "visibility") !== "none");
     }
 
-    /*
-     * Raster-Layer
-     */
+    // Raster-Layer
     const rasterId = `${layer.id}-raster`;
 
     if (map.getLayer(rasterId)) {
@@ -137,8 +125,16 @@ function isLayerVisible(map, layer) {
     return false;
 }
 
+
+
+
 export function loadPermalink(map) {
     const params = new URLSearchParams(window.location.search);
+
+    const language = params.get("lang");
+
+    if (language)
+        setLanguage(language);
 
     if (!params.has("lon") || !params.has("lat") || !params.has("z")) {
         return false;
@@ -160,9 +156,7 @@ export function loadPermalink(map) {
         console.log("PERMALINK POI vorgemerkt:", pendingPermalinkPoi);
     }
 
-    /*
-     * Bearing und Pitch
-     */
+    // Bearing und Pitch
     const bearing = parseFloat(params.get("b"));
     const pitch = parseFloat(params.get("p"));
     const jumpOptions = {center : [ lon, lat ], zoom : zoom};
@@ -173,21 +167,21 @@ export function loadPermalink(map) {
     if (Number.isFinite(pitch))
         jumpOptions.pitch = pitch;
 
-    /*
-     * Kartenausschnitt herstellen.
-     */
+    // Kartenausschnitt herstellen.
     map.jumpTo(jumpOptions);
 
-    /*
-     * Layer und Transparenzen wiederherstellen.
-     */
+    // Layer und Transparenzen wiederherstellen.
     restoreLayers(map, params);
     refreshLayerControl(map);
 
-    console.log("Permalink geladen:", {lon, lat, zoom, bearing, pitch, poi});
+    console.log("Permalink geladen:", {lon, lat, zoom, bearing, pitch, poi, language});
 
     return true;
 }
+
+
+
+
 
 function restoreLayers(map, params) {
     const layerParameter = params.get("layers");
@@ -205,9 +199,7 @@ function restoreLayers(map, params) {
         activeLayers.set(id, Number.isFinite(opacity) ? opacity : 1);
     }
 
-    /*
-     * Zuerst alle Layer deaktivieren.
-     */
+    // Zuerst alle Layer deaktivieren.
     for (const layer of layerConfig) {
         let mapLayerId;
 
@@ -221,10 +213,7 @@ function restoreLayers(map, params) {
         }
     }
 
-    /*
-     * Danach die im Permalink gespeicherten
-     * Layer wieder aktivieren.
-     */
+    // Danach die im Permalink gespeicherten Layer wieder aktivieren.
     for (const [id, opacity] of activeLayers) {
         let mapLayerId;
 
@@ -238,9 +227,7 @@ function restoreLayers(map, params) {
 
         map.setLayoutProperty(mapLayerId, "visibility", "visible");
 
-        /*
-         * Transparenz wiederherstellen.
-         */
+        // Transparenz wiederherstellen.
         const layerType = map.getLayer(mapLayerId).type;
 
         if (layerType === "raster") {
