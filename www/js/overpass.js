@@ -1488,6 +1488,9 @@ export function initPrefetch(map) {
 
 function applyFeatureStyle(feature, style) {
 
+    // style weiß bei real/synthetisch welches feature sichtbar ist
+    feature.properties._app_visible = style.visible;
+
     const isSynthetic =
         feature.properties._site_synthetic === true;
 
@@ -1612,5 +1615,6 @@ function updateFeatureStyles(zoom) {
         }
     }
 }
+
 
 

@@ -8,9 +8,8 @@ export let currentPopupFeature = null;
 let popupSequence = 0;
 
 export function initPopup(map) {
-    /*
-     * Klick auf einzelne POIs und Objekt-Icons
-     */
+
+    // Klick auf einzelne POIs und Objekt-Icons
     for (const layer of ["osm-pois", "osm-object-icons"]) {
         map.on("click", layer, async e => {
             console.log("FEATURE CLICK", layer, e.features);
@@ -18,14 +17,21 @@ export function initPopup(map) {
             if (!e.features || !e.features.length)
                 return;
 
-            const feature = e.features[0];
+            const feature =
+                e.features.find(f =>
+                    f.properties._site_synthetic !== true &&
+                    f.properties._app_icon_size > 0
+                ) ??
+                e.features.find(f =>
+                    f.properties._site_synthetic === true &&
+                    f.properties._app_icon_size > 0
+                ) ??
+                e.features[0];
 
             showPopup(map, feature);
         });
 
-        /*
-         * Mauszeiger
-         */
+        // Mauszeiger
         map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
         map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
     }
