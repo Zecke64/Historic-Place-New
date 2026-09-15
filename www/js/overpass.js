@@ -330,20 +330,79 @@ function getRectangleBounds(rectangle) {
                                        [ lastBounds.getEast(), firstBounds.getNorth() ]);
 }
 
+
+
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+
+function createObjectTypeQuery(key, values, lifecycle = false) {
+
+    const valueRegex =
+        values.length === 1
+            ? `^${escapeRegex(values[0])}$`
+            : `^(${values.map(escapeRegex).join("|")})$`;
+
+    if (!lifecycle) {
+        return `["${key}"~"${valueRegex}"]`;
+    }
+
+    return `[~"^(disused:|abandoned:|razed:)*${key}$"~"${valueRegex}"]`;
+}
+
+
+
+
 function createQueryForZoomClass(zoomClass, bounds) {
-    const south = bounds.getSouth();
-    const west = bounds.getWest();
-    const north = bounds.getNorth();
-    const east = bounds.getEast();
+
+    const bbox =
+        `${bounds.getSouth()},${bounds.getWest()},` +
+        `${bounds.getNorth()},${bounds.getEast()}`;
+
+    // Gleiche Keys zusammenfassen.
+    //
+    // lifecycle und key bilden gemeinsam den Gruppierungsschlüssel,
+    // weil z. B. "historic" und "disused:historic" unterschiedliche
+    // Overpass-Selektoren ergeben.
+    const grouped = new Map();
+
+    for (const group of zoomClass.groups) {
+
+        const lifecycle = group.lifecycle === true;
+
+        for (const [key, value] of group.objectTypes) {
+
+            const groupKey = `${lifecycle}:${key}`;
+
+            if (!grouped.has(groupKey)) {
+                grouped.set(groupKey, {
+                    key,
+                    lifecycle,
+                    values: []
+                });
+            }
+
+            grouped.get(groupKey).values.push(value);
+        }
+    }
 
     const queries = [];
 
-    for (const group of zoomClass.groups) {
-        for (const [key, value] of group.objectTypes) {
-            const objectTypeQuery = createObjectTypeQuery(key, value, group.lifecycle === true);
+    for (const { key, lifecycle, values } of grouped.values()) {
 
-            queries.push(`nwr${objectTypeQuery}(${south},${west},${north},${east});`);
-        }
+        const uniqueValues = [...new Set(values)];
+
+        const objectTypeQuery =
+            createObjectTypeQuery(
+                key,
+                uniqueValues,
+                lifecycle
+            );
+
+        queries.push(
+            `nwr${objectTypeQuery}(${bbox});`
+        );
     }
 
     return `
@@ -356,6 +415,7 @@ function createQueryForZoomClass(zoomClass, bounds) {
 out geom qt 500;
 `;
 }
+
 
 
 
@@ -789,6 +849,8 @@ async function loadTiles(tiles, bounds, zoomClass, state, signal, zoom) {
 
     const query = createQueryForZoomClass(zoomClass, bounds);
 
+    console.log ("QUERY:",query);
+    
     try {
         const response = await fetch(OVERPASS_URL, {
             method : "POST",
@@ -1280,13 +1342,7 @@ function clearSource(map) {
     }
 }
 
-function createObjectTypeQuery(key, value, lifecycle = false) {
-    if (!lifecycle) {
-        return `["${key}"="${value}"]`;
-    }
 
-    return `[ ~"^(disused:|abandoned:|razed:)*${key}$"~"^${value}$" ]`;
-}
 
 function getGeometryCenter(coordinates) {
     let minLon = Infinity;
@@ -1510,7 +1566,7 @@ function applyFeatureStyle(feature, style) {
 
     feature.properties._app_icon_rotate =
         style.rotation && Number.isFinite(direction)
-            ? direction
+            ? direction-180
             : 0;
 
     feature.properties._line_width =
