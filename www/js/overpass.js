@@ -849,7 +849,7 @@ async function loadTiles(tiles, bounds, zoomClass, state, signal, zoom) {
 
     const query = createQueryForZoomClass(zoomClass, bounds);
 
-    console.log ("QUERY:",query);
+    // console.log ("QUERY:",query);
     
     try {
         const response = await fetch(OVERPASS_URL, {
@@ -987,6 +987,44 @@ async function loadTile(tile, zoomClass, state, signal, zoom) {
 
 
 
+function parseDirection(value) {
+
+    if (value == null)
+        return null;
+
+    const text = String(value).trim().toUpperCase();
+
+    // Gradangabe
+    const degrees = Number(text);
+
+    if (Number.isFinite(degrees))
+        return ((degrees % 360) + 360) % 360;
+
+    // Himmelsrichtung
+    const directions = {
+        N   : 0,
+        NNE : 22.5,
+        NE  : 45,
+        ENE : 67.5,
+        E   : 90,
+        ESE : 112.5,
+        SE  : 135,
+        SSE : 157.5,
+        S   : 180,
+        SSW : 202.5,
+        SW  : 225,
+        WSW : 247.5,
+        W   : 270,
+        WNW : 292.5,
+        NW  : 315,
+        NNW : 337.5
+    };
+
+    return directions[text] ?? null;
+}
+
+
+
 async function loadTileRectangle(rectangle, zoomClass, state, signal, zoom) {
 
     const tiles = getTilesToLoad(
@@ -1091,8 +1129,8 @@ function convertToGeoJSON(data, zoomClass) {
             : invisibleStyle;
 
         // Drehung des Icons nur, wenn rotation explizit auf true gesetzt ist
-        const direction = parseFloat(originalTags?.direction);
-        const iconRotation = style.rotation && Number.isFinite(direction)
+        const direction = parseDirection(originalTags?.direction);
+        const iconRotation = style.rotation && direction !== null
             ? direction-180     // wir drehen um 180° damit wir in Richtung des Objekts schauen
             : 0;
 
@@ -1562,10 +1600,10 @@ function applyFeatureStyle(feature, style) {
         feature.properties._matched_tags ??
         feature.properties;
 
-    const direction = parseFloat(tags?.direction);
+    const direction = parseDirection(tags?.direction);
 
     feature.properties._app_icon_rotate =
-        style.rotation && Number.isFinite(direction)
+        style.rotation && direction !== null
             ? direction-180
             : 0;
 
