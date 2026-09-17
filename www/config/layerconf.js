@@ -160,7 +160,7 @@ export const layerConfig = [
         opacityControl : false,
         display : {
             overview :  {minZoom : 6}, 
-            detail :    {minZoom : 6}
+            detail :    {minZoom : 12}
         },
         mapLayers : [
             {id : "poi-clusters",       type : "circle"}, 

@@ -66,6 +66,7 @@ let loadPOIsController = null;
 let prefetchTimer = null;
 let prefetchController = null;
 let prefetchPending = false;
+let lastZoom = 0;
 
 export function initOverpassLayer(map) {
 
@@ -186,6 +187,7 @@ export function initOverpassLayer(map) {
 
     // Zoomvorgang merken
     map.on("zoomstart", () => {
+        lastZoom = Math.trunc(map.getZoom());
         if (loadPOIsRunning && loadPOIsController) {
             console.log("ZOOM START – laufende Requests abbrechen");
             loadPOIsController.abort();
@@ -193,10 +195,8 @@ export function initOverpassLayer(map) {
     });
 
     map.on("zoomend", () => {
-        updateFeatureStyles(map.getZoom());
-        updateMapSources(map);
-        // Hier müssen die drei/vier GeoJSON-Sources
-        // mit den aktualisierten Features neu gesetzt werden.
+        if (lastZoom != Math.trunc(map.getZoom()))
+            loadPOIs(map);
     });
 
     // Nach Kartenbewegung neu laden
@@ -834,6 +834,10 @@ async function loadPOIs(map) {
             prefetchPending = false;
             prefetchPOIs(map);
         }
+
+        // besser gleich hier
+        updateFeatureStyles(map.getZoom());
+        updateMapSources(map);
     }
 }
 
