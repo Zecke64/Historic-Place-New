@@ -25,18 +25,12 @@ map.on("load", async () => {
     initZoomHandling(map);
     createLayerControl(map);
     createPermalinkControl(map);
+    createLanguageSelector();
     loadPermalink(map);
     await loadIcons(map);
     initOverpassLayer(map);
     initPopup(map);
     initPrefetch(map);
-
-    //console.log("MapLibre Layer:", map.getStyle().layers.map(l => l.id));
-
-    const languageContainer = document.createElement("div");
-    languageContainer.className = "language-selector-container";
-    document.body.appendChild(languageContainer);
-    createLanguageSelector(languageContainer);
 });
 
 // Zoomanzeige

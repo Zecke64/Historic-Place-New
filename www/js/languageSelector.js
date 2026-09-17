@@ -1,6 +1,11 @@
 import {getLanguage, getSupportedLanguages, setLanguage, tr, updateLanguage} from "./language.js";
 
-export function createLanguageSelector(container) {
+export function createLanguageSelector() {
+
+    const languageContainer = document.createElement("div");
+    languageContainer.className = "language-selector-container";
+    document.body.appendChild(languageContainer);
+
     const button = document.createElement("button");
     button.id = "language-button";
     button.className = "map-control-button";
@@ -15,28 +20,22 @@ export function createLanguageSelector(container) {
     const panel = document.createElement("div");
 
     panel.id = "language-control";
-
     panel.style.display = "none";
 
     const flagFiles = {de : "de.svg", en : "gb.svg"};
 
     for (const language of getSupportedLanguages()) {
-        const option = document.createElement("div");
 
+        const option = document.createElement("div");
         option.className = "language-option";
 
         const flag = document.createElement("img");
-
         flag.className = "language-flag";
-
         flag.src = "img/flags/" + flagFiles[language];
-
         flag.alt = language.toUpperCase();
 
         const code = document.createElement("span");
-
         code.className = "language-code";
-
         code.textContent = language.toUpperCase();
 
         option.appendChild(flag);
@@ -44,9 +43,7 @@ export function createLanguageSelector(container) {
 
         option.addEventListener("click", () => {
             setLanguage(language);
-
             panel.style.display = "none";
-
             updateLanguage();
         });
 
@@ -57,7 +54,7 @@ export function createLanguageSelector(container) {
         "click",
         () => { panel.style.display = panel.style.display === "none" ? "block" : "none"; });
 
-    const map = container.parentElement;
+    const map = languageContainer.parentElement;
     map.appendChild(button);
     map.appendChild(panel);
 
