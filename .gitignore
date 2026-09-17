@@ -1,1 +1,3 @@
 /www/config/*.lutz
+/www/config.*
+/www/img.*
