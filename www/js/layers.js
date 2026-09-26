@@ -20,6 +20,10 @@ export async function initLayerManager(map) {
             addRasterLayer(map, layer);
         }
 
+        if (layer.source && layer.source.type === "wms") {
+            addWmsLayer(map, layer);
+        }
+
         if (layer.shape) {
             await addGeoJsonLayer(map, layer);
         }
@@ -56,6 +60,50 @@ export function addRasterLayer(map, options) {
     layers[id] =
         {id : id, titleKey : options.titleKey, category : options.category, opacity : opacity};
 }
+
+
+
+function addWmsLayer(map, layer) {
+
+    const sourceId = `${layer.id}-wms-source`;
+    const layerId = `${layer.id}-wms`;
+
+    const params = new URLSearchParams({
+        SERVICE: "WMS",
+        VERSION: layer.source.version ?? "1.3.0",
+        REQUEST: "GetMap",
+        LAYERS: layer.source.layers,
+        STYLES: "",
+        FORMAT: layer.source.format ?? "image/png",
+        TRANSPARENT: layer.source.transparent ? "TRUE" : "FALSE",
+        CRS: layer.source.crs,
+        WIDTH: "256",
+        HEIGHT: "256"
+    });
+
+    const url =
+        `${layer.source.url}?${params.toString()}` +
+        "&BBOX={bbox-epsg-3857}";
+
+    map.addSource(sourceId, {
+        type: "raster",
+        tiles: [url],
+        tileSize: layer.source.tileSize ?? 256
+    });
+
+    map.addLayer({
+        id: layerId,
+        type: "raster",
+        source: sourceId,
+        layout: {
+            visibility: layer.visible ? "visible" : "none"
+        },
+        paint: {
+            "raster-opacity": layer.opacity ?? 1
+        }
+    });
+}
+
 
 
 export async function addGeoJsonLayer(map, options) {
@@ -171,6 +219,27 @@ export function updateLayerVisibility(map) {
     const zoom = map.getZoom();
 
     for (const layer of layerConfig) {
+
+        if (layer.source?.type === "wms") {
+
+            const mapLayerId = `${layer.id}-wms`;
+
+            if (map.getLayer(mapLayerId)) {
+                const minZoom =
+                    layer.display?.detail?.minZoom ?? 0;
+
+                const visible =
+                    layer.visible && zoom >= minZoom;
+
+                map.setLayoutProperty(
+                    mapLayerId,
+                    "visibility",
+                    visible ? "visible" : "none"
+                );
+            }
+
+            continue;
+        }
 
         for (const mapLayer of layer.mapLayers) {
             let visible = false;

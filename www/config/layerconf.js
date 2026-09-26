@@ -31,8 +31,28 @@ export const layerTemplates =
         {
             type: "geojson"
         },
+    },
+
+    "wms-template":
+    {
+        extends: "basis-template",
+        type: "wms",
+        source:
+        {
+            type: "wms",
+            version: "1.3.0",
+            format: "image/png",
+            transparent: false
+        },
+        display:
+        {
+            overview: { minZoom: 0 },
+            detail:   { minZoom: 0 }
+        }
     }
 };
+
+
 
 export const layerConfig = [
 
@@ -1335,6 +1355,26 @@ export const layerConfig = [
         credit : 'Staatsbibliothek Berlin / LVGL Saarland'
     },
 
+
+    // #################################################################################
+    //
+    //  WMS-Layer
+    //
+    // #################################################################################
+
+    {
+        id: "mtb-sachsen-vor-1945",
+        template: "wms-template",
+        titleKey: "layer.mtb-sachsen-vor-1945",
+        description: "Messtischblatt vor 1945",
+        source: {
+            url: "https://geodienste.sachsen.de/wms_geosn_hist/guest",
+            layers: "messtischblatt_vor_1945",
+            transparent: true,
+            crs: "EPSG:3857",
+        },
+        credit: "GeoSN"
+    },
 
 
     // #################################################################################

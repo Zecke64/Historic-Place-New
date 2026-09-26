@@ -8,6 +8,34 @@ let creditElement = null;
 const osmCredit = "© OpenStreetmap Contributors";
 
 
+
+function getRasterLayer(layer, map) {
+
+    if (layer.source?.type === "wms") {
+        const id = `${layer.id}-wms`;
+
+        if (map.getLayer(id)) {
+            return {
+                id,
+                type: "raster"
+            };
+        }
+
+        return null;
+    }
+
+    for (const mapLayer of layer.mapLayers ?? []) {
+        if (mapLayer.type !== "raster")
+            continue;
+
+        if (map.getLayer(mapLayer.id))
+            return mapLayer;
+    }
+
+    return null;
+}
+
+
 export function createLayerControl(map) {
 
     const button = document.createElement("button");
@@ -209,10 +237,22 @@ function createOpacityControl(layer, map) {
     // Aktuelle Transparenz aus MapLibre lesen.
     let opacity = layer.opacity;
 
+    /*
     const rasterId = `${layer.id}-raster`;
 
     if (map.getLayer(rasterId)) {
         const mapOpacity = map.getPaintProperty(rasterId, "raster-opacity");
+        if (mapOpacity != null)
+            opacity = mapOpacity;
+    }
+    */
+
+    const rasterLayer = getRasterLayer(layer, map);
+
+    if (rasterLayer) {
+        const mapOpacity =
+            map.getPaintProperty(rasterLayer.id, "raster-opacity");
+
         if (mapOpacity != null)
             opacity = mapOpacity;
     }
@@ -268,6 +308,7 @@ function createOverlayEntry(layer, map) {
 }
 
 
+/*
 function setLayerOpacity(map, layer, opacity) {
 
     layer.opacity = opacity;
@@ -295,6 +336,58 @@ function setLayerOpacity(map, layer, opacity) {
 
             map.setPaintProperty(mapLayer.id, "text-opacity", opacity);
 
+            break;
+        }
+    }
+}
+*/
+
+
+function setLayerOpacity(map, layer, opacity) {
+
+    layer.opacity = opacity;
+
+    const rasterLayer = getRasterLayer(layer, map);
+
+    if (rasterLayer) {
+        map.setPaintProperty(
+            rasterLayer.id,
+            "raster-opacity",
+            opacity
+        );
+    }
+
+    if (!layer.mapLayers)
+        return;
+
+    for (const mapLayer of layer.mapLayers) {
+        if (!map.getLayer(mapLayer.id))
+            continue;
+
+        switch (mapLayer.type) {
+        case "fill":
+        case "line":
+            break;
+
+        case "circle":
+            map.setPaintProperty(
+                mapLayer.id,
+                "circle-opacity",
+                opacity
+            );
+            break;
+
+        case "symbol":
+            map.setPaintProperty(
+                mapLayer.id,
+                "icon-opacity",
+                opacity
+            );
+            map.setPaintProperty(
+                mapLayer.id,
+                "text-opacity",
+                opacity
+            );
             break;
         }
     }
@@ -335,10 +428,21 @@ function createBaseEntry(layer, map) {
     radio.name = "base-layer";
 
     // Aktuelle Sichtbarkeit aus MapLibre lesen.
+    /*
     const rasterId = `${layer.id}-raster`;
 
     if (map.getLayer(rasterId)) {
         radio.checked = map.getLayoutProperty(rasterId, "visibility") !== "none";
+    } else {
+        radio.checked = false;
+    }
+    */
+
+    const rasterLayer = getRasterLayer(layer, map);
+
+    if (rasterLayer) {
+        radio.checked =
+            map.getLayoutProperty(rasterLayer.id, "visibility") !== "none";
     } else {
         radio.checked = false;
     }
@@ -431,6 +535,7 @@ function layerIsInView(map, layer) {
 
 
 // Zoom >= minZoom(layer)?
+/*
 function layerIsAvailable(map, layer) {
 
     if (layer.category !== "overlay")
@@ -455,6 +560,41 @@ function layerIsAvailable(map, layer) {
 
     return true;
 }
+*/
+
+
+function layerIsAvailable(map, layer) {
+
+    if (layer.category !== "overlay")
+        return true;
+
+    const minZoom = layer.display?.overview?.minZoom;
+
+    if (minZoom !== undefined && map.getZoom() < minZoom) {
+        return false;
+    }
+
+    // WMS-Layer sind nicht an eine GeoJSON-Shape gebunden.
+    if (layer.source?.type === "wms")
+        return true;
+
+    if (!layer._shapeBounds)
+        return false;
+
+    const mapBounds = map.getBounds();
+    const shapeBounds = layer._shapeBounds;
+
+    if (shapeBounds.maxLon < mapBounds.getWest() ||
+        shapeBounds.minLon > mapBounds.getEast() ||
+        shapeBounds.maxLat < mapBounds.getSouth() ||
+        shapeBounds.minLat > mapBounds.getNorth()) {
+        return false;
+    }
+
+    return true;
+}
+
+
 
 
 export function refreshLayerControl(map) {

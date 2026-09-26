@@ -95,6 +95,8 @@ export const languages = {
         "layer.Voelklingen_1823" :          "Tractus Völklingen 1823", 
         "layer.Saar-PreussUr-1850" :        "Preussische Uraufnahme 1850", 
 
+        "layer.mtb-sachsen-vor-1945" :      "Sachsen vor 1945",
+
         "status.mouse" : "Maus:",
         "status.pois" : "POIs:",
 
