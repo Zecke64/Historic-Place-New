@@ -71,7 +71,29 @@ export function getSupportedLanguages() { return Object.keys(languages); }
  * Falls kein Schlüssel existiert,
  * wird der Schlüssel selbst zurückgegeben.
  */
-export function tr(key) { return languages[currentLanguage]?.[key] ?? key; }
+
+//export function tr(key) { return languages[currentLanguage]?.[key] ?? key; }
+
+export function tr(key) {
+
+    // 1. Aktuell ausgewählte Sprache
+    if (languages[currentLanguage]?.[key] !== undefined)
+        return languages[currentLanguage][key];
+
+    // 2. Englisch als Fallback
+    if (languages.en?.[key] !== undefined)
+        return languages.en[key];
+
+    // 3. Erste Sprache, die den Key enthält
+    for (const language of Object.keys(languages)) {
+        if (languages[language]?.[key] !== undefined)
+            return languages[language][key];
+    }
+
+    // 4. Key selbst als letzter Fallback
+    return key;
+}
+
 
 /*
  * Alle mit data-i18n markierten

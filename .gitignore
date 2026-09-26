@@ -1,3 +1,5 @@
 /www/config/*.lutz
+/www/config/*.zecke
 /www/config.*
-/www/img.*
+/www/*/*.sav
+/www/*.*

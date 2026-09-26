@@ -36,8 +36,8 @@ const OVERPASS_URL =
     //    "https://overpass-api.de/api/interpreter";
     //    "https://overpass.private.coffee/api/interpreter";
     //"https://mystic.historic.place:4443/api/interpreter";
-    "https://mystic.historic.place:4445/api/interpreter";
-    //"https://mystic.historic.place:4446/api/interpreter";
+    //"https://mystic.historic.place:4445/api/interpreter";
+    "https://mystic.historic.place:4446/api/interpreter";
 
 const sourceId = "osm-pois";
 const MAX_PARALLEL_REQUESTS = 8;
