@@ -81,6 +81,28 @@ export async function showPopup(map, feature) {
             .setHTML(html)
             .addTo(map);
 
+    const popupDomElement = currentPopup.getElement();
+    const popupContent = popupDomElement?.querySelector(".maplibregl-popup-content");
+
+    let popupResizeObserver = null;
+
+    if (popupContent) {
+
+        let updateScheduled = false;
+        popupResizeObserver = new ResizeObserver(() => {
+            if (updateScheduled)
+                return;
+            updateScheduled = true;
+            requestAnimationFrame(() => {
+                updateScheduled = false;
+                if (thisPopupId === popupSequence && currentPopup)
+                    currentPopup._update();
+            });
+        });
+
+        popupResizeObserver.observe(popupContent);
+    }
+
     currentPopup.on("close", () => {
         currentPopup = null;
         currentPopupFeature = null;

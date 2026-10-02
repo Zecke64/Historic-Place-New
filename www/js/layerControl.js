@@ -560,7 +560,6 @@ function layerIsAvailable(map, layer) {
 
     return true;
 }
-*/
 
 
 function layerIsAvailable(map, layer) {
@@ -593,6 +592,38 @@ function layerIsAvailable(map, layer) {
 
     return true;
 }
+*/
+
+
+
+function layerIsAvailable(map, layer) {
+
+    if (layer.category !== "overlay")
+        return true;
+
+    const minZoom = layer.display?.overview?.minZoom;
+
+    if (minZoom !== undefined && map.getZoom() < minZoom) {
+        return false;
+    }
+
+    // Wenn keine Shape vorhanden ist, ist der Layer überall verfügbar.
+    if (!layer._shapeBounds)
+        return true;
+
+    const mapBounds = map.getBounds();
+    const shapeBounds = layer._shapeBounds;
+
+    if (shapeBounds.maxLon < mapBounds.getWest() ||
+        shapeBounds.minLon > mapBounds.getEast() ||
+        shapeBounds.maxLat < mapBounds.getSouth() ||
+        shapeBounds.minLat > mapBounds.getNorth()) {
+        return false;
+    }
+
+    return true;
+}
+
 
 
 

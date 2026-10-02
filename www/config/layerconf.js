@@ -42,7 +42,12 @@ export const layerTemplates =
             type: "wms",
             version: "1.3.0",
             format: "image/png",
-            transparent: false
+            transparent: false,
+            crs: "EPSG:3857"
+        },
+        shape:
+        {
+            type: "geojson"
         },
         display:
         {
@@ -92,6 +97,22 @@ export const layerConfig = [
     // #################################################################################
 
 
+    // ################################   Deutsches Reich 1893   ################################
+    {
+        id : "kdr1893",
+        template : "ovl-raster-template",
+        titleKey : "layer.kdr1893",
+        description : 'Karte des Deutschen Reichs 1893 aus der David Rumsey Map Collection',
+        source : {
+            tiles : ["https://tiles.historic.place/kdr1893/{z}/{x}/{y}.png"]
+        },
+        shape : { url : "./shape/kdr1893.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 10 }
+        },
+        credit : '<a href="https://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>'
+    },
 
     // ################################   German Maps 1936   ################################
     {
@@ -1362,6 +1383,7 @@ export const layerConfig = [
     //
     // #################################################################################
 
+    // ################################   Sachsen vor 1945   ################################
     {
         id: "mtb-sachsen-vor-1945",
         template: "wms-template",
@@ -1371,11 +1393,229 @@ export const layerConfig = [
             url: "https://geodienste.sachsen.de/wms_geosn_hist/guest",
             layers: "messtischblatt_vor_1945",
             transparent: true,
-            crs: "EPSG:3857",
+        },
+        shape : { url : "./shape/sachsen.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 12 }
         },
         credit: "GeoSN"
     },
 
+    // ################################   Sachsen DDR   ################################
+    {
+        id: "mtb-sachsen-ddr",
+        template: "wms-template",
+        titleKey: "layer.sachsen-ddr",
+        description: "Sachsen TK25 DDR Ausgabe Staat, Staatsbetrieb Geobasisinformation und Vermessung Sachsen - GeoSN",
+        source: {
+            url: "https://geodienste.sachsen.de/wms_geosn_hist/guest",
+            layers: "tk25_ddr_ausgabe_staat",
+            transparent: true,
+        },
+        shape : { url : "./shape/sachsen.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 12 }
+        },
+        credit: "GeoSN"
+    },
+
+
+    // ################################   Sachsen 1990-1996   ################################
+    {
+        id: "mtb-sachsen-1990",
+        template: "wms-template",
+        titleKey: "layer.sachsen-1990",
+        description: "Sachsen 1990-1996, Staatsbetrieb Geobasisinformation und Vermessung Sachsen - GeoSN",
+        source: {
+            url: "https://geodienste.sachsen.de/wms_geosn_hist/guest",
+            layers: "tk25_ab_1990",
+            transparent: true,
+        },
+        shape : { url : "./shape/sachsen.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 12 }
+        },
+        credit: "GeoSN"
+    },
+
+
+    // ################################   Dutch Topographical & Military Map 1850   ################################
+    {
+        id: "dutch-topomil-1850",
+        template: "wms-template",
+        titleKey: "layer.dutch-topomil-1850",
+        description: "Kadaster, University of Groningen",
+        source: {
+            url: "https://geo.rug.nl/image/services/HistorischeKaarten/TMK_Kleur/ImageServer/WMSServer?",
+            layers: "0",
+            transparent: true,
+        },
+        shape : { url : "./shape/Bonnebladen_1865.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 11 }
+        },
+        credit: '<a href="https://opendata.rug.nl/datasets?group_id=cfe67a82c2754794a6ff0dfbf0e84603"target="_blank">Kadaster, University of Groningen</a>'
+    },
+
+
+    // ################################   Dutch Topographical & Military Map 1850   ################################
+    {
+        id: "bonnebladen-1865",
+        template: "wms-template",
+        titleKey: "layer.bonnebladen-1865",
+        description: "Kadaster, University of Groningen",
+        source: {
+            url: "https://geo.rug.nl/image/services/HistorischeKaarten/Bonnebladen/ImageServer/WMSServer?",
+            layers: "0",
+            transparent: true,
+        },
+        shape : { url : "./shape/Bonnebladen_1865.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 11 }
+        },
+        credit: '<a href="https://opendata.rug.nl/datasets?group_id=cfe67a82c2754794a6ff0dfbf0e84603"target="_blank">Kadaster, University of Groningen</a>'
+    },
+
+
+    // ################################   Wien 1912   ################################
+    {
+        id: "wien-1912",
+        template: "wms-template",
+        titleKey: "layer.wien-1912",
+        description: "Generalstadtplan Wien 1912, Stadt Wien (CC BY 3.0 AT)",
+        source: {
+            url: "https://data.wien.gv.at/daten/wms?",
+            layers: "GENLPLAN1912OGD",
+            transparent: true,
+        },
+        shape : { url : "./shape/wien_1912.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 12 }
+        },
+        credit: '<a href="https://www.data.gv.at/katalog/dataset/35102370-ad3b-41e5-a5c3-567750be2711"target="_blank">Stadt Wien</a>, <a href="https://creativecommons.org/licenses/by/3.0/at/deed.de"target="_blank">(CC BY 3.0 AT)</a>'
+    },
+
+
+
+/*
+    // ################################   Bayrische Originalpositionsblätter   ################################
+    {
+        id: "bayrische_originalpositionsblaetter",
+        template: "ovl-raster-template",
+        titleKey: "layer.bayrische_originalpositionsblaetter",
+        description: "Bayrische Originalpositionsblätter 1:25.000, Ausgabe 1836-1841",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "Bayrische_Originalpositionsblaetter",
+            format: "image/png"
+        }
+    },
+
+    // ################################   Preußische Generalstabskarte   ################################
+    {
+        id: "preussische_generalstabskarte",
+        template: "ovl-raster-template",
+        titleKey: "layer.preussische_generalstabskarte",
+        description: "Preußische Generalstabskarte 1:86.400, Ausgabe 1816-1847",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "Preußische_Generalstabskarte",
+            format: "image/png"
+        }
+    },
+
+    // ################################   Ur-Messtischblätter   ################################
+    {
+        id: "ur_messtischblaetter",
+        template: "ovl-raster-template",
+        titleKey: "layer.ur_messtischblaetter",
+        description: "Ur-Messtischblätter 1:25.000, Ausgabe 1843-1878",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "Ur-Messtischblaetter",
+            format: "image/png"
+        }
+    },
+
+    // ################################   Karte des Deutschen Reiches   ################################
+    {
+        id: "karte_deutsches_reich",
+        template: "ovl-raster-template",
+        titleKey: "layer.karte_deutsches_reich",
+        description: "Karte des Deutschen Reiches 1:100.000, Ausgabe 1875-1945",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "Karte_des_Deutschen_Reiches",
+            format: "image/png"
+        }
+    },
+
+    // ################################   TK25 1935-1940   ################################
+    {
+        id: "tk25_1935_1940",
+        template: "ovl-raster-template",
+        titleKey: "layer.tk25_1935_1940",
+        description: "Topographische Karte 1:25.000, Ausgaben 1935-1940",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "TK25_Ausgaben_1935-1940",
+            format: "image/png"
+        }
+    },
+
+    // ################################   TK25 1957-1965   ################################
+    {
+        id: "tk25_1957_1965",
+        template: "ovl-raster-template",
+        titleKey: "layer.tk25_1957_1965",
+        description: "Topographische Karte 1:25.000, Ausgaben 1957-1965",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "TK25_Ausgaben_1957-1965",
+            format: "image/png"
+        }
+    },
+
+    // ################################   TK25 1978-1982   ################################
+    {
+        id: "tk25_1978_1982",
+        template: "ovl-raster-template",
+        titleKey: "layer.tk25_1978_1982",
+        description: "Topographische Karte 1:25.000, Ausgaben 1978-1982",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "TK25_Ausgaben_1978-1982",
+            format: "image/png"
+        }
+    },
+
+    // ################################   KDS 1963   ################################
+    {
+        id: "kds_1963",
+        template: "ovl-raster-template",
+        titleKey: "layer.kds_1963",
+        description: "Karte des Saarlandes 1:100.000, Ausgabe 1963",
+        source: {
+            type: "wms",
+            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
+            layers: "KDS_1963",
+            format: "image/png"
+        }
+    },
+*/
 
     // #################################################################################
     //

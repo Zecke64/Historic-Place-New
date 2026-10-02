@@ -96,6 +96,11 @@ export const languages = {
         "layer.Saar-PreussUr-1850" :        "Preussische Uraufnahme 1850", 
 
         "layer.mtb-sachsen-vor-1945" :      "Sachsen vor 1945",
+        "layer.sachsen-ddr" :               "Sachsen TK25 DDR Ausgabe Staat",
+        "layer.sachsen-1990" :              "Sachsen 1990-1996",
+        "layer.dutch-topomil-1850" :        "Dutch Topographical & Military Map 1850",
+        "layer.bonnebladen-1865" :          "Bonnebladen 1865",
+        "layer.wien-1912" :                 "Wien 1912",
 
         "status.mouse" : "Maus:",
         "status.pois" : "POIs:",
