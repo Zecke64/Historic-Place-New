@@ -3,26 +3,77 @@
  */
 
 import {resolvedLayerConfig as layerConfig} from "./layerconfig.js";
+import {startLoadingInd,stopLoadingInd} from "./loadingIndicator.js"
 
 
 
 export async function initLayerManager(map) {
 
+    const loadingSources = new Set();
+    const rasterSources = new Set();
+
+    // MapLibre meldet hier das Laden von Raster-/WMS-Tiles.
+    // Wird für den loading-Spinner gebraucht
+    map.on("sourcedataloading", event => {
+
+        if (!event.sourceId)
+            return;
+
+        if (!rasterSources.has(event.sourceId))
+            return;
+
+        if (!loadingSources.has(event.sourceId)) {
+            loadingSources.add(event.sourceId);
+            startLoadingInd();
+        }
+    });
+
+    map.on("sourcedata", event => {
+
+        if (!event.sourceId)
+            return;
+
+        if (!rasterSources.has(event.sourceId))
+            return;
+
+        if (!event.isSourceLoaded)
+            return;
+
+        if (loadingSources.has(event.sourceId)) {
+            loadingSources.delete(event.sourceId);
+            stopLoadingInd();
+        }
+    });
+
     for (const layer of layerConfig) {
 
-        if (layer.source && layer.source.type === "raster") {
+        if (layer.source?.type === "raster") {
+            const mapLayer = layer.mapLayers?.find(
+                l => l.type === "raster"
+            );
+            if (mapLayer) {
+                rasterSources.add(`${mapLayer.id}-source`);
+            }
             addRasterLayer(map, layer);
         }
 
-        if (layer.source && layer.source.type === "wms") {
+        if (layer.source?.type === "wms") {
+            rasterSources.add(`${layer.id}-wms-source`);
             addWmsLayer(map, layer);
         }
 
         if (layer.shape) {
-            await addGeoJsonLayer(map, layer);
+            startLoadingInd();
+            try {
+                await addGeoJsonLayer(map, layer);
+            }
+            finally {
+                stopLoadingInd();
+            }
         }
     }
 }
+
 
 
 

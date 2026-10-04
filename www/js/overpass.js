@@ -5,6 +5,7 @@ import {showPopup} from "./popup.js";
 import {normalizeTags} from "./utils.js";
 import {prefetchWikidata} from "./wikidata.js";
 import {resolvedZoomClasses as zoomClasses} from "./zoomclasses.js";
+import {startLoadingInd,stopLoadingInd} from "./loadingIndicator.js"
 
 const ENABLE_POI_CLUSTERING = false;
 
@@ -685,6 +686,7 @@ async function loadPOIs(map) {
     loadPOIsRunning = true;
     loadPOIsPending = false;
     loadPOIsController = new AbortController();
+    startLoadingInd();
 
     console.log("LOAD POIS START");
 
@@ -820,6 +822,8 @@ async function loadPOIs(map) {
         loadPOIsPending = false;
         loadPOIsRunning = false;
         loadPOIsController = null;
+
+        stopLoadingInd();
 
         console.log("LOAD POIS END");
 

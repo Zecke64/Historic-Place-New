@@ -31,7 +31,7 @@ export function createLanguageSelector() {
 
         const flag = document.createElement("img");
         flag.className = "language-flag";
-        flag.src = "img/flags/" + flagFiles[language];
+        flag.src = "img/flags/" + language + ".svg"
         flag.alt = language.toUpperCase();
 
         const code = document.createElement("span");
