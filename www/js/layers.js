@@ -4,17 +4,11 @@
 
 import {resolvedLayerConfig as layerConfig} from "./layerconfig.js";
 
-const layers = {};
-export const layerRegistry = {};
-const layerState = {};
 
 
 export async function initLayerManager(map) {
 
     for (const layer of layerConfig) {
-        layerRegistry[layer.id] = layer;
-
-        layerState[layer.id] = {visible : layer.visible};
 
         if (layer.source && layer.source.type === "raster") {
             addRasterLayer(map, layer);
@@ -31,9 +25,8 @@ export async function initLayerManager(map) {
 }
 
 
-/**
- * Rasterlayer hinzufügen
- */
+
+// Rasterlayer hinzufügen
 export function addRasterLayer(map, options) {
 
     const {id, source, opacity = 1, visible = true} = options;
@@ -57,8 +50,6 @@ export function addRasterLayer(map, options) {
         paint : {"raster-opacity" : opacity}
     });
 
-    layers[id] =
-        {id : id, titleKey : options.titleKey, category : options.category, opacity : opacity};
 }
 
 
@@ -86,12 +77,6 @@ function addWmsLayer(map, layer) {
         version === "1.1.1" ? "SRS" : "CRS",
         layer.source.crs
     );
-
-    /*
-    const url =
-        `${layer.source.url}?${params.toString()}` +
-        "&BBOX={bbox-epsg-3857}";
-        */
 
     const separator =
     layer.source.url.includes("?") ? "&" : "?";
@@ -298,129 +283,6 @@ export function updateLayerVisibility(map) {
     }
 }
 
-
-
-
-/*
-export function updateLayerVisibility(map) {
-
-    const zoom = map.getZoom();
-
-    for (const layer of layerConfig) {
-
-        if (!layer.visible)
-            continue;
-
-        // WMS-Raster
-        if (layer.source?.type === "wms") {
-
-            const mapLayerId = `${layer.id}-wms`;
-
-            if (map.getLayer(mapLayerId)) {
-
-                const minZoom =
-                    layer.display?.detail?.minZoom ?? 0;
-
-                const visible =
-                    zoom >= minZoom;
-
-                map.setLayoutProperty(
-                    mapLayerId,
-                    "visibility",
-                    visible ? "visible" : "none"
-                );
-            }
-        }
-
-        // Shape bzw. sonstige MapLayers
-        for (const mapLayer of layer.mapLayers ?? []) {
-
-            let visible = false;
-
-            if (layer.type === "poi") {
-
-                visible =
-                    zoom >= layer.display.overview.minZoom;
-
-            }
-            else if (mapLayer.type === "fill" ||
-                     mapLayer.type === "line") {
-
-                visible =
-                    zoom >= layer.display.overview.minZoom &&
-                    zoom < layer.display.detail.minZoom;
-
-            }
-            else if (mapLayer.type === "raster") {
-
-                visible =
-                    zoom >= layer.display.detail.minZoom;
-            }
-
-            if (map.getLayer(mapLayer.id)) {
-
-                map.setLayoutProperty(
-                    mapLayer.id,
-                    "visibility",
-                    visible ? "visible" : "none"
-                );
-            }
-        }
-    }
-}
-*/
-
-/*
-export function updateLayerVisibility(map) {
-
-    const zoom = map.getZoom();
-
-    for (const layer of layerConfig) {
-
-        if (layer.source?.type === "wms") {
-
-            const mapLayerId = `${layer.id}-wms`;
-
-            if (map.getLayer(mapLayerId)) {
-                const minZoom =
-                    layer.display?.detail?.minZoom ?? 0;
-
-                const visible =
-                    layer.visible && zoom >= minZoom;
-
-                map.setLayoutProperty(
-                    mapLayerId,
-                    "visibility",
-                    visible ? "visible" : "none"
-                );
-            }
-
-            continue;
-        }
-
-        for (const mapLayer of layer.mapLayers) {
-            let visible = false;
-
-            if (layer.visible) {
-
-                if (layer.type === "poi") {
-                    visible = layer.visible && zoom >= layer.display.overview.minZoom;
-                } else if (mapLayer.type === "fill" || mapLayer.type === "line") {
-                    visible = layer.visible && zoom >= layer.display.overview.minZoom &&
-                              zoom < layer.display.detail.minZoom;
-                } else if (mapLayer.type === "raster") {
-                    visible = layer.visible && zoom >= layer.display.detail.minZoom;
-                }
-
-            }
-
-            if (map.getLayer(mapLayer.id)) {
-                map.setLayoutProperty(mapLayer.id, "visibility", visible ? "visible" : "none");
-            }
-        }
-    }
-}
-*/
 
 
 export function initZoomHandling(map) {

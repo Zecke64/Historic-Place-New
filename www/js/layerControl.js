@@ -1,5 +1,5 @@
 import {resolvedLayerConfig as layerConfig} from "./layerconfig.js";
-import {layerRegistry, updateLayerVisibility} from "./layers.js";
+import {updateLayerVisibility} from "./layers.js";
 import {tr} from "./language.js";
 
 let activeCredits = [];
@@ -96,9 +96,7 @@ async function copyPermalink(map) {
     const bearing = map.getBearing();
     const pitch = map.getPitch();
 
-    /*
-     * Sichtbare Layer ermitteln.
-     */
+    // Sichtbare Layer ermitteln.
     const layers = [];
 
     for (const layer of layerConfig) {
@@ -110,9 +108,7 @@ async function copyPermalink(map) {
         }
     }
 
-    /*
-     * URL erzeugen.
-     */
+    // URL erzeugen.
     const url = new URL(window.location.href);
     url.search = "";
     const params = new URLSearchParams();
@@ -181,10 +177,8 @@ function createOverlaySection(parent, map) {
 
 
 function updateOverlaySection(section, map) {
-    /*
-     * Alle bisherigen Einträge entfernen,
-     * die Überschrift aber behalten.
-     */
+
+    // Alle bisherigen Einträge entfernen, die Überschrift aber behalten.
     while (section.children.length > 1) {
         section.removeChild(section.lastChild);
     }
@@ -236,16 +230,6 @@ function createOpacityControl(layer, map) {
 
     // Aktuelle Transparenz aus MapLibre lesen.
     let opacity = layer.opacity;
-
-    /*
-    const rasterId = `${layer.id}-raster`;
-
-    if (map.getLayer(rasterId)) {
-        const mapOpacity = map.getPaintProperty(rasterId, "raster-opacity");
-        if (mapOpacity != null)
-            opacity = mapOpacity;
-    }
-    */
 
     const rasterLayer = getRasterLayer(layer, map);
 
@@ -306,41 +290,6 @@ function createOverlayEntry(layer, map) {
 
     return row;
 }
-
-
-/*
-function setLayerOpacity(map, layer, opacity) {
-
-    layer.opacity = opacity;
-
-    for (const mapLayer of layer.mapLayers) {
-        if (!map.getLayer(mapLayer.id))
-            continue;
-
-        switch (mapLayer.type) {
-        case "raster":
-            map.setPaintProperty(mapLayer.id, "raster-opacity", opacity);
-            break;
-
-            // Shapes haben immer eine fixe Transparenz
-        case "fill":
-        case "line":
-            break;
-
-        case "circle":
-            map.setPaintProperty(mapLayer.id, "circle-opacity", opacity);
-            break;
-
-        case "symbol":
-            map.setPaintProperty(mapLayer.id, "icon-opacity", opacity);
-
-            map.setPaintProperty(mapLayer.id, "text-opacity", opacity);
-
-            break;
-        }
-    }
-}
-*/
 
 
 function setLayerOpacity(map, layer, opacity) {
@@ -426,17 +375,6 @@ function createBaseEntry(layer, map) {
 
     radio.type = "radio";
     radio.name = "base-layer";
-
-    // Aktuelle Sichtbarkeit aus MapLibre lesen.
-    /*
-    const rasterId = `${layer.id}-raster`;
-
-    if (map.getLayer(rasterId)) {
-        radio.checked = map.getLayoutProperty(rasterId, "visibility") !== "none";
-    } else {
-        radio.checked = false;
-    }
-    */
 
     const rasterLayer = getRasterLayer(layer, map);
 
@@ -535,67 +473,6 @@ function layerIsInView(map, layer) {
 
 
 // Zoom >= minZoom(layer)?
-/*
-function layerIsAvailable(map, layer) {
-
-    if (layer.category !== "overlay")
-        return true;
-
-    const minZoom = layer.display?.overview?.minZoom;
-
-    if (minZoom !== undefined && map.getZoom() < minZoom) {
-        return false;
-    }
-
-    if (!layer._shapeBounds)
-        return false;
-
-    const mapBounds = map.getBounds();
-    const shapeBounds = layer._shapeBounds;
-
-    if (shapeBounds.maxLon < mapBounds.getWest() || shapeBounds.minLon > mapBounds.getEast() ||
-        shapeBounds.maxLat < mapBounds.getSouth() || shapeBounds.minLat > mapBounds.getNorth()) {
-        return false;
-    }
-
-    return true;
-}
-
-
-function layerIsAvailable(map, layer) {
-
-    if (layer.category !== "overlay")
-        return true;
-
-    const minZoom = layer.display?.overview?.minZoom;
-
-    if (minZoom !== undefined && map.getZoom() < minZoom) {
-        return false;
-    }
-
-    // WMS-Layer sind nicht an eine GeoJSON-Shape gebunden.
-    if (layer.source?.type === "wms")
-        return true;
-
-    if (!layer._shapeBounds)
-        return false;
-
-    const mapBounds = map.getBounds();
-    const shapeBounds = layer._shapeBounds;
-
-    if (shapeBounds.maxLon < mapBounds.getWest() ||
-        shapeBounds.minLon > mapBounds.getEast() ||
-        shapeBounds.maxLat < mapBounds.getSouth() ||
-        shapeBounds.minLat > mapBounds.getNorth()) {
-        return false;
-    }
-
-    return true;
-}
-*/
-
-
-
 function layerIsAvailable(map, layer) {
 
     if (layer.category !== "overlay")

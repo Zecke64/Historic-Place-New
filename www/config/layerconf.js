@@ -652,7 +652,7 @@ export const layerConfig = [
         },
         shape : { url : "./shape/Fourcy.json" },
         display : {
-            overview : { minZoom : 12 },
+            overview : { minZoom : 11 },
             detail   : { minZoom : 15 }
         },
         credit : "Atlas Fourcy courtesy of Bibliothèque de l'"+'École des mines de Paris, <a href="https://www.bib.mines-paristech.fr/" target="_blank"> MINES ParisTech</a>'
@@ -924,7 +924,7 @@ export const layerConfig = [
         titleKey : "layer.Yugoslavia",
         description : 'Former Yugoslavia Topographic Maps 1:50,000, Series M709, The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from OpenStreetMap Hrvatska',
         source : {
-            tiles : ["https://tiles.historic.place/https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png"]
+            tiles : ["https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png"]
         },
         shape : { url : "./shape/Yugoslavia.json" },
         display : {
@@ -968,7 +968,7 @@ export const layerConfig = [
         credit : 'Grossherzogthum Baden 1839, <a href="https://digi.ub.uni-heidelberg.de/sammlungen/karten/rothe/" target="_blank">Universitätsbibliothek Heidelberg Ministerium für Wissenschaft, Forschung und Kunst Baden-Württemberg</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/de/deed.en" target="_blank">(CC BY-SA 3.0 DE)</a>'
     },
 
-    // ################################   Karte der Rheinlande von Tranchot und v. Müffling 1803-1820   ################################
+    // ###################   Karte der Rheinlande von Tranchot und v. Müffling 1803-1820   ################
     {
         id : "Rheinland_1803-1820",
         template : "ovl-raster-template",
@@ -1019,7 +1019,7 @@ export const layerConfig = [
         credit : 'Verkehrskarte Magdeburg von Hans Ravenstein, Ravensteins Geographische Verlagsanstalt <a href="https://commons.wikimedia.org/wiki/File:Neue Spezial- und Verkehrskarte für den Regierungsbezirk Magdeburg.jpg" target="_blank">Wikimedia Commons</a>, <a href="https://en.wikipedia.org/wiki/Public_domain" target="_blank">Public domain</a>'
     },
 
-    // ################################   Carte industrielle de la région parisienne 1927   ################################
+    // #######################   Carte industrielle de la région parisienne 1927   #######################
     {
         id : "Paris",
         template : "ovl-raster-template",
@@ -1036,7 +1036,7 @@ export const layerConfig = [
         credit : 'Carte industrielle de la région parisienne, <a href="https://catalogue.bnf.fr/ark:/12148/cb40712638q" target="_blank">gallica.bnf.fr / Bibliothèque nationale de France</a>, Tiles from <a href="https://mapwarper.net/layers/867" target="_blank">Map Warper</a>'
     },
 
-    // ################################   Post und Eisenbahn-Reisekarte Deutschland 1859   ################################
+    // ########################   Post und Eisenbahn-Reisekarte Deutschland 1859   #######################
     {
         id : "posteisen-1859",
         template : "ovl-raster-template",
@@ -1045,10 +1045,10 @@ export const layerConfig = [
         source : {
             tiles : ["https://tiles.historic.place/region/Reisekarte_Deutschland_1856/{z}/{x}/{y}.png"]
         },
-        shape : { url : "./shape/kdr1893.json" },
+        shape : { url : "./shape/posteisenbahn-1859.json" },
         display : {
             overview : { minZoom : 4 },
-            detail   : { minZoom : 7 }
+            detail   : { minZoom : 6 }
         },
         credit : 'Post und Eisenbahn-Reisekarte Deutschland 1859 , <a href="https://www.bsb-muenchen.de" target="_blank">© Bayerische Staatsbibliothek München, urn:nbn:de:bvb:12-bsb00112332-6</a>, <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>'
     },
@@ -1098,8 +1098,8 @@ export const layerConfig = [
         },
         shape : { url : "./shape/Westruss.json" },
         display : {
-            overview : { minZoom : 5 },
-            detail   : { minZoom : 8 }
+            overview : { minZoom : 4 },
+            detail   : { minZoom : 7 }
         },
         credit : '<a href="http://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>, Andrees Allgemeiner Handatlas-Authors Richard Andree and Albert Scobel'
     },
@@ -1121,7 +1121,7 @@ export const layerConfig = [
         credit : '<a href="https://geobasis-bb.de/lgb/de/geodaten/historische-karten/schmettausches-kartenwerk-%281767-1787%29/" target="_blank">Landesvermessung und Geobasisinformation Brandenburg (LGB) </a> Quelle © Staatsbibliothek zu Berlin – Preußischer Kulturbesitz, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">dl-de-by-2.0 (Daten geändert)</a>'
     },
 
-    // ################################   Wandkarte vom Königreiche Sachsen 1857   ################################
+    // ##########################   Wandkarte vom Königreiche Sachsen 1857   ###########################
     {
         id : "sachsen-1857",
         template : "ovl-raster-template",
@@ -1138,7 +1138,7 @@ export const layerConfig = [
         credit : 'Wandkarte vom Königreiche Sachsen 1857 ,<a href="https://leibniz-ifl.de/" target="_blank">Leibniz-Institut für Länderkunde e.V., Leipzig</a>, <a href="https://commons.wikimedia.org/wiki/Category:1857_maps_of_Saxony" target="_blank">Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank">(CC0 1.0) Public Domain Dedication</a>'
     },
 
-    // ################################   Sächsische Meilenblätter 1781/1810   ################################
+    // ###########################   Sächsische Meilenblätter 1781/1810   ###########################
     {
         id : "sachsen-1781",
         template : "ovl-raster-template",
@@ -1164,15 +1164,15 @@ export const layerConfig = [
         source : {
             tiles : ["https://tiles.historic.place/region/Sitzenrodaer-Forst_1780/{z}/{x}/{y}.png"]
         },
-        shape : { url : "./shape/sachsen.json" },
+        shape : { url : "./shape/sitzenroda.json" },
         display : {
-            overview : { minZoom : 7 },
-            detail   : { minZoom : 10 }
+            overview : { minZoom : 8 },
+            detail   : { minZoom : 11 }
         },
         credit : 'Karte vom Sitzenroder Forstrevier 1780 ,<a href="http://www.deutschefotothek.de/documents/obj/70400358" target="_blank"> Pönisch, Carl Ernst, Sächsische Landesbibliothek - Staats- und Universitätsbibliothek Dresden (SLUB)</a>, <a href="https://creativecommons.org/publicdomain/mark/1.0/deed.en" target="_blank">(CC0 1.0) Public Domain</a>'
     },
 
-    // ################################   MTB35xx Saarbrücken/St. Johann 1882-87   ################################
+    // ##########################   MTB35xx Saarbrücken/St. Johann 1882-87   ###########################
     {
         id : "MTB35xx-SB-StJ",
         template : "ovl-raster-template",
@@ -1206,7 +1206,7 @@ export const layerConfig = [
         credit : 'Landesarchiv Saarbrücken, Bestand K Hellwig, Nr. 0261, Urheber César-Francois Cassini de Thury (1714-1784) / CC-BY-SA 3.0 DE'
     },
 
-    // ################################   Ostfrankreich-Vogesen Hachette 1892   ################################
+    // ##########################   Ostfrankreich-Vogesen Hachette 1892   #############################
     {
         id : "OstFR-Vogesen-1892",
         template : "ovl-raster-template",
@@ -1257,7 +1257,7 @@ export const layerConfig = [
         credit : 'Saarländisches Landesarchiv'
     },
 
-    // ################################   Tractus Rittenhofen/Coelln/Engelfangen 1759   ################################
+    // ##########################   Tractus Rittenhofen/Coelln/Engelfangen 1759   ######################
     {
         id : "Rittenhofen-Coelln-Engelfangen_1759",
         template : "ovl-raster-template",
@@ -1378,10 +1378,38 @@ export const layerConfig = [
 
 
     // #################################################################################
+    // #################################################################################
+    // #################################################################################
     //
     //  WMS-Layer
     //
     // #################################################################################
+    // #################################################################################
+    // #################################################################################
+
+
+
+
+
+    // #############################    Freiburg 1944   #############################
+    {
+        id: "freiburg-1944",
+        template: "wms-template",
+        titleKey: "layer.freiburg-1944",
+        description: "Freiburg 1944, © Stadt Freiburg (DL-DE-BY-2.0)",
+        source: {
+            url: "https://geoportal.freiburg.de/wms/verma_stadtplan_hist/verma_stadtplan_hist?",
+            layers: "stadtplan_1944",
+            transparent: true,
+        },
+        shape : { url : "./shape/Freiburg_1944.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 13 }
+        },
+        credit: '<a href="https://geodaten.freiburg.de/geonetwork/srv/ger/catalog.search#/metadata/16f7271f-beae-4120-9d8c-5fdcecd4d092"target="_blank">Datengrundlage: Stadt Freiburg, www.freiburg.de</a>, <a href="https://www.govdata.de/dl-de/by-2-0"target="_blank">(DL-DE-BY-2.0)</a>'
+    },
+
 
     // ################################   Sachsen vor 1945   ################################
     {
@@ -1396,7 +1424,7 @@ export const layerConfig = [
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
-            overview : { minZoom : 7 },
+            overview : { minZoom : 6 },
             detail   : { minZoom : 12 }
         },
         credit: "GeoSN"
@@ -1415,7 +1443,7 @@ export const layerConfig = [
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
-            overview : { minZoom : 7 },
+            overview : { minZoom : 6 },
             detail   : { minZoom : 12 }
         },
         credit: "GeoSN"
@@ -1435,7 +1463,7 @@ export const layerConfig = [
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
-            overview : { minZoom : 7 },
+            overview : { minZoom : 6 },
             detail   : { minZoom : 12 }
         },
         credit: "GeoSN"
@@ -1455,7 +1483,7 @@ export const layerConfig = [
         },
         shape : { url : "./shape/Bonnebladen_1865.json" },
         display : {
-            overview : { minZoom : 7 },
+            overview : { minZoom : 5 },
             detail   : { minZoom : 11 }
         },
         credit: '<a href="https://opendata.rug.nl/datasets?group_id=cfe67a82c2754794a6ff0dfbf0e84603"target="_blank">Kadaster, University of Groningen</a>'
@@ -1475,7 +1503,7 @@ export const layerConfig = [
         },
         shape : { url : "./shape/Bonnebladen_1865.json" },
         display : {
-            overview : { minZoom : 7 },
+            overview : { minZoom : 5 },
             detail   : { minZoom : 11 }
         },
         credit: '<a href="https://opendata.rug.nl/datasets?group_id=cfe67a82c2754794a6ff0dfbf0e84603"target="_blank">Kadaster, University of Groningen</a>'
@@ -1502,120 +1530,137 @@ export const layerConfig = [
     },
 
 
-
-/*
-    // ################################   Bayrische Originalpositionsblätter   ################################
+    // ################################   Zürich 1793 (Müllerplan)   ################################
     {
-        id: "bayrische_originalpositionsblaetter",
-        template: "ovl-raster-template",
-        titleKey: "layer.bayrische_originalpositionsblaetter",
-        description: "Bayrische Originalpositionsblätter 1:25.000, Ausgabe 1836-1841",
+        id: "zuerich-1793",
+        template: "wms-template",
+        titleKey: "layer.zuerich-1793",
+        description: "Stadtplan von 1793 (Müllerplan),Quelle: Stadt Zürich, non-commercial use",
         source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "Bayrische_Originalpositionsblaetter",
-            format: "image/png"
-        }
+            url: "https://www.ogd.stadt-zuerich.ch/wms/geoportal/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1793__Muellerplan_?",
+            layers: "UP_1793_STZH.tif",
+            transparent: true,
+        },
+        shape : { url : "./shape/Zuerich_1910.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 12 }
+        },
+        credit: '<a href="https://www.stadt-zuerich.ch/geodaten/download/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1793__Muellerplan_"target="_blank">Quelle: Stadt Zürich</a>, <a href="https://www.geocat.ch/geonetwork/srv/ger/md.viewer#/full_view/f87519a7-dc70-7032-e338-367f714d9fad"target="_blank">non-commercial use</a>'
     },
 
+
+    // ################################   Zürich 1900   ################################
+    {
+        id: "zuerich-1900",
+        template: "wms-template",
+        titleKey: "layer.zuerich-1900",
+        description: "Stadtplan von 1900, Quelle: Stadt Zürich, non-commercial use",
+        source: {
+            url: "https://www.ogd.stadt-zuerich.ch/wms/geoportal/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1900?",
+            layers: "UP_1900_STZH.tif",
+            transparent: true,
+        },
+        shape : { url : "./shape/Zuerich_1910.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 12 }
+        },
+        credit: '<a href="https://www.stadt-zuerich.ch/geodaten/download/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1900"target="_blank">Quelle: Stadt Zürich</a>, <a href="https://www.geocat.ch/geonetwork/srv/ger/md.viewer#/full_view/a29830fb-f4a1-c29d-7f1d-1fb9c303415c"target="_blank">non-commercial use</a>'
+    },
+
+
+    // ################################   Zürich 1864 (Kellerplan)   ################################
+    {
+        id: "zuerich-1864",
+        template: "wms-template",
+        titleKey: "layer.zuerich-1864",
+        description: "Stadtplan von 1864 (Kellerplan), Creative-Commons-Zero-Lizenz (CC-0)",
+        source: {
+            url: "https://www.ogd.stadt-zuerich.ch/wms/geoportal/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1864?",
+            layers: "UP_1864_STZH.tif",
+            transparent: true,
+        },
+        shape : { url : "./shape/Zuerich_1910.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 13 }
+        },
+        credit: '<a href="https://www.stadt-zuerich.ch/geodaten/download/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1864"target="_blank">Quelle: Stadt Zürich</a>, <a href="https://opendefinition.org/licenses/cc-zero/"target="_blank">Creative-Commons-Zero-Lizenz (CC-0)</a>'
+    },
+
+
+    // ################################   Zürich 1860   ################################
+    {
+        id: "zuerich-1860",
+        template: "wms-template",
+        titleKey: "layer.zuerich-1860",
+        description: "Stadtplan von 1860, Quelle: Stadt Zürich, non-commercial use",
+        source: {
+            url: "https://www.ogd.stadt-zuerich.ch/wms/geoportal/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1860?",
+            layers: "UP_1860_STZH.tif",
+            transparent: true,
+        },
+        shape : { url : "./shape/Zuerich_1910.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 13 }
+        },
+        credit: '<a href="https://www.stadt-zuerich.ch/geodaten/download/Historischer_Uebersichtsplan_der_Stadt_Zuerich_um_1860"target="_blank">Quelle: Stadt Zürich</a>, <a href="https://www.geocat.ch/geonetwork/srv/ger/md.viewer#/full_view/da6181dd-9c08-d592-6c9a-9103c5bd6caf"target="_blank">non-commercial use</a>'
+    },
+
+
+    // ################################   Open Data Zürich Denkmalschutz   ################################
+    {
+        id: "zuerich-denkmal",
+        template: "wms-template",
+        titleKey: "layer.zuerich-denkmal",
+        description: "Geoinformation Kanton Zürich, Open Data",
+        source: {
+            url: "https://wms.zh.ch/DenkmalschutzWMS?",
+            layers: "DenkmalschutzWMS",
+            transparent: true,
+        },
+        shape : { url : "./shape/zuerich.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 10 }
+        },
+        credit: '<a href="https://opendata.swiss/de/organization/geoinformation-kanton-zuerich"target="_blank">Geoinformation Kanton Zürich</a>, <a href="https://opendata.swiss/de/terms-of-use/"target="_blank">Open Data</a>'
+    },
+
+
+    // ###########################   Open Data Zürich Archäologische Zonen   ###########################
+    {
+        id: "zuerich-arch",
+        template: "wms-template",
+        titleKey: "layer.zuerich-arch",
+        description: "Geoinformation Kanton Zürich, Open Data",
+        source: {
+            url: "https://wms.zh.ch/ArchWMS?",
+            layers: "ArchWMS",
+            transparent: true,
+        },
+        shape : { url : "./shape/zuerich.json" },
+        display : {
+            overview : { minZoom : 9 },
+            detail   : { minZoom : 10 }
+        },
+        credit: '<a href="https://opendata.swiss/de/organization/geoinformation-kanton-zuerich"target="_blank">Geoinformation Kanton Zürich</a>, <a href="https://opendata.swiss/de/terms-of-use/"target="_blank">Open Data</a>'
+    },
+
+
+
+    // rausgenommene saarländische WMS-Layer
+
+    // ################################   Bayrische Originalpositionsblätter   ##########################
     // ################################   Preußische Generalstabskarte   ################################
-    {
-        id: "preussische_generalstabskarte",
-        template: "ovl-raster-template",
-        titleKey: "layer.preussische_generalstabskarte",
-        description: "Preußische Generalstabskarte 1:86.400, Ausgabe 1816-1847",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "Preußische_Generalstabskarte",
-            format: "image/png"
-        }
-    },
-
     // ################################   Ur-Messtischblätter   ################################
-    {
-        id: "ur_messtischblaetter",
-        template: "ovl-raster-template",
-        titleKey: "layer.ur_messtischblaetter",
-        description: "Ur-Messtischblätter 1:25.000, Ausgabe 1843-1878",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "Ur-Messtischblaetter",
-            format: "image/png"
-        }
-    },
-
     // ################################   Karte des Deutschen Reiches   ################################
-    {
-        id: "karte_deutsches_reich",
-        template: "ovl-raster-template",
-        titleKey: "layer.karte_deutsches_reich",
-        description: "Karte des Deutschen Reiches 1:100.000, Ausgabe 1875-1945",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "Karte_des_Deutschen_Reiches",
-            format: "image/png"
-        }
-    },
-
     // ################################   TK25 1935-1940   ################################
-    {
-        id: "tk25_1935_1940",
-        template: "ovl-raster-template",
-        titleKey: "layer.tk25_1935_1940",
-        description: "Topographische Karte 1:25.000, Ausgaben 1935-1940",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "TK25_Ausgaben_1935-1940",
-            format: "image/png"
-        }
-    },
-
     // ################################   TK25 1957-1965   ################################
-    {
-        id: "tk25_1957_1965",
-        template: "ovl-raster-template",
-        titleKey: "layer.tk25_1957_1965",
-        description: "Topographische Karte 1:25.000, Ausgaben 1957-1965",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "TK25_Ausgaben_1957-1965",
-            format: "image/png"
-        }
-    },
-
     // ################################   TK25 1978-1982   ################################
-    {
-        id: "tk25_1978_1982",
-        template: "ovl-raster-template",
-        titleKey: "layer.tk25_1978_1982",
-        description: "Topographische Karte 1:25.000, Ausgaben 1978-1982",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "TK25_Ausgaben_1978-1982",
-            format: "image/png"
-        }
-    },
-
     // ################################   KDS 1963   ################################
-    {
-        id: "kds_1963",
-        template: "ovl-raster-template",
-        titleKey: "layer.kds_1963",
-        description: "Karte des Saarlandes 1:100.000, Ausgabe 1963",
-        source: {
-            type: "wms",
-            url: "https://geoportal.saarland.de/mapbender/php/wms.php?layer_id=41884",
-            layers: "KDS_1963",
-            format: "image/png"
-        }
-    },
-*/
 
     // #################################################################################
     //
