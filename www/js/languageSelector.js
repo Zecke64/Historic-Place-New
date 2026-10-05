@@ -22,7 +22,8 @@ export function createLanguageSelector() {
     panel.id = "language-control";
     panel.style.display = "none";
 
-    const flagFiles = {de : "de.svg", en : "gb.svg"};
+    const flagFiles = {de : "de.svg", en : "gb.svg", cs : "cs.svg", fr : "fr.svg", da : "da.svg", es : "es.svg", kl : "kl.svg", gl : "gl.svg", hu : "hu.svg", it : "it.svg", ja : "ja.svg", ko : "ko.svg", nl : "nl.svg",
+        pl : "pl.svg", pt : "pt.svg", br : "pt-Br.svg", ro : "ro.svg", ru : "ru.svg", tr : "tr.svg", uk : "uk.svg", gr : "gr.svg", il : "il.svg", sv : "sv.svg"};
 
     for (const language of getSupportedLanguages()) {
 
