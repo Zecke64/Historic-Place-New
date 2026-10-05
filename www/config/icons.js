@@ -194,6 +194,102 @@ export const iconRules = [
         },
     },
 },
+
+    // Klosterruine
+{
+    condition: AND(
+        OR(["building", "monastery"], ["amenity", "monastery"], ["historic", "monastery"], ["historic", "abbey"]),
+                   OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"]),
+                   OR(["historic", "ruins"], ["ruins", "yes"])
+    ),
+    minZoom : 10,
+    icon: "image_kloster-r",
+    iconSize : 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#669999",
+    fillOpacity: 0,
+    membersIconSize :   0,
+    zoom: {
+        11 : {
+            lineWidth: 0,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        12 : {
+            lineWidth: 0,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        13 : {
+            lineWidth: 1,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        14 : {
+            lineWidth: 2,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        15 : {
+            lineWidth: 3,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0.20
+        },
+    },
+},
+{
+    condition: AND(
+        OR(["building", "monastery"], ["amenity", "monastery"], ["historic", "monastery"], ["historic", "abbey"]),
+                   OR(["historic", "ruins"], ["ruins", "yes"])
+    ),
+    minZoom : 10,
+    icon: "kloster-r",
+    iconSize : 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#669999",
+    fillOpacity: 0,
+    membersIconSize :   0,
+    zoom: {
+        11 : {
+            lineWidth: 0,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        12 : {
+            lineWidth: 0,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        13 : {
+            lineWidth: 1,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        14 : {
+            lineWidth: 2,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0
+        },
+        15 : {
+            lineWidth: 3,
+            lineColor: "#000000",
+            fillColor: "#669999",
+            fillOpacity: 0.20
+        },
+    },
+},
+
      // Kloster
 {
     condition: AND(
