@@ -9,6 +9,7 @@ export const languages = {
 
         "spinner.loading" :                 "Daten werden geladen ...",
         "input.search" :                    "Ort suchen ...",
+        "toast.permalink" :                 "Link wurde in der Zwischenablage gespeichert",
 
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",
@@ -405,6 +406,7 @@ export const languages = {
 
         "spinner.loading" :                 "Loading data ...",
         "input.search" :                    "Search location ...",
+        "toast.permalink" :                 "Link saved to clipboard",
 
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",
@@ -419,18 +421,6 @@ export const languages = {
 
         "status.mouse" :                    "Mouse:",
         "status.pois" :                     "POI's:",
-
-        
-
-
-
-
-
-
-
-
-
-
 
         "icon.aircraft" :                   "Aircraft",
         "icon.image_aircraft" :             "Aircraft",
@@ -1586,6 +1576,7 @@ export const languages = {
         "button.search" :                   "Rechercher",
         
         "input.search" :                    "Rechercher un lieu…",
+        "toast.permalink" :                 "Lien copié",
         
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",

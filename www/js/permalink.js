@@ -86,6 +86,8 @@ export function createPermalinkControl(map) {
 
         const url = window.location.origin + window.location.pathname + "?" + params.toString();
 
+        showToast("toast.permalink");
+
         try {
             await navigator.clipboard.writeText(url);
             console.log("Permalink kopiert:", url);
@@ -239,3 +241,29 @@ function restoreLayers(map, params) {
 export function getPendingPermalinkPoi() { return pendingPermalinkPoi; }
 
 export function clearPendingPermalinkPoi() { pendingPermalinkPoi = null; }
+
+
+
+
+function showToast(i18nKey) {
+
+    const duration = 2000;
+
+    let toast = document.getElementById("app-toast");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "app-toast";
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = tr(i18nKey);
+    toast.classList.add("show");
+
+    clearTimeout(toast._hideTimer);
+
+    toast._hideTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, duration);
+}
+
