@@ -1,0 +1,55 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background-image:
+        linear-gradient(
+            rgba(0, 0, 0, 0.25),
+            rgba(0, 0, 0, 0.25)
+        ),
+        url("../img/map_icons/Historic-Place-Splash.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: sans-serif;
+}
+
+.splash-links {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 25px 40px;
+
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 8px;
+
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 1);
+}
+
+.splash-links a {
+    display: block;
+
+    min-width: 180px;
+    padding: 8px 15px;
+
+    color: #E8D6B8;
+    text-align: center;
+    text-decoration: none;
+
+    font-size: 20px;
+}
+
+.splash-links a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    text-decoration: underline;
+}

@@ -2,9 +2,17 @@ export const languages = {
 
     de : {
 
+        "splash.wiki" :                     "Wiki",
+        "splash.donate" :                   "Spenden",
+        "splash.contact" :                  "Kontakt",
+        "splash.news" :                     "Neues von Historic.Place",
+        "splash.legend" :                   "Legende",
+        "splash.close" :                    "Schließen",
+
         "button.layers" :                   "Ebenenauswahl",
         "button.language" :                 "Sprache",
         "button.permalink" :                "Permalink speichern",
+        "button.info" :                     "Mehr Informationen",
         "button.search" :                   "Suchen",
 
         "spinner.loading" :                 "Daten werden geladen ...",
@@ -399,9 +407,17 @@ export const languages = {
 
     en : {
 
+        "splash.wiki" :                     "Wiki",
+        "splash.donate" :                   "Donate",
+        "splash.contact" :                  "Contact",
+        "splash.news" :                     "News",
+        "splash.legend" :                   "Legend",
+        "splash.close" :                    "Close",
+
         "button.layers" :                   "Layers",
         "button.language" :                 "Language",
         "button.permalink" :                "Save permalink",
+        "button.info" :                     "More information",
         "button.search" :                   "Search",
 
         "spinner.loading" :                 "Loading data ...",

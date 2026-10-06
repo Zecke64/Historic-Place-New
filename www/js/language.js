@@ -1,4 +1,3 @@
-
 import {languages} from "../config/languages.js";
 
 /*
@@ -116,4 +115,34 @@ export function updateLanguage() {
             element.textContent = text;
         }
     });
+}
+
+
+
+
+export function initLanguage() {
+
+    const availableLanguages = Object.keys(languages);
+
+    for (const browserLanguage of navigator.languages ?? []) {
+
+        const language = browserLanguage.toLowerCase();
+
+        // Exakter Treffer, z. B. de-de
+        if (availableLanguages.includes(language)) {
+            currentLanguage = language;
+            return;
+        }
+
+        // Sprachanteil, z. B. de aus de-DE
+        const baseLanguage = language.split("-")[0];
+
+        if (availableLanguages.includes(baseLanguage)) {
+            currentLanguage = baseLanguage;
+            return;
+        }
+    }
+
+    // Fallback
+    currentLanguage = "en";
 }

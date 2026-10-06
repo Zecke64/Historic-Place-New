@@ -108,6 +108,14 @@ body
     right:10px;
 }
 
+#info-button
+{
+    position:absolute;
+    box-sizing:border-box;
+    top:148px;
+    right:10px;
+}
+
 .map-control-button img
 {
     display:block;
@@ -223,3 +231,4 @@ body
     transform: translateY(0);
     transition: opacity 0.2s ease-in, transform 0.2s ease-in;
 }
+
