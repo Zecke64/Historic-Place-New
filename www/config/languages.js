@@ -689,7 +689,6 @@ export const languages = {
         "popup.author" :                    "Author",
         "popup.license" :                   "License",
         "popup.source" :                    "Source",
-
     },
 
     cs : {
@@ -701,7 +700,7 @@ export const languages = {
 
         "spinner.loading" :                 "Načítání dat ...",
         "input.search"   :                  "Vyhledat místo ...",
-        "toast.permalink":                  "Odkaz uložen do schránky"
+        "toast.permalink":                  "Odkaz uložen do schránky",
 
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",
@@ -995,7 +994,7 @@ export const languages = {
         
         "spinner.loading" :                 "Indlæser data ...",
         "input.search"   :                  "Søg efter sted ...",
-        "toast.permalink":                  "Link gemt i udklipsholderen"
+        "toast.permalink":                  "Link gemt i udklipsholderen",
         
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",
@@ -1289,7 +1288,7 @@ export const languages = {
         
         "spinner.loading" :                 "Cargando datos ...",
         "input.search"   :                  "Buscar ubicación ...",
-        "toast.permalink":                  "Enlace guardado en el portapapeles"
+        "toast.permalink":                  "Enlace guardado en el portapapeles",
         
         "layer.opentopomap" :               "OpenTopoMap",
         "layer.openstreetmap" :             "OpenStreetMap",
@@ -2160,8 +2159,7 @@ export const languages = {
         "popup.author" :                    "Autor",
         "popup.license" :                   "Licenza",
         "popup.source" :                    "Fonte",
-        
-    }
+        }
     
 
 };
