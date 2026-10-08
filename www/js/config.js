@@ -7,7 +7,7 @@ export const CONFIG = {
         // Startposition Saarland / Deutschland
         center : [ 6.95, 49.25 ],
 
-        zoom : 10,
+        zoom : 3.5,
 
         minZoom : 2,
         maxZoom : 19,
