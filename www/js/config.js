@@ -5,9 +5,9 @@ export const CONFIG = {
     map : {
 
         // Startposition Saarland / Deutschland
-        center : [ 6.95, 49.25 ],
+        center : [ 9.5, 51.25 ],
 
-        zoom : 3.5,
+        zoom : 6,
 
         minZoom : 2,
         maxZoom : 19,
