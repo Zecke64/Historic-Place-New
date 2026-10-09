@@ -3,6 +3,7 @@ export const languages = {
     de : {
 
         "splash.wiki" :                     "Wiki",
+        "splash.specialmaps" :              "Sonderkarten",
         "splash.donate" :                   "Spenden",
         "splash.contact" :                  "Kontakt",
         "splash.news" :                     "Neues von Historic.Place",
@@ -408,6 +409,7 @@ export const languages = {
     en : {
 
         "splash.wiki" :                     "Wiki",
+        "splash.specialmaps" :              "Special maps",
         "splash.donate" :                   "Donate",
         "splash.contact" :                  "Contact",
         "splash.news" :                     "News",
