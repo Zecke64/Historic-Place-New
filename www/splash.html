@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>historic.place</title>
+
+    <link rel="stylesheet" href="css/splash-win.css">
+    <script type="module" src="js/language.js"> </script>
+</head>
+
+<body>
+
+    <div class="splash-links">
+        <a href="https://wiki.historic.place/doku.php?id=start"
+           data-i18n="splash.wiki"></a>
+
+        <a href="https://mystic.historic.place/themes/sonderkarten/Maplibre/historic.html"
+           data-i18n="splash.specialmaps" target="_top"></a>
+
+        <a href="https://wiki.historic.place/doku.php?id=spenden"
+           data-i18n="splash.donate"></a>
+
+        <a href="https://gk.historic.place/Anbieterkennung.html"
+           data-i18n="splash.contact"></a>
+
+        <a href="https://wiki.historic.place/doku.php?id=de:news"
+           data-i18n="splash.news"></a>
+
+        <a href="https://wiki.historic.place/doku.php?id=de:karteneigenschaften"
+           data-i18n="splash.legend"></a>
+    </div>
+
+    <script type="module">
+        import {tr} from "./js/language.js";
+
+        function updateSplashLanguage() {
+
+            document
+                .querySelectorAll("[data-i18n]")
+                .forEach(element => {
+                    element.textContent = tr(element.dataset.i18n);
+                });
+        }
+
+        updateSplashLanguage();
+
+        window.addEventListener(
+            "languagechange",
+            updateSplashLanguage
+        );
+    </script>
+
+</body>
+
+</html>
+

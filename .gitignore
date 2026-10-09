@@ -2,4 +2,4 @@
 /www/config/*.zecke
 /www/config.*
 /www/*/*.sav
-/www/*.*
+/www/*.zecke
