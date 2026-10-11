@@ -34,7 +34,7 @@
     </div>
 
     <script type="module">
-        import {tr} from "./js/language.js";
+        import {tr,setLanguage} from "./js/language.js";
 
         function updateSplashLanguage() {
 
@@ -45,6 +45,11 @@
                 });
         }
 
+        const language = new URLSearchParams(window.location.search).get("lang");
+
+        if (language) {
+            setLanguage(language);
+        }
         updateSplashLanguage();
 
         window.addEventListener(

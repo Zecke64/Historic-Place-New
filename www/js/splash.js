@@ -1,4 +1,4 @@
-import {tr} from "./language.js";
+import {tr,getLanguage} from "./language.js";
 
 let splashElement = null;
 
@@ -21,7 +21,7 @@ export function showSplashScreen() {
             </button>
 
             <iframe
-                src="splash.html"
+                src="splash.html?lang=${encodeURIComponent(getLanguage())}"
                 title="Willkommen">
             </iframe>
 
