@@ -8,6 +8,7 @@ export const languages = {
         "splash.contact" :                  "Kontakt",
         "splash.news" :                     "Neues von Historic.Place",
         "splash.legend" :                   "Legende",
+        "splash.latestUpdate" :             "Letzter Update",
         "splash.close" :                    "Schließen",
 
         "button.layers" :                   "Ebenenauswahl",
@@ -434,6 +435,7 @@ export const languages = {
         "splash.contact" :                  "Contact",
         "splash.news" :                     "News",
         "splash.legend" :                   "Legend",
+        "splash.latestUpdate" :             "Last Update",
         "splash.close" :                    "Close",
 
         "button.layers" :                   "Layers",
