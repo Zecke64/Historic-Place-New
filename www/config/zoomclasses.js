@@ -209,6 +209,7 @@ export const zoomClasses = [
                 ["historic", "milestone"],
                 ["historic", "rune_stone"],
                 ["man_made", "cross"],
+                ["summit:cross", "yes"],
                 ["historic", "threshing_floor"],
             ],
         },
@@ -264,7 +265,13 @@ export const zoomClasses = [
             objectTypes: [
                 ["historic", "memorial"],
                 ["historic", "monument"],
+                ["historic", "aqueduct"],
                 ["amenity", "townhall"],
+                ["historic", "lavoir"],
+                ["man_made", "obelisk"],
+                ["man_made", "kiln"],
+                ["abandoned:man_made", "kiln"],
+                ["disused:man_made", "kiln"],
             ],
         },
     ]
@@ -296,6 +303,7 @@ export const zoomClasses = [
                 ["historic", "exhibit"],
                 ["historic", "highwater_mark"],
                 ["historic", "building"],
+                ["man_made", "chimney"],
             ],
         },
         {
@@ -349,6 +357,8 @@ export const zoomClasses = [
                 ["heritage", "9"],
                 ["heritage", "10"],
                 ["heritage", "yes"],
+                ["board_type", "history"],
+                
             ],
         },
     ]

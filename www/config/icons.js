@@ -1345,6 +1345,54 @@ export const iconRules = [
     fillColor: "#8b4513",
     fillOpacity: 0,
 },
+    // Steinkiste
+{
+    condition: AND(
+        OR(["megalith_type", "cist"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 11,
+    icon: "image_cist",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+{
+    match: [["megalith_type", "cist"]],
+    minZoom : 11,
+    icon: "cist",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+    // Chamber 
+{
+    condition: AND(
+        OR(["megalith_type", "chamber"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 11,
+    icon: "image_chamber",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+{
+    match: [["megalith_type", "chamber"]],
+    minZoom : 11,
+    icon: "chamber",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
     // Steinkreis
 {
     condition: AND(
@@ -2790,6 +2838,22 @@ export const iconRules = [
     icon: "historic_boundary_stone",
     iconSize: 0.5,
 },
+    // Gipfelkreuz
+{
+    condition: AND(
+        ["summit:cross", "yes"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 13,
+    icon: "image_peakcross",
+    iconSize: 0.8
+},
+{
+    match: [["summit:cross", "yes"]],
+    minZoom : 13,
+    icon: "peakcross",
+    iconSize: 0.8
+},
     // Wegkreuz
 {
     condition: AND(
@@ -4091,9 +4155,135 @@ export const iconRules = [
         iconSize: 0.5,
         lineWidth: 0,
 },
+    // Aquädukt
+{
+    condition: AND(
+        ["historic", "aqueduct"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_aquaeduct",
+    iconSize: 0.8,
+    lineWidth: 1,
+},
+{
+    match: [
+        ["historic", "aqueduct"]],
+        minZoom : 15,
+        icon: "aquaeduct",
+        iconSize: 0.8,
+        lineWidth: 1,
+},
+    // Waschplatz
+{
+    condition: AND(
+        ["historic", "lavoir"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_lavoir",
+    iconSize: 0.8,
+    lineWidth: 1,
+},
+{
+    match: [
+        ["historic", "lavoir"]],
+        minZoom : 15,
+        icon: "lavoir",
+        iconSize: 0.8,
+        lineWidth: 1,
+},
+    // Obelisk
+{
+    condition: AND(
+        ["man_made", "obelisk"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_obelisk-antik",
+    iconSize: 0.8,
+    lineWidth: 0,
+},
+{
+    match: [
+        ["man_made", "obelisk"]],
+        minZoom : 15,
+        icon: "obelisk-antik",
+        iconSize: 0.8,
+        lineWidth: 0,
+},
+    // Brennofen
+{
+    condition: AND(
+        OR( ["man_made", "kiln"], ["abandoned:man_made", "kiln"], ["disused:man_made", "kiln"]),
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_meileraus",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        OR(["man_made", "kiln"], ["abandoned:man_made", "kiln"], ["disused:man_made", "kiln"]),
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
+    ),
+    minZoom : 15,
+    icon: "meileraus",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        ["man_made", "kiln"],
+        OR(["historic", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_meiler",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        OR(["man_made", "kiln"]),
+        OR(["historic", "*"], ["heritage", "*"])
+    ),
+    minZoom : 15,
+    icon: "meiler",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
 
 // *****************************   Zoom 16   *****************************
 
+    //Building
+{
+    condition: AND(
+        ["historic", "building"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_house",
+    iconSize: 0.8,
+    lineWidth: 2,
+    lineColor: "#000000",
+    fillColor: "#FF0000",
+    fillOpacity: 0.20
+},
 {
     match: [["historic", "building"]],
     minZoom : 16,
@@ -4104,10 +4294,29 @@ export const iconRules = [
     fillColor: "#FF0000",
     fillOpacity: 0.20
 },
+    // Brunnen
+{
+    condition: AND(
+        ["man_made", "water_well"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_brunnen",
+    iconSize: 0.8
+},
 {
     match: [["man_made", "water_well"]],
     minZoom : 16,
     icon: "brunnen",
+    iconSize: 0.8
+},
+{
+    condition: AND(
+        ["amenity", "fountain"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_fountain",
     iconSize: 0.8
 },
 {
@@ -4116,10 +4325,30 @@ export const iconRules = [
     icon: "fountain",
     iconSize: 0.8
 },
+    // Hochwassermarke
+{
+    condition: AND(
+        ["historic", "highwater_mark"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_highwater_mark",
+    iconSize: 0.8
+},
 {
     match: [["historic", "highwater_mark"]],
     minZoom : 16,
     icon: "highwater_mark",
+    iconSize: 0.8
+},
+    // Ausstellungsstück
+{
+    condition: AND(
+        ["historic", "exhibit"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_exhibit",
     iconSize: 0.8
 },
 {
@@ -4128,27 +4357,73 @@ export const iconRules = [
     icon: "exhibit",
     iconSize: 0.8
 },
+    // Schornstein
 {
+    condition: AND(
+        ["man_made", "chimney"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_chimney",
+    iconSize: 0.8,
+    lineWidth: 0
+},
+{
+    match: [["man_made", "chimney"]],
+    minZoom : 16,
+    icon: "chimney",
+    iconSize: 0.8,
+    lineWidth: 0
+},
     // Gefängnis
+{
+    condition: AND(
+        ["amenity", "prison"],
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_prison",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
     condition: AND(
         OR(["amenity", "prison"]),
-                   OR(
-                       ["historic", "*"],
-                      ["disused", "*"],
-                      ["abandoned", "*"],
-                      ["razed", "*"]
-                   )
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
     ),
     minZoom : 16,
     icon: "prison",
-    lineWidth: 0,
+    iconSize: 0.8,
+    lineWidth: 1,
     lineColor: "#000000",
     fillColor: "#8b4513",
     fillOpacity: 0
 },
 
 // *****************************   Zoom 17   *****************************
-
+    // Informationstafel
+{
+    condition: AND(
+        ["board_type", "history"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_board",
+    iconSize: 0.8
+},
+{
+    condition: AND(
+        OR(["board_type", "history"]),
+                   OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
+    ),
+    minZoom : 17,
+    icon: "board",
+    iconSize: 0.8
+},
 {
     match: [["highway", "street_lamp"]],
     minZoom : 17,
