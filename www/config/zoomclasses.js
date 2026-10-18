@@ -209,6 +209,7 @@ export const zoomClasses = [
                 ["historic", "milestone"],
                 ["historic", "rune_stone"],
                 ["man_made", "cross"],
+                ["summit:cross", "yes"],
                 ["historic", "threshing_floor"],
             ],
         },

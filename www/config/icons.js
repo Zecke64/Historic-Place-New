@@ -2838,6 +2838,22 @@ export const iconRules = [
     icon: "historic_boundary_stone",
     iconSize: 0.5,
 },
+    // Gipfelkreuz
+{
+    condition: AND(
+        ["summit:cross", "yes"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 13,
+    icon: "image_peakcross",
+    iconSize: 0.8
+},
+{
+    match: [["summit:cross", "yes"]],
+    minZoom : 13,
+    icon: "peakcross",
+    iconSize: 0.8
+},
     // Wegkreuz
 {
     condition: AND(
