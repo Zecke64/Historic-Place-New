@@ -4272,7 +4272,25 @@ export const iconRules = [
 },
 
 // *****************************   Zoom 17   *****************************
-
+    // Informationstafel
+{
+    condition: AND(
+        ["board_type", "history"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_board",
+    iconSize: 0.8
+},
+{
+    condition: AND(
+        OR(["board_type", "history"]),
+                   OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
+    ),
+    minZoom : 17,
+    icon: "board",
+    iconSize: 0.8
+},
 {
     match: [["highway", "street_lamp"]],
     minZoom : 17,

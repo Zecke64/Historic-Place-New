@@ -351,6 +351,8 @@ export const zoomClasses = [
                 ["heritage", "9"],
                 ["heritage", "10"],
                 ["heritage", "yes"],
+                ["board_type", "history"],
+                
             ],
         },
     ]
