@@ -296,6 +296,7 @@ export const zoomClasses = [
                 ["historic", "exhibit"],
                 ["historic", "highwater_mark"],
                 ["historic", "building"],
+                ["man_made", "chimney"],
             ],
         },
         {

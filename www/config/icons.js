@@ -4181,6 +4181,24 @@ export const iconRules = [
     icon: "exhibit",
     iconSize: 0.8
 },
+    // Schornstein
+{
+    condition: AND(
+        ["man_made", "chimney"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_chimney",
+    iconSize: 0.8,
+    lineWidth: 0
+},
+{
+    match: [["man_made", "chimney"]],
+    minZoom : 16,
+    icon: "chimney",
+    iconSize: 0.8,
+    lineWidth: 0
+},
     // Gefängnis
 {
     condition: AND(
