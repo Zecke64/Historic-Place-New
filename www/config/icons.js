@@ -4177,12 +4177,31 @@ export const iconRules = [
         iconSize: 0.8,
         lineWidth: 1,
 },
+    // Obelisk
+{
+    condition: AND(
+        ["man_made", "obelisk"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_obelisk-antik",
+    iconSize: 0.8,
+    lineWidth: 0,
+},
+{
+    match: [
+        ["man_made", "obelisk"]],
+        minZoom : 15,
+        icon: "obelisk-antik",
+        iconSize: 0.8,
+        lineWidth: 0,
+},
     // Brennofen
 {
     condition: AND(
         OR( ["man_made", "kiln"], ["abandoned:man_made", "kiln"], ["disused:man_made", "kiln"]),
-                   OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"]),
-                   OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
     ),
     minZoom : 15,
     icon: "image_meileraus",
@@ -4195,7 +4214,7 @@ export const iconRules = [
 {
     condition: AND(
         OR(["man_made", "kiln"], ["abandoned:man_made", "kiln"], ["disused:man_made", "kiln"]),
-                   OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
     ),
     minZoom : 15,
     icon: "meileraus",
