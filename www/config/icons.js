@@ -4094,6 +4094,20 @@ export const iconRules = [
 
 // *****************************   Zoom 16   *****************************
 
+    //Building
+{
+    condition: AND(
+        ["historic", "building"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_house",
+    iconSize: 0.8,
+    lineWidth: 2,
+    lineColor: "#000000",
+    fillColor: "#FF0000",
+    fillOpacity: 0.20
+},
 {
     match: [["historic", "building"]],
     minZoom : 16,
@@ -4104,10 +4118,29 @@ export const iconRules = [
     fillColor: "#FF0000",
     fillOpacity: 0.20
 },
+    // Brunnen
+{
+    condition: AND(
+        ["man_made", "water_well"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_brunnen",
+    iconSize: 0.8
+},
 {
     match: [["man_made", "water_well"]],
     minZoom : 16,
     icon: "brunnen",
+    iconSize: 0.8
+},
+{
+    condition: AND(
+        ["amenity", "fountain"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_fountain",
     iconSize: 0.8
 },
 {
@@ -4116,10 +4149,30 @@ export const iconRules = [
     icon: "fountain",
     iconSize: 0.8
 },
+    // Hochwassermarke
+{
+    condition: AND(
+        ["historic", "highwater_mark"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_highwater_mark",
+    iconSize: 0.8
+},
 {
     match: [["historic", "highwater_mark"]],
     minZoom : 16,
     icon: "highwater_mark",
+    iconSize: 0.8
+},
+    // Ausstellungsstück
+{
+    condition: AND(
+        ["historic", "exhibit"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_exhibit",
     iconSize: 0.8
 },
 {
@@ -4128,20 +4181,30 @@ export const iconRules = [
     icon: "exhibit",
     iconSize: 0.8
 },
-{
     // Gefängnis
+{
+    condition: AND(
+        ["amenity", "prison"],
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_prison",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
     condition: AND(
         OR(["amenity", "prison"]),
-                   OR(
-                       ["historic", "*"],
-                      ["disused", "*"],
-                      ["abandoned", "*"],
-                      ["razed", "*"]
-                   )
+        OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
     ),
     minZoom : 16,
     icon: "prison",
-    lineWidth: 0,
+    iconSize: 0.8,
+    lineWidth: 1,
     lineColor: "#000000",
     fillColor: "#8b4513",
     fillOpacity: 0
