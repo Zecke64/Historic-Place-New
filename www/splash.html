@@ -14,8 +14,9 @@
 <body>
 
     <div class="splash-links">
-        <a href="https://wiki.historic.place/doku.php?id=start"
-           data-i18n="splash.wiki"></a>
+        <a id="wiki_link" href="https://wiki.historic.place/doku.php?id=start"
+           data-i18n="splash.wiki"
+        </a>
 
         <a href="https://www.historic.place/themes/sonderkarten/Maplibre/historic.html"
            data-i18n="splash.specialmaps" target="_top"></a>
@@ -35,18 +36,20 @@
 
     <div class="splash-update">
         <span data-i18n="splash.latestUpdate"></span>
-        <time datetime="2026-09-21">21.09.2026</time>
+        <time id="update-date"></time>
     </div>
 
     <script type="module">
         import {tr,setLanguage} from "./js/language.js";
 
         function updateSplashLanguage() {
-
             document
                 .querySelectorAll("[data-i18n]")
                 .forEach(element => {
                     element.textContent = tr(element.dataset.i18n);
+                    if (element.dataset.i18n === "splash.wiki") {
+                        element.href = tr("splash.wiki_url");
+                    }
                 });
         }
 
