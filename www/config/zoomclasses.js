@@ -264,6 +264,7 @@ export const zoomClasses = [
             objectTypes: [
                 ["historic", "memorial"],
                 ["historic", "monument"],
+                ["historic", "aqueduct"],
                 ["amenity", "townhall"],
             ],
         },

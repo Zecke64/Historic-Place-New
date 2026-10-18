@@ -1345,6 +1345,30 @@ export const iconRules = [
     fillColor: "#8b4513",
     fillOpacity: 0,
 },
+    // Steinkiste
+{
+    condition: AND(
+        OR(["megalith_type", "cist"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 11,
+    icon: "image_cist",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+{
+    match: [["megalith_type", "cist"]],
+    minZoom : 11,
+    icon: "cist",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
     // Steinkreis
 {
     condition: AND(
@@ -4090,6 +4114,25 @@ export const iconRules = [
         icon: "monument",
         iconSize: 0.5,
         lineWidth: 0,
+},
+    // Aquädukt
+{
+    condition: AND(
+        ["historic", "aqueduct"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_aquaeduct",
+    iconSize: 0.8,
+    lineWidth: 1,
+},
+{
+    match: [
+        ["historic", "aqueduct"]],
+        minZoom : 15,
+        icon: "aquaeduct",
+        iconSize: 0.8,
+        lineWidth: 1,
 },
 
 // *****************************   Zoom 16   *****************************
