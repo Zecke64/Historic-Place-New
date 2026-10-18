@@ -1369,6 +1369,30 @@ export const iconRules = [
     fillColor: "#8b4513",
     fillOpacity: 0,
 },
+    // Chamber 
+{
+    condition: AND(
+        OR(["megalith_type", "chamber"]),
+                   OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 11,
+    icon: "image_chamber",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+{
+    match: [["megalith_type", "chamber"]],
+    minZoom : 11,
+    icon: "chamber",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
     // Steinkreis
 {
     condition: AND(
@@ -4131,6 +4155,25 @@ export const iconRules = [
         ["historic", "aqueduct"]],
         minZoom : 15,
         icon: "aquaeduct",
+        iconSize: 0.8,
+        lineWidth: 1,
+},
+    // Waschplatz
+{
+    condition: AND(
+        ["historic", "lavoir"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_lavoir",
+    iconSize: 0.8,
+    lineWidth: 1,
+},
+{
+    match: [
+        ["historic", "lavoir"]],
+        minZoom : 15,
+        icon: "lavoir",
         iconSize: 0.8,
         lineWidth: 1,
 },
