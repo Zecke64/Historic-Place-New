@@ -267,6 +267,9 @@ export const zoomClasses = [
                 ["historic", "aqueduct"],
                 ["amenity", "townhall"],
                 ["historic", "lavoir"],
+                ["man_made", "kiln"],
+                ["abandoned:man_made", "kiln"],
+                ["disused:man_made", "kiln"],
             ],
         },
     ]

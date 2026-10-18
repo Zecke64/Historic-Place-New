@@ -1373,7 +1373,7 @@ export const iconRules = [
 {
     condition: AND(
         OR(["megalith_type", "chamber"]),
-                   OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
     ),
     minZoom : 11,
     icon: "image_chamber",
@@ -4176,6 +4176,61 @@ export const iconRules = [
         icon: "lavoir",
         iconSize: 0.8,
         lineWidth: 1,
+},
+    // Brennofen
+{
+    condition: AND(
+        OR( ["man_made", "kiln"], ["abandoned:man_made", "kiln"], ["disused:man_made", "kiln"]),
+                   OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"]),
+                   OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_meileraus",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        OR(["man_made", "kiln"], ["abandoned:man_made", "kiln"], ["disused:man_made", "kiln"]),
+                   OR(["historic", "*"], ["disused", "*"], ["abandoned", "*"], ["razed", "*"], ["heritage", "*"])
+    ),
+    minZoom : 15,
+    icon: "meileraus",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        ["man_made", "kiln"],
+        OR(["historic", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_meiler",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        OR(["man_made", "kiln"]),
+        OR(["historic", "*"], ["heritage", "*"])
+    ),
+    minZoom : 15,
+    icon: "meiler",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
 },
 
 // *****************************   Zoom 16   *****************************
