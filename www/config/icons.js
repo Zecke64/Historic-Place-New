@@ -4193,6 +4193,23 @@ export const iconRules = [
         iconSize: 0.8,
         lineWidth: 1,
 },
+    // Pranger
+{
+    condition: AND(
+        ["historic", "pillory"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_pranger",
+    iconSize: 0.8
+},
+{
+    match: [
+        ["historic", "pillory"]],
+        minZoom : 15,
+        icon: "pranger",
+        iconSize: 0.8
+},
     // Obelisk
 {
     condition: AND(
