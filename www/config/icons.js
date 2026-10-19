@@ -4315,6 +4315,25 @@ export const iconRules = [
 {
     condition: AND(
         ["man_made", "water_well"],
+        OR(["pump", "manual"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 16,
+    icon: "image_pumpe",
+    iconSize: 0.8
+},
+{
+    condition: AND(
+        ["man_made", "water_well"],
+        OR(["pump", "manual"])
+    ),
+    minZoom : 16,
+    icon: "pumpe",
+    iconSize: 0.8
+},
+{
+    condition: AND(
+        ["man_made", "water_well"],
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
     ),
     minZoom : 16,
