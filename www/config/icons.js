@@ -1225,6 +1225,16 @@ export const iconRules = [
 },
     // Wassermühle
 {
+    match: [["razed:man_made", "watermill"]],
+    minZoom : 11,
+    icon: "razed-watermill",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+{
     condition: AND(
         OR(["man_made", "watermill"], ["abandoned:man_made", "watermill"], ["disused:man_made", "watermill"]),
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
@@ -2710,6 +2720,30 @@ export const iconRules = [
     minZoom : 13,
     icon: "trio",
     iconSize: 0.8,
+},
+    // Bahnhof
+{
+    condition: AND(
+        OR(["building", "train_station"]),
+        OR(["heritage", "*"], ["historic", "*"]),         
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 13,
+    icon: "image_railway_station",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+},
+{
+    condition: AND(
+        OR(["building", "train_station"]),
+        OR(["heritage", "*"], ["historic", "*"]),
+    ),
+    minZoom : 13,
+    icon: "railway_station",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
 },
     // Vermessungspunkt
 {
@@ -4284,7 +4318,34 @@ export const iconRules = [
     fillColor: "#8b4513",
     fillOpacity: 0
 },
-
+    // Hochbehälter
+{
+    condition: AND(
+        ["man_made", "reservoir_covered"],
+        OR(["historic", "*"], ["heritage", "*"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_reservoir_covered",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
+{
+    condition: AND(
+        OR(["man_made", "reservoir_covered"]),
+        OR(["historic", "*"], ["heritage", "*"])
+    ),
+    minZoom : 15,
+    icon: "reservoir_covered",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0
+},
 // *****************************   Zoom 16   *****************************
 
     //Building
@@ -4864,6 +4925,26 @@ export const iconRules = [
     lineColor: "#000000",
     fillColor: "#FEFC00",
     fillOpacity: 0.25
+},
+    // Ruins
+{
+    condition: AND(
+        ["historic", "ruins"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_ruins",
+    iconSize: 0.8
+},
+    // sonstige historische Objekte
+{
+    condition: AND(
+        ["historic", "*"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_blaues_kreuz",
+    iconSize: 0.8
 },
 
 // *****************************   Zoom 6   *****************************

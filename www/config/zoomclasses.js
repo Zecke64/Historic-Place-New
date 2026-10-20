@@ -208,6 +208,7 @@ export const zoomClasses = [
                 ["historic", "boundary_stone"],
                 ["historic", "milestone"],
                 ["historic", "rune_stone"],
+                ["building", "train_station"],
                 ["man_made", "cross"],
                 ["summit:cross", "yes"],
                 ["historic", "threshing_floor"],
@@ -270,6 +271,7 @@ export const zoomClasses = [
                 ["historic", "lavoir"],
                 ["historic", "pillory"],
                 ["man_made", "obelisk"],
+                ["man_made", "reservoir_covered"],
                 ["man_made", "kiln"],
                 ["abandoned:man_made", "kiln"],
                 ["disused:man_made", "kiln"],
@@ -359,7 +361,7 @@ export const zoomClasses = [
                 ["heritage", "10"],
                 ["heritage", "yes"],
                 ["board_type", "history"],
-                
+                ["historic", "ruins"],
             ],
         },
     ]
