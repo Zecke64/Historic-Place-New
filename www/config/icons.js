@@ -1474,6 +1474,30 @@ export const iconRules = [
     fillColor: "#8b4513",
     fillOpacity: 0,
 },
+    // Tholos
+{
+    condition: AND(
+        OR(["megalith_type", "tholos"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 11,
+    icon: "image_tholos",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
+{
+    match: [["megalith_type", "tholos"]],
+    minZoom : 11,
+    icon: "tholos",
+    iconSize: 0.8,
+    lineWidth: 0,
+    lineColor: "#000000",
+    fillColor: "#8b4513",
+    fillOpacity: 0,
+},
     // Hügelgrab
 {
     condition: AND(
@@ -4345,6 +4369,27 @@ export const iconRules = [
     lineColor: "#000000",
     fillColor: "#8b4513",
     fillOpacity: 0
+},
+    // Technisches Denkmal
+{
+    condition: AND(
+        ["historic", "technical_monument"],
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 15,
+    icon: "image_t-heritage",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000"
+},
+{
+    match: [
+        ["historic", "technical_monument"]],
+        minZoom : 15,
+        icon: "t-heritage",
+        iconSize: 0.8,
+        lineWidth: 1,
+        lineColor: "#000000"
 },
 // *****************************   Zoom 16   *****************************
 
