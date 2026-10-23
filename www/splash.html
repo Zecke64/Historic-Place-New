@@ -39,6 +39,35 @@
         <time id="update-date">18.10.2026</time>
     </div>
 
+    <script>
+        const language = new URLSearchParams(window.location.search).get("lang");
+        fetch('update.date.txt')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP-Error: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(text => {
+                const timestamp = text.trim();
+                const date = new Date(timestamp);
+
+                if (Number.isNaN(date.getTime())) {
+                    throw new Error(`Ungültiger Zeitstempel: "${timestamp}"`);
+                }
+
+                const formatted = new Intl.DateTimeFormat(language, {
+                    dateStyle: 'medium',
+                    timeZone: 'UTC'
+                }).format(date);
+                document.getElementById('update-date').textContent = formatted;
+            })
+            .catch(error => {
+                document.getElementById('update-date').textContent = 'not available';
+                console.error('Fehler beim Laden des Datums:', error);
+            });
+    </script>
+
     <script type="module">
         import {tr,setLanguage} from "./js/language.js";
 

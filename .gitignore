@@ -3,3 +3,4 @@
 /www/config.*
 /www/*/*.sav
 /www/*.zecke
+/www/update.date.txt
