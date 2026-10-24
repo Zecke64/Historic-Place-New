@@ -1155,6 +1155,23 @@ export const layerConfig = [
         credit : 'Meilenblätter von Sachsen, Sächs. Ing.-Korps unter Ltg. von Friedrich Ludwig Aster, <a href="https://www.deutschefotothek.de/cms/kartenforum-sachsen-meilenblaetter-berlin.xml" target="_blank">SLUB / Deutsche Fotothek</a>, <a href="https://commons.wikimedia.org/wiki/Category:Meilenbl%C3%A4tter" target="_blank">Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank">(CC0 1.0) Public Domain Dedication</a>'
     },
 
+    // ###########################   Sächsische Kantoneinteilung (1814)   ###########################
+    {
+        id : "sachsen-1814",
+        template : "ovl-raster-template",
+        titleKey : "layer.sachsen-1814",
+        description : 'Sächsische Kantoneinteilung (1814)',
+        source : {
+            tiles : ["https://tiles.historic.place/region/Saechsische_Kantoneinteilung_(1814)/{z}/{x}/{y}.png"]
+        },
+        shape : { url : "./shape/sachsen.json" },
+        display : {
+            overview : { minZoom : 7 },
+            detail   : { minZoom : 8 }
+        },
+        credit : 'Richard Andree (1835–1912): Geschichte des Corps Lusatia zu Leipzig. Leipzig 1899, Erich Bauer, Jahrbuch des Vereins für corpsstudentische Geschichtsforschung, Sonderheft 1967, Public domain, <a href="https://commons.wikimedia.org/wiki/File:Sächsische_Kantoneinteilung_(1814).JPG" target="_blank">Wikimedia Commons</a>'
+    },
+
     // ################################   Sitzenrodaer-Forst 1780   ################################
     {
         id : "sitzenroda",
