@@ -1026,7 +1026,7 @@ export const layerConfig = [
         titleKey : "layer.Paris",
         description : 'Carte industrielle de la région parisienne 1927, Bibliothèque nationale de France, Tiles from Map Warper',
         source : {
-            tiles : ["https://tiles.historic.place/https://mapwarper.net/mosaics/tile/867/{z}/{x}/{y}.png"]
+            tiles : ["https://mapwarper.net/mosaics/tile/867/{z}/{x}/{y}.png"]
         },
         shape : { url : "./shape/Paris.json" },
         display : {
