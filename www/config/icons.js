@@ -4599,8 +4599,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.25
 },
-{
     // Denkmalschutz Litauen
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "kpd"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_kpd",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4624,8 +4649,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Denkmalschutz Wales
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "cadw"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_cadw",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4649,8 +4699,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Belarus_Heritage
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "mcrb"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_Belarus_Heritage",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4674,8 +4749,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Historic Scotland
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "hs"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_hs",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4692,7 +4792,33 @@ export const iconRules = [
         OR(["heritage:operator", "hs"])
     ),
     minZoom : 17,
-    icon: "heritage-en",
+    icon: "hs",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+    // Bundesdenkmalamt
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "bda"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_bda",
     iconSize: 0.8,
     lineWidth: 1,
     lineColor: "#000000",
@@ -4700,7 +4826,6 @@ export const iconRules = [
     fillOpacity: 0.20
 },
 {
-    // Bundesdenkmalamt
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4724,8 +4849,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Uprava za zaštitu kulturne baštine
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "uzkb"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_uzkb",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4749,8 +4899,51 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Denkmalschutz Nordrhein-Westfalen
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(
+            ["heritage:operator", "UntereDenkmalbehörde"],
+           ["heritage:operator", "BezirksRegierung"],
+           [
+               "heritage:operator",
+           "Institut für Denkmalschutz und Denkmalpflege Essen"
+           ],
+           [
+               "heritage:operator",
+           "Institut für Denkmalschutz und Denkmalpflege Düsseldorf"
+           ],
+           ["heritage:operator", "IfDuD Essen"],
+           ["heritage:operator", "IfDuD Düsseldorf"],
+           [
+               "heritage:operator",
+           "Institut für Denkmalschutz und Denkmalpflege"
+           ],
+           ["heritage:operator", "UntereDenkmalbehörde Velbert"]
+        ),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_nrw",
+    iconSize: 0.8,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4792,8 +4985,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Národní památkový ústav
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "npu"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_npu",
+    iconSize: 1,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4817,8 +5035,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Riksantikvarieämbetets
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "raa"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_raa",
+    iconSize: 0.6,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4842,8 +5085,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Narodowy Instytut Dziedzictwa
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "nid"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_nid",
+    iconSize: 0.6,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4867,8 +5135,33 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Monuments historiques et sites
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["heritage:operator", "mhs"]),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_mhs",
+    iconSize: 0.6,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4892,8 +5185,37 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // English Heritage
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(
+            ["heritage:operator", "eh"],
+           ["heritage:operator", "English Heritage"],
+           ["heritage:operator", "English_Heritage"]
+        ),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_heritage-en",
+    iconSize: 0.6,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4921,8 +5243,36 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Historic England
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(
+            ["heritage:operator", "he"],
+           ["heritage:operator", "Historic England"]
+        ),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_he",
+    iconSize: 0.6,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.20
+},
+{
     condition: AND(
         OR(
             ["heritage", "2"],
@@ -4949,8 +5299,32 @@ export const iconRules = [
     fillColor: "#FEFC00",
     fillOpacity: 0.20
 },
-{
     // Denkmalschutz
+{
+    condition: AND(
+        OR(
+            ["heritage", "2"],
+           ["heritage", "3"],
+           ["heritage", "4"],
+           ["heritage", "5"],
+           ["heritage", "6"],
+           ["heritage", "7"],
+           ["heritage", "8"],
+           ["heritage", "9"],
+           ["heritage", "10"],
+           ["heritage", "yes"]
+        ),
+        OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"])
+    ),
+    minZoom : 17,
+    icon: "image_heritage",
+    iconSize: 0.6,
+    lineWidth: 1,
+    lineColor: "#000000",
+    fillColor: "#FEFC00",
+    fillOpacity: 0.25
+},
+{
     match: [
         ["heritage", "2"],
         ["heritage", "3"],
