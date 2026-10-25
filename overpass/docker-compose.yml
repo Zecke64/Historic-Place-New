@@ -1,0 +1,23 @@
+services:
+
+  overpass:
+    image: wiktorn/overpass-api:latest
+
+    container_name: overpass-planet-hp-${APP_DATE}
+
+    ports:
+      - "${APP_PORT}:80"
+
+    environment:
+
+      OVERPASS_META: "yes"
+      OVERPASS_MODE: "init"
+      OVERPASS_PLANET_URL: "file:///data/planet-hp.osm.bz2"
+      OVERPASS_ALLOW_DUPLICATE_QUERIES: "yes"
+
+    volumes:
+
+      - ./db:/db
+      - ./data:/data
+
+    restart: unless-stopped

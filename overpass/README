@@ -1,0 +1,8 @@
+overpass will be run as docker image.
+Adapt paths and ports to your needs.
+
+Historic.place operates on a reduced overpass planet. 
+It contains only the subset of objects needed for the map. 
+osmium is used to create the reduced planet and to keep it up-to-date using daily diffs.
+
+Start ./update-overpass from cron on a daily base. The other scripts are called from it.

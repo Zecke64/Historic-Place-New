@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+#       first updates the planet to newest diff
+#       then create a new docker instance with a reduced but up-to-date planet
+#
+
+set -ex
+
+./update-planet
+./update-hp-backend

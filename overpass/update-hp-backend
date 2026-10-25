@@ -1,0 +1,95 @@
+#!/bin/bash
+#
+#       loads a new planet, reduces it to the needed content,
+#       sets up a docker container with overpass
+#       and switches from old production to new production instance
+#
+
+set -ex
+
+planet_f="planet/planet-latest.osm.pbf"
+osmium_filter_f="./hp-filter-osmium.txt"
+filtered_planet="planet/planet-hp.osm.bz2"
+docker_name_prefix="overpass-planet-hp"
+ovp_dir=/opt/overpass
+port=8083
+tmp_port=8099
+ovp_test_object="data=[out:json];node(13076003702);out geom;"
+running="planet/update-hp-backend.running"
+update_file=planet/update.date.txt
+
+
+#########################################################################################
+
+raus() {
+    ret=$1
+    shift
+    echo "$*"
+    exit $ret
+}
+
+
+#---------------------------------------------------------------------------------------
+
+trap 'rm -f $running' EXIT
+[ -f "$running" ] && raus 2 "Another instance is running"
+touch $running
+
+#find running overpass instance and its date
+old_id=$(docker ps |grep "$port->80" |awk '{print $1}')
+old_dir=$(docker inspect $old_id |jq '.[].Config.Labels."com.docker.compose.project.working_dir"'| tr -d \")
+old_date=${old_dir##*/}
+last_epoch=$(date -d "$old_date" +"%s")
+
+available=$(osmium fileinfo $planet_f |grep "osmosis_replication_timestamp")
+available=${available#*=}
+available_epoch=$(date -d "$available" +"%s")
+available_ymd=$(date -d "$available" +"%Y-%m-%d")
+
+[ $available_epoch -le $last_epoch ] && raus 0 "No newer planet than $last_update available"
+
+echo "newer planet available: $available"
+
+# shrink planet
+osmium tags-filter "$planet_f" -e "$osmium_filter_f" -o "$filtered_planet" || raus 2 "osmium went wrong"
+[ -s $filtered_planet ] || raus 2 "filtered planet not ok"
+
+# make docker overpass instance on temporary port
+(ss -tln |grep ":$tmp_port"|grep -q LISTEN) && \
+        raus 2 "temp port $tmp_port in use by other process"
+
+ovp_new_dir="$ovp_dir/$available_ymd"
+mkdir $ovp_new_dir
+[ -d $ovp_new_dir ] || raus 2 "overpass directory $ovp_new_dir not created"
+mkdir $ovp_new_dir/db
+mkdir $ovp_new_dir/data
+cp ./docker-compose.yml $ovp_new_dir
+mv $filtered_planet $ovp_new_dir/data
+cd $ovp_new_dir
+
+APP_PORT=$tmp_port APP_DATE=$available_ymd docker compose up -d
+
+# Port isn't assigned yet so use name instead of id
+tmp_name="$docker_name_prefix-$available_ymd"
+while [[ "$(docker inspect -f {{.State.Health.Status}} $tmp_name)" != "healthy" ]]; do
+    sleep 10
+done
+
+# check if instance works correctly
+res=$(curl -G "http://localhost:$tmp_port/api/interpreter" --data-urlencode "$ovp_test_object")
+[[ "$res" =~ Torgau ]] || raus 2 "new container at localhost:$new_port does not give correct result"
+
+# stop old and new instance 
+docker stop $old_id
+docker rm $old_id
+tmp_id=$(docker ps |grep "$tmp_port->80" |awk '{print $1}')
+docker stop $tmp_id
+docker rm $tmp_id
+
+# start new instance on production port
+APP_PORT=$port APP_DATE=$available_ymd docker compose up -d
+
+# prepare date for display in the splash screen
+echo "$available_ymd" > $update_file
+
+raus 0 "done"

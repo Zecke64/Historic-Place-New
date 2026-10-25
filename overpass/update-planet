@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+#   keeps planet up to date
+#
+
+
+set -euo pipefail
+set -x
+
+planet_url="https://planet.osm.org/pbf/planet-latest.osm.pbf"
+planet_file="planet/planet-latest.osm.pbf"
+planet_new="planet/planet-new.osm.pbf"
+running="planet/update-planet.running"
+
+
+
+raus () {
+    ret=$1
+    shift
+    echo "$*"
+    exit $ret
+}
+
+#trap 'ret=$?; rm -f $running; exit $ret' EXIT
+trap 'rm -f $running' EXIT
+[ -f "$running" ] && raus 2 "Another instance of $0 is running"
+touch $running
+
+
+while true; do
+
+    # do we have a full planet? Otherwise get one.
+    [ -s "$planet_file" ] || curl -LfsS -o "$planet_file" "$planet_url"
+    [ -s "$planet_file" ] || raus 2 "no planet available"
+
+    # find next applicable diff
+    planet_ts=$(osmium fileinfo $planet_file |grep "osmosis_replication_timestamp")
+    planet_ts=${planet_ts#*=}
+    planet_epoch=$(date -d "$planet_ts" +"%s")
+
+    echo "$planet_epoch $planet_ts"
+
+    diff_info=$(./find_next_diff.sh "$planet_ts")
+    [[ "$diff_info" =~ "No newer daily diff available" ]] && break
+
+    diff_ts=$(echo -e "$diff_info" |awk '/Timestamp:/ {print $2}')
+    diff_url=$(echo -e "$diff_info" |awk '/Diff:/ {print $2}')
+    diff_f=${diff_url##*/}
+
+    echo -e "$diff_url \n$diff_ts"
+
+    # get diff and apply to planet
+    rm -f ./planet/*.osc.gz
+    curl -LfsS -o "planet/$diff_f" "$diff_url"
+    osmium apply-changes --output-header="osmosis_replication_timestamp=$diff_ts" \
+        "$planet_file" "planet/$diff_f" -o "$planet_new" 
+
+    # check
+    [ -s "$planet_new" ] || raus 2 "osmium apply-changes went wrong"
+    test_ts=$(osmium fileinfo $planet_new |grep "osmosis_replication_timestamp")
+    test_ts=${test_ts#*=}
+    [ "$diff_ts" = "$test_ts" ] || raus 2 "new planet $planet_new has wrong timestamp $test_ts"
+
+    # Test succeeded, swap planets
+    mv "$planet_new" "$planet_file"
+
+done
+
