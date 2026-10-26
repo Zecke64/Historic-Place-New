@@ -7,16 +7,18 @@
 
 set -ex
 
-planet_f="planet/planet-latest.osm.pbf"
-osmium_filter_f="./hp-filter-osmium.txt"
-filtered_planet="planet/planet-hp.osm.bz2"
+basedir=$(dirname $0)
+
+planet_f="$basedir/planet/planet-latest.osm.pbf"
+osmium_filter_f="$basedir/hp-filter-osmium.txt"
+filtered_planet="$basedir/planet/planet-hp.osm.bz2"
 docker_name_prefix="overpass-planet-hp"
 ovp_dir=/opt/overpass
 port=8083
 tmp_port=8099
 ovp_test_object="data=[out:json];node(13076003702);out geom;"
-running="planet/update-hp-backend.running"
-update_file=planet/update.date.txt
+running="$basedir/planet/update-hp-backend.running"
+update_file="$basedir/planet/update.date.txt"
 
 
 #########################################################################################
