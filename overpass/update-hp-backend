@@ -7,7 +7,7 @@
 
 set -ex
 
-basedir=$(dirname $0)
+basedir=$(tmppth=$(realpath "$0") && dirname "$tmppth")
 
 planet_f="$basedir/planet/planet-latest.osm.pbf"
 osmium_filter_f="$basedir/hp-filter-osmium.txt"

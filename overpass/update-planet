@@ -21,7 +21,6 @@ raus () {
     exit $ret
 }
 
-#trap 'ret=$?; rm -f $running; exit $ret' EXIT
 trap 'rm -f $running' EXIT
 [ -f "$running" ] && raus 2 "Another instance of $0 is running"
 touch $running
