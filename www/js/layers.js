@@ -45,6 +45,16 @@ export async function initLayerManager(map) {
         }
     });
 
+    map.on("idle", () => {
+
+        // Raster-/WMS-Ladevorgänge abschließen,
+        // die noch in unserem Set stehen.
+        for (const sourceId of [...loadingSources]) {
+            loadingSources.delete(sourceId);
+            stopLoadingInd();
+        }
+    });
+
     for (const layer of layerConfig) {
 
         if (layer.source?.type === "raster") {
@@ -91,7 +101,21 @@ export function addRasterLayer(map, options) {
         return;
     }
 
-    map.addSource(mapLayer.id + "-source", {type : "raster", tiles : tiles, tileSize : tileSize});
+    const rasterSource = {
+        type: "raster",
+        tiles: tiles,
+        tileSize: tileSize
+    };
+
+    if (source.minZoom !== undefined) {
+        rasterSource.minzoom = source.minZoom;
+    }
+
+    if (source.maxZoom !== undefined) {
+        rasterSource.maxzoom = source.maxZoom;
+    }
+
+    map.addSource(mapLayer.id + "-source", rasterSource);
 
     map.addLayer({
         id : mapLayer.id,
@@ -136,11 +160,21 @@ function addWmsLayer(map, layer) {
         `${layer.source.url}${separator}${params.toString()}` +
         "&BBOX={bbox-epsg-3857}";
 
-    map.addSource(sourceId, {
+    const rasterSource = {
         type: "raster",
         tiles: [url],
         tileSize: layer.source.tileSize ?? 256
-    });
+    };
+
+    if (layer.source.minZoom !== undefined) {
+        rasterSource.minzoom = source.minZoom;
+    }
+
+    if (layer.source.maxZoom !== undefined) {
+        rasterSource.maxzoom = layer.source.maxZoom;
+    }
+
+    map.addSource(sourceId, rasterSource);
 
     map.addLayer({
         id: layerId,
@@ -272,6 +306,8 @@ export function updateLayerVisibility(map) {
 
     for (const layer of layerConfig) {
 
+        const detailMinZoom = getDetailMinZoom(layer);
+
         // WMS-Raster
         if (layer.source?.type === "wms") {
 
@@ -279,12 +315,9 @@ export function updateLayerVisibility(map) {
 
             if (map.getLayer(mapLayerId)) {
 
-                const minZoom =
-                    layer.display?.detail?.minZoom ?? 0;
-
                 const visible =
                     layer.visible &&
-                    zoom >= minZoom;
+                    zoom >= detailMinZoom;
 
                 map.setLayoutProperty(
                     mapLayerId,
@@ -312,14 +345,14 @@ export function updateLayerVisibility(map) {
                 visible =
                     layer.visible &&
                     zoom >= layer.display.overview.minZoom &&
-                    zoom < layer.display.detail.minZoom;
+                    zoom < detailMinZoom;
 
             }
             else if (mapLayer.type === "raster") {
 
                 visible =
                     layer.visible &&
-                    zoom >= layer.display.detail.minZoom;
+                    zoom >= detailMinZoom;
             }
 
             if (map.getLayer(mapLayer.id)) {
@@ -360,4 +393,21 @@ function deepMerge(base, override) {
     }
 
     return result;
+}
+
+
+
+// Hilfsfunktion: MapLibre zeigt bei 256x256 Tiles zeigt Kacheln 
+// bereits bei Zoom=n-1,5 an, wenn n die kleinste Zoomstufe
+// ist, für die es Kacheln gibt
+//
+function getDetailMinZoom(layer) {
+
+    if (layer.source?.minZoom === undefined)
+        return layer.display?.detail?.minZoom ?? 0;
+
+    const tileSize = layer.source.tileSize ?? 256;
+    const zoomOffset = Math.log2(512 / tileSize);
+
+    return layer.source.minZoom - zoomOffset - 0.5;
 }

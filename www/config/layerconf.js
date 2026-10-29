@@ -15,12 +15,13 @@ export const layerTemplates =
         source:
         {
             type:     "raster",
-            tileSize: 256
+            tileSize: 256,
+            maxZoom: 20
         },
         display:
         {
             overview: { minZoom: 0 },
-            detail:   { minZoom: 0 }
+            // detail:   { minZoom: 0 }
         }
     },
 
@@ -43,7 +44,8 @@ export const layerTemplates =
             version: "1.3.0",
             format: "image/png",
             transparent: false,
-            crs: "EPSG:3857"
+            crs: "EPSG:3857",
+            maxZoom: 20
         },
         shape:
         {
@@ -104,12 +106,14 @@ export const layerConfig = [
         titleKey : "layer.kdr1893",
         description : 'Karte des Deutschen Reichs 1893 aus der David Rumsey Map Collection',
         source : {
-            tiles : ["https://tiles.historic.place/kdr1893/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/kdr1893/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 15
         },
         shape : { url : "./shape/kdr1893.json" },
         display : {
             overview : { minZoom : 7 },
-            detail   : { minZoom : 10 }
+            // detail   : { minZoom : 10 }
         },
         credit : '<a href="https://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>'
     },
@@ -597,7 +601,8 @@ export const layerConfig = [
         titleKey : "layer.Kliver",
         description : 'Flözkarte des Saarländischen Kohledistrikts nach Moritz Kliver (1881-1908)',
         source : {
-            tiles : ["https://tiles.historic.place/mining/Kliver/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/mining/Kliver/{z}/{x}/{y}.png"],
+            maxZoom : 17
         },
         shape : { url : "./shape/Kliver.json" },
         display : {
@@ -1162,7 +1167,8 @@ export const layerConfig = [
         titleKey : "layer.sachsen-1814",
         description : 'Sächsische Kantoneinteilung (1814)',
         source : {
-            tiles : ["https://tiles.historic.place/region/Saechsische_Kantoneinteilung_(1814)/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Saechsische_Kantoneinteilung_(1814)/{z}/{x}/{y}.png"],
+            maxZoom : 10
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
