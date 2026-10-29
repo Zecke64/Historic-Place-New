@@ -7,6 +7,9 @@
 set -euo pipefail
 set -x
 
+basedir=$(tmppth=$(realpath "$0") && dirname "$tmppth")
+cd "$basedir"
+
 planet_url="https://planet.osm.org/pbf/planet-latest.osm.pbf"
 planet_file="planet/planet-latest.osm.pbf"
 planet_new="planet/planet-new.osm.pbf"

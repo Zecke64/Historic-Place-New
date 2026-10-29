@@ -6,5 +6,8 @@
 
 set -ex
 
+basedir=$(tmppth=$(realpath "$0") && dirname "$tmppth")
+
+cd "$basedir"
 ./update-planet
 ./update-hp-backend
