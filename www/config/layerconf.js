@@ -125,12 +125,14 @@ export const layerConfig = [
         titleKey : "layer.byu1936",
         description : 'Pre-WW2 German Maps, BYU Harold B. Library Collections',
         source : {
-            tiles : ["https://tiles.historic.place/gm1936/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/gm1936/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/byu1936.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://lib.byu.edu/collections/german-maps/" target="_blank">BYU Harold B. Lee Library</a>'
     },
@@ -142,12 +144,14 @@ export const layerConfig = [
         titleKey : "layer.newport",
         description : 'Newport 1845 National Library of Wales',
         source : {
-            tiles : ["https://tiles.historic.place/newport1845/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/newport1845/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
         },
         shape : { url : "./shape/newport.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+           // detail   : { minZoom : 14 }
         },
         credit : '<a href="https://www.llgc.org.uk/en/" target="_blank">National Library of Wales</a>'
     },
@@ -159,12 +163,14 @@ export const layerConfig = [
         titleKey : "layer.Berlin_1940",
         description : 'Geoportal Berlin, Berlin um 1940',
         source : {
-            tiles : ["https://tiles.historic.place/city/Berlin_1940/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Berlin_1940/{z}/{x}/{y}.png"],
+            minZoom : 16,
+            maxZoom : 18
         },
         shape : { url : "./shape/Berlin_1940.json" },
         display : {
             overview : { minZoom : 13 },
-            detail   : { minZoom : 16 }
+            //detail   : { minZoom : 16 }
         },
         credit : '<a href="https://www.stadtentwicklung.berlin.de/geoinformation/geodateninfrastruktur/de/geodienste/" target="_blank">Geoportal Berlin, Berlin um 1940</a>'
     },
@@ -176,12 +182,14 @@ export const layerConfig = [
         titleKey : "layer.dresden1833",
         description : 'Dresden 1833 David Rumsey Map Collection',
         source : {
-            tiles : ["https://tiles.historic.place/city/Dresden_1833/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Dresden_1833/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 17
         },
         shape : { url : "./shape/dresden1833.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : '<a href="https://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>'
     },
@@ -193,12 +201,14 @@ export const layerConfig = [
         titleKey : "layer.Belgrad1940",
         description : 'Belgrad 1940, Map Archive of Wojskowy Instytut Geograficzny 1919 - 1939 (non-commercial use)',
         source : {
-            tiles : ["https://tiles.historic.place/city/Belgrad1940/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Belgrad1940/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/Belgrad1940.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : '<a href="https://english.mapywig.org/news.php" target="_blank">Map Archive of Wojskowy Instytut Geograficzny (non-commercial use)</a>'
     },
@@ -210,12 +220,14 @@ export const layerConfig = [
         titleKey : "layer.Umgebung_von_Wien_1941",
         description : 'Umgebung von Wien 1941, Map Archive of Wojskowy Instytut Geograficzny 1919 - 1939 (non-commercial use)',
         source : {
-            tiles : ["https://tiles.historic.place/city/Umgebung_von_Wien_1941/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Umgebung_von_Wien_1941/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 15
         },
         shape : { url : "./shape/Umgebung_von_Wien_1941.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://english.mapywig.org/news.php" target="_blank">Map Archive of Wojskowy Instytut Geograficzny (non-commercial use)</a>'
     },
@@ -227,12 +239,14 @@ export const layerConfig = [
         titleKey : "layer.moskau1836",
         description : 'Moskau 1836 David Rumsey Map Collection ',
         source : {
-            tiles : ["https://tiles.historic.place/city/Moskau_1836/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Moskau_1836/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/moskau1836.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>'
     },
@@ -244,12 +258,14 @@ export const layerConfig = [
         titleKey : "layer.budapest1933",
         description : 'Budapest 1933, Map Archive of Wojskowy Instytut Geograficzny 1919 - 1939 ',
         source : {
-            tiles : ["https://tiles.historic.place/city/Budapest_1933/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Budapest_1933/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/budapest1933.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://english.mapywig.org/news.php" target="_blank">Map Archive of Wojskowy Instytut Geograficzny</a>'
     },
@@ -261,12 +277,14 @@ export const layerConfig = [
         titleKey : "layer.Schwarzwald-Nord-1920",
         description : 'Schwarzwald(Nord) 1920, Map Archive of Wojskowy Instytut Geograficzny 1919 - 1939 (non-commercial use)',
         source : {
-            tiles : ["https://tiles.historic.place/region/Schwarzwald-Nord-1920/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Schwarzwald-Nord-1920/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 15
         },
         shape : { url : "./shape/Schwarzwald-Nord-1920.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://english.mapywig.org/news.php" target="_blank">Map Archive of Wojskowy Instytut Geograficzny (non-commercial use)</a>'
     },
@@ -278,12 +296,14 @@ export const layerConfig = [
         titleKey : "layer.Helsinki_1900",
         description : 'Helsinki 1900, Helsinki Region Infoshare',
         source : {
-            tiles : ["https://tiles.historic.place/city/Helsinki_1900/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Helsinki_1900/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Helsinki_1900.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.hri.fi/fi/" target="_blank">Helsinki Region Infoshare</a>'
     },
@@ -295,12 +315,14 @@ export const layerConfig = [
         titleKey : "layer.Lyon_1888",
         description : 'Lyon 1888, Bibliothèque nationale de France',
         source : {
-            tiles : ["https://tiles.historic.place/city/Lyon_1888/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Lyon_1888/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Lyon_1888.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://visualiseur.bnf.fr/CadresFenetre?O=IFN-8439740&M=imageseule" target="_blank">Bibliothèque nationale de France</a>'
     },
@@ -312,12 +334,14 @@ export const layerConfig = [
         titleKey : "layer.Tartu_1892",
         description : 'Tartu 1892, National Archives of Estonia',
         source : {
-            tiles : ["https://tiles.historic.place/city/Tartu_1892/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Tartu_1892/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Tartu_1892.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.ra.ee" target="_blank">National Archives of Estonia</a>'
     },
@@ -329,12 +353,14 @@ export const layerConfig = [
         titleKey : "layer.Umea_1937",
         description : 'Umeå 1937 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Umea_1937/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Umea_1937/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Umea_1937.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://warper.wmflabs.org/" target="_blank">Wikimaps Warper</a>'
     },
@@ -346,12 +372,14 @@ export const layerConfig = [
         titleKey : "layer.Zuerich_1910",
         description : 'Zürich 1910 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Zuerich_1910/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Zuerich_1910/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Zuerich_1910.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://imagebase.ubvu.vu.nl/cdm/ref/collection/krt/id/1784" target="_blank">Universiteitsbibliotheek Vrije Universiteit Amsterdam</a>, <a href="https://warper.wmflabs.org/" target="_blank">Wikimaps Warper</a>'
     },
@@ -363,12 +391,14 @@ export const layerConfig = [
         titleKey : "layer.Zuerich_1504",
         description : 'Zürich 1504 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Zuerich_1504/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Zuerich_1504/{z}/{x}/{y}.png"],
+            minZoom : 15,
+            maxZoom : 18
         },
         shape : { url : "./shape/Zuerich_1504.json" },
         display : {
             overview : { minZoom : 12 },
-            detail   : { minZoom : 15 }
+            //detail   : { minZoom : 15 }
         },
         credit : '<a href="https://commons.wikimedia.org/wiki/File:Keller_Stadtplan_Z%C3%BCrich_1504.jpg" target="_blank">Wikimedia Commons</a>, <a href="https://warper.wmflabs.org/maps/57" target="_blank">Wikimaps Warper</a>'
     },
@@ -380,12 +410,14 @@ export const layerConfig = [
         titleKey : "layer.Lindau_1822",
         description : 'Lindau 1822 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Lindau_1822/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Lindau_1822/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
         },
         shape : { url : "./shape/Lindau_1822.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.bayerische-landesbibliothek-online.de/" target="_blank">Bayerische Landesbibliothek Online</a>, <a href="https://warper.wmflabs.org/" target="_blank">Wikimaps Warper</a>'
     },
@@ -397,12 +429,14 @@ export const layerConfig = [
         titleKey : "layer.rostock_1911",
         description : 'Hansestadt Rostock , (ODC-By) v1.0',
         source : {
-            tiles : ["https://tiles.historic.place/city/Rostock_1911/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Rostock_1911/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
         },
         shape : { url : "./shape/rostock_1911.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.opendata-hro.de/dataset/plan-von-rostock_1911/resource/18e531e2-b28b-4ae2-9630-940bf60df6ad" target="_blank">Hansestadt Rostock </a>, <a href="https://opendatacommons.org/licenses/by/1.0/" target="_blank">(ODC-By) v1.0</a>'
     },
@@ -414,12 +448,14 @@ export const layerConfig = [
         titleKey : "layer.Rostock_Tarnow_1790",
         description : 'Hansestadt Rostock , (CC0 1.0)',
         source : {
-            tiles : ["https://tiles.historic.place/city/Rostock_Tarnow_1790/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Rostock_Tarnow_1790/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 19
         },
         shape : { url : "./shape/Rostock_Tarnow_1790.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : '<a href="https://www.opendata-hro.de/dataset/tarnow_1790" target="_blank">Hansestadt Rostock </a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">(CC0 1.0)</a>'
     },
@@ -431,12 +467,14 @@ export const layerConfig = [
         titleKey : "layer.Rostock_Schmettau_1788",
         description : 'Hansestadt Rostock , (CC0 1.0)',
         source : {
-            tiles : ["https://tiles.historic.place/region/Rostock_1788/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Rostock_1788/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 16
         },
         shape : { url : "./shape/Rostock_Schmettau_1788.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : '<a href="https://www.opendata-hro.de/dataset/schmettau_1788" target="_blank">Hansestadt Rostock </a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">(CC0 1.0)</a>'
     },
@@ -448,12 +486,14 @@ export const layerConfig = [
         titleKey : "layer.Rostock_Wiebeking_1786",
         description : 'Hansestadt Rostock , (CC0 1.0)',
         source : {
-            tiles : ["https://tiles.historic.place/region/Rostock_Wiebeking_1786/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Rostock_Wiebeking_1786/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 16
         },
         shape : { url : "./shape/Rostock_Wiebeking_1786.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : '<a href="https://www.opendata-hro.de/dataset/wiebeking_1786" target="_blank">Hansestadt Rostock </a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">(CC0 1.0)</a>'
     },
@@ -465,12 +505,14 @@ export const layerConfig = [
         titleKey : "layer.Cherbourg_1943",
         description : 'Cherbourg 1943 , Used by permission of the University of Texas Libraries, The University of Texas at Austin',
         source : {
-            tiles : ["https://tiles.historic.place/city/Cherbourg_1943/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Cherbourg_1943/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Cherbourg_1943.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.lib.utexas.edu/maps/" target="_blank">The University of Texas at Austin</a>'
     },
@@ -482,12 +524,14 @@ export const layerConfig = [
         titleKey : "layer.Markgroeningen_1751",
         description : 'Markgröningen 1751 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Markgroeningen_1751/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Markgroeningen_1751/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 17
         },
         shape : { url : "./shape/Markgroeningen_1751.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.landesarchiv-bw.de" target="_blank">Landesarchiv Baden-Württemberg</a>, <a href="https://warper.wmflabs.org/" target="_blank">Wikimaps Warper</a>'
     },
@@ -499,12 +543,14 @@ export const layerConfig = [
         titleKey : "layer.Urmesstisch_Berlin_1835-1840",
         description : 'Urmesstischblatter_Spandau-Berlin_Nord_1835-1840 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Urmesstisch_Berlin_1835-1840/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Urmesstisch_Berlin_1835-1840/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/Urmesstisch_Berlin_1835-1840.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://warper.wmflabs.org/" target="_blank">Wikimaps Warper</a>'
     },
@@ -516,12 +562,14 @@ export const layerConfig = [
         titleKey : "layer.Berlin_1907",
         description : 'Mende Großer Verkehrs-Plan Berlin und seine Vororte 1907 , Wikimaps Warper',
         source : {
-            tiles : ["https://tiles.historic.place/city/Berlin_1907/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Berlin_1907/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/Berlin_1907.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://blocksignal.de/krt/f.php?k=vw" target="_blank">blocksignal.de</a>, <a href="https://warper.wmflabs.org/" target="_blank">Wikimaps Warper</a>'
     },
@@ -533,12 +581,14 @@ export const layerConfig = [
         titleKey : "layer.Duebener-Heide_Flurnamen_1800",
         description : 'Quellennachweis: Archiv,Landesamt für Denkmalpflege und Archäologie Sachsen-Anhalt.',
         source : {
-            tiles : ["https://tiles.historic.place/region/Duebener-Heide_Flurnamen_1800/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Duebener-Heide_Flurnamen_1800/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/Duebener-Heide_Flurnamen_1800.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.lda-lsa.de/" target="_blank">Archiv,Landesamt für Denkmalpflege und Archäologie Sachsen-Anhalt</a>'
     },
@@ -550,12 +600,14 @@ export const layerConfig = [
         titleKey : "layer.usa_1900",
         description : 'United States Geological Survey-Historical Topographic Maps',
         source : {
-            tiles : ["https://tiles.historic.place/region/usa_1900/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/usa_1900/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/usa_1900.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : 'USA 1900,<a href="https://www.usgs.gov" target="_blank">U.S. Geological Survey Department of the Interior/USGS U.S. Geological Survey</a>'
     },
@@ -567,12 +619,14 @@ export const layerConfig = [
         titleKey : "layer.Pfalz_1836-1841",
         description : 'Top. Aufnahme der Pfalz (1836-1841), Landesamt für Vermessung und Geobasisinformation (LVermGeo) Rheinland-Pfalz',
         source : {
-            tiles : ["https://tiles.historic.place/region/pfalz_1836-1841/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/pfalz_1836-1841/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/Pfalz_1836-1841.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.lvermgeo.rlp.de" target="_blank">©GeoBasis-DE / LVermGeoRP (2016)</a>'
     },
@@ -584,12 +638,14 @@ export const layerConfig = [
         titleKey : "layer.Preußische_Kartenaufnahme_1843-1878",
         description : 'Preußische Kartenaufnahme 1843-1878, Landesamt für Vermessung und Geobasisinformation (LVermGeo) Rheinland-Pfalz',
         source : {
-            tiles : ["https://tiles.historic.place/region/Preußische_Kartenaufnahme_1843-1878/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Preußische_Kartenaufnahme_1843-1878/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/Preußische_Kartenaufnahme_1843-1878.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.lvermgeo.rlp.de" target="_blank">©GeoBasis-DE / LVermGeoRP (2016)</a>'
     },
@@ -602,12 +658,13 @@ export const layerConfig = [
         description : 'Flözkarte des Saarländischen Kohledistrikts nach Moritz Kliver (1881-1908)',
         source : {
             tiles : ["https://tiles.historic.place/mining/Kliver/{z}/{x}/{y}.png"],
+            minZoom : 14,
             maxZoom : 17
         },
         shape : { url : "./shape/Kliver.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Kliver courtesy of <a href="https://www.sulb.uni-saarland.de/" target="_blank">SULB</a>'
     },
@@ -619,12 +676,14 @@ export const layerConfig = [
         titleKey : "layer.Duhamel",
         description : 'Duhamel-Atlas (Atlas des concessions du Terrain Houiller de la Sarre) von Beaunier und Calmelet (1810)',
         source : {
-            tiles : ["https://tiles.historic.place/mining/Duhamel/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/mining/Duhamel/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 17
         },
         shape : { url : "./shape/Duhamel.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : "Duhamel-Atlas courtesy of Bibliothèque de l'"+'École des mines de Paris, <a href="https://www.bib.mines-paristech.fr/" target="_blank"> MINES ParisTech</a>'
     },
@@ -636,12 +695,14 @@ export const layerConfig = [
         titleKey : "layer.Oberschlesien_1902",
         description : 'Flötzkarte des Oberschlesischen Steinkohlenbeckens 1902',
         source : {
-            tiles : ["https://tiles.historic.place/mining/Oberschlesien_1902/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/mining/Oberschlesien_1902/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
         },
         shape : { url : "./shape/Oberschlesien_1902.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://english.mapywig.org/news.php" target="_blank">provided by Mapywig (non-commercial use)</a>'
     },
@@ -653,12 +714,14 @@ export const layerConfig = [
         titleKey : "layer.Fourcy",
         description : 'Atlas Fourcy (premier atlas souterrain de Paris), 1859',
         source : {
-            tiles : ["https://tiles.historic.place/mining/Fourcy/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/mining/Fourcy/{z}/{x}/{y}.png"],
+            minZoom : 15,
+            maxZoom : 19
         },
         shape : { url : "./shape/Fourcy.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 15 }
+            //detail   : { minZoom : 15 }
         },
         credit : "Atlas Fourcy courtesy of Bibliothèque de l'"+'École des mines de Paris, <a href="https://www.bib.mines-paristech.fr/" target="_blank"> MINES ParisTech</a>'
     },
@@ -670,12 +733,14 @@ export const layerConfig = [
         titleKey : "layer.Wien_1684",
         description : 'Grundrissplan der Stadt Wien nach Suttinger 1683 (1684)',
         source : {
-            tiles : ["https://tiles.historic.place/city/Wien_1684/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Wien_1684/{z}/{x}/{y}.png"],
+            minZoom : 16,
+            maxZoom : 19
         },
         shape : { url : "./shape/Wien_1684.json" },
         display : {
             overview : { minZoom : 13 },
-            detail   : { minZoom : 16 }
+            //detail   : { minZoom : 16 }
         },
         credit : '<a href="https://www.data.gv.at/katalog/dataset/stadt-wien_kartenvor1850wien/resource/25088e6c-f612-48f2-a5be-b35f23e78fa1" target="_blank">Stadt Wien</a>, <a href="https://creativecommons.org/licenses/by/3.0/at/deed.de" target="_blank">(CC BY 3.0 AT)</a>'
     },
@@ -687,12 +752,14 @@ export const layerConfig = [
         titleKey : "layer.Gent_1841",
         description : 'High res map of Ghent by Saurel 1841',
         source : {
-            tiles : ["https://tiles.historic.place/city/Gent_1841/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Gent_1841/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 18
         },
         shape : { url : "./shape/Gent_1841.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : '<a href="https://adore.ugent.be/view?q=_id:%22archive.ugent.be:6CFD6A70-8CD1-11E2-A445-9E8DB44EB760%22&search_type=advanced" target="_blank">Universiteitsbibliotheek Gent</a>, <a href="https://creativecommons.org/licenses/by-nc-sa/2.0/be/deed.nl" target="_blank">(CC BY-NC-SA 2.0 BE)</a>, <a href="https://warper.wmflabs.org/maps/1291" target="_blank">Wikimaps Warper</a>'
     },
@@ -704,12 +771,14 @@ export const layerConfig = [
         titleKey : "layer.Saar",
         description : 'Heimatkarte Saargebiet 1927, Map Archive of Wojskowy Instytut Geograficzny (non-commercial use)',
         source : {
-            tiles : ["https://tiles.historic.place/region/Heimatkarte-Saargebiet_1927/{z}/{x}/{y}.png"]
-        },
+            tiles : ["https://tiles.historic.place/region/Heimatkarte-Saargebiet_1927/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 13
+        },  
         shape : { url : "./shape/Saar.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : '<a href="https://english.mapywig.org/news.php" target="_blank">Map Archive of Wojskowy Instytut Geograficzny (non-commercial use)</a>'
     },
@@ -721,12 +790,14 @@ export const layerConfig = [
         titleKey : "layer.Mines_D_Anzin",
         description : "Carte des concessions et chemins de fer de la Compagnie propriétaire des mines d'Anzin, Raismes, Fresnes, Vieux-Condé, Denain, Saint-Saulve, Odomez et Hasnon ",
         source : {
-            tiles : ["https://tiles.historic.place/mining/Mines_D_Anzin/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/mining/Mines_D_Anzin/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 15
         },
         shape : { url : "./shape/Mines_D_Anzin.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : '<a href="https://gallica.bnf.fr/ark:/12148/btv1b8445093c/f1" target="_blank"> gallica.bnf.fr / Bibliothèque nationale de France </a>'
     },
@@ -738,12 +809,14 @@ export const layerConfig = [
         titleKey : "layer.stockholm",
         description : 'Topografiska corpsens map of Stockholm, Blad I-IX 1861',
         source : {
-            tiles : ["https://tiles.historic.place/city/Stockholm_1861/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Stockholm_1861/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 16
         },
         shape : { url : "./shape/stockholm.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : 'Historical map created by Topografiska corpsen, original at<a href="https://stockholmskallan.se/Soksida/Post/?nid=9746" target="_blank">Stockholms stadsarkiv</a> ,<a href="https://creativecommons.org/licenses/by-sa/2.5/se/" target="_blank">(CC BY-SA 2.5 SE)</a>, <a href="https://commons.wikimedia.org/wiki/Category:Topografiska_corpsens_map_of_Stockholm,_Blad_I-IX" target="_blank">Wikimedia Commons</a>'
     },
@@ -755,12 +828,14 @@ export const layerConfig = [
         titleKey : "layer.goeteborg",
         description : 'Map of Gothenburg, Sweden, published by N. P. Pehrsson in 1888',
         source : {
-            tiles : ["https://tiles.historic.place/city/Goeteborg_1888/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Goeteborg_1888/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
         },
         shape : { url : "./shape/goeteborg.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : '<a href="https://www.riksarkivet.se/goteborg" target="_blank">Riksarkivet, Landsarkivet i Göteborg</a> ,<a href="https://creativecommons.org/publicdomain/mark/1.0/deed.en" target="_blank">Public Domain</a>, <a href="https://commons.wikimedia.org/wiki/File:Simon%27s_1888_Gothenburg_map.tiff" target="_blank">Wikimedia Commons</a>'
     },
@@ -772,12 +847,14 @@ export const layerConfig = [
         titleKey : "layer.TAYNINH",
         description : 'Tây Ninh, published by E. Dufrénoy (Paris)  in 1898',
         source : {
-            tiles : ["https://tiles.historic.place/region/TAYNINH_1898/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/TAYNINH_1898/{z}/{x}/{y}.png"],
+            minZoom : 11,
+            maxZoom : 14
         },
         shape : { url : "./shape/TAYNINH.json" },
         display : {
             overview : { minZoom : 8 },
-            detail   : { minZoom : 11 }
+            //detail   : { minZoom : 11 }
         },
         credit : '<a href="https://gallica.bnf.fr/accueil/fr/content/accueil-fr?mode=desktop" target="_blank">gallica.bnf.fr / Bibliothèque nationale de France</a> ,<a href="https://creativecommons.org/licenses/by-nc/2.0/" target="_blank">(CC BY-NC 2.0)</a>, <a href="https://commons.wikimedia.org/wiki/File:TayNinh1898.jpg" target="_blank">Wikimedia Commons</a>'
     },
@@ -789,12 +866,14 @@ export const layerConfig = [
         titleKey : "layer.Polen_1920",
         description : 'Poland : 1:2,000,000 Digital Commonwealth, Norman B. Leventhal Map Center Collection, Boston Public Library',
         source : {
-            tiles : ["https://tiles.historic.place/region/Poland--Boundaries--Maps_1920/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Poland--Boundaries--Maps_1920/{z}/{x}/{y}.png"],
+            minZoom : 6,
+            maxZoom : 10
         },
         shape : { url : "./shape/Polen_1920.json" },
         display : {
             overview : { minZoom : 3 },
-            detail   : { minZoom : 6 }
+            //detail   : { minZoom : 6 }
         },
         credit : ' Poland 1920  Arctowski, Henryk, General Drafting Company, <a href="https://www.digitalcommonwealth.org" target="_blank">Digital Commonwealth</a>, <a href="https://www.digitalcommonwealth.org/search/commonwealth:x633fb66g" target="_blank"> Norman B. Leventhal Map Center Collection, Boston Public Library</a>, <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">(CC BY-NC-SA)</a>'
     },
@@ -806,12 +885,14 @@ export const layerConfig = [
         titleKey : "layer.Frankreich_1799",
         description : 'Clement Cruttwell Map of France 1799, Geographicus Rare Antique Maps',
         source : {
-            tiles : ["https://tiles.historic.place/region/Frankreich_1799/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Frankreich_1799/{z}/{x}/{y}.png"],
+            minZoom : 6,
+            maxZoom : 10
         },
         shape : { url : "./shape/Frankreich_1799.json" },
         display : {
             overview : { minZoom : 3 },
-            detail   : { minZoom : 6 }
+            //detail   : { minZoom : 6 }
         },
         credit : 'Frankreich 1799 Cruttwell, C., Atlas to Cruttwells Gazetteer, 1799<a href="https://www.geographicus.com/P/AntiqueMap/FranceDepartments-cruttwell-1799" target="_blank"> Geographicus Rare Antique Maps</a>, a cooperation project with <a href="https://commons.wikimedia.org/wiki/File:1799_Clement_Cruttwell_Map_of_France_in_Departments_-_Geographicus_-_FranceDepartments-cruttwell-1799.jpg" target="_blank">Wikimedia Commons</a>, <a href="https://warper.wmflabs.org/maps/1531#Preview_tab" target="_blank">Wikimaps Warper</a>, <a href="https://commons.wikimedia.org/wiki/Commons:Licensing#Material_in_the_public_domain" target="_blank">Public domain</a>'
     },
@@ -823,12 +904,14 @@ export const layerConfig = [
         titleKey : "layer.Egypt_1885",
         description : 'W. & A.K. Johnston Limited, Norman B. Leventhal Map Center Collection, Boston Public Library, Digital Commonwealth',
         source : {
-            tiles : ["https://tiles.historic.place/region/Egypt_1885/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Egypt_1885/{z}/{x}/{y}.png"],
+            minZoom : 6,
+            maxZoom : 9
         },
         shape : { url : "./shape/Egypt_1885.json" },
         display : {
             overview : { minZoom : 3 },
-            detail   : { minZoom : 6 }
+            //detail   : { minZoom : 6 }
         },
         credit : 'Egypt 1885 W. & A.K. Johnston Limited, <a href="https://www.digitalcommonwealth.org" target="_blank">Digital Commonwealth</a>, <a href="https://www.digitalcommonwealth.org/collections/commonwealth:41688024w" target="_blank"> Norman B. Leventhal Map Center Collection, Boston Public Library</a>, <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">(CC BY-NC-SA)</a>'
     },
@@ -840,12 +923,14 @@ export const layerConfig = [
         titleKey : "layer.Brasil_1911",
         description : 'Rio de Janeiro : Jornal do Brasil, Leventhal Map Center Collection, Boston Public Library, Digital Commonwealth',
         source : {
-            tiles : ["https://tiles.historic.place/region/Brasil_1911/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Brasil_1911/{z}/{x}/{y}.png"],
+            minZoom : 6,
+            maxZoom : 10
         },
         shape : { url : "./shape/Brasil_1911.json" },
         display : {
             overview : { minZoom : 3 },
-            detail   : { minZoom : 6 }
+            //detail   : { minZoom : 6 }
         },
         credit : 'Brasil 1911 from Rio de Janeiro : Jornal do Brasil, <a href="https://www.digitalcommonwealth.org" target="_blank">Digital Commonwealth</a>, <a href="https://www.digitalcommonwealth.org/collections/commonwealth:41688024w" target="_blank"> Norman B. Leventhal Map Center Collection, Boston Public Library</a>, <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">(CC BY-NC-SA)</a>'
     },
@@ -857,12 +942,14 @@ export const layerConfig = [
         titleKey : "layer.Finmarken_1861",
         description : 'Kartverket (Norges Geografiske Oppmåling):J. A. Friis, Etnografisk Kart over Finmarken 1861, (CC BY 4.0)',
         source : {
-            tiles : ["https://tiles.historic.place/region/Finmarken_1861/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Finmarken_1861/{z}/{x}/{y}.png"],
+            minZoom : 7,
+            maxZoom : 12
         },
         shape : { url : "./shape/Finmarken_1861.json" },
         display : {
             overview : { minZoom : 4 },
-            detail   : { minZoom : 7 }
+            //detail   : { minZoom : 7 }
         },
         credit : ' Etnografisk Kart over Finmarken 1861, <a href="https://kartverket.no/Kart/Historiske-kart/Historiske-kart-galleri/" target="_blank">Kartverket (Norges Geografiske Oppmåling)</a>, <a href="https://en.wikipedia.org/wiki/Jens_Andreas_Friis" target="_blank">J. A. Friis</a>, <a href="https://creativecommons.org/licenses/by/4.0/deed.no" target="_blank">(CC BY 4.0)</a>'
     },
@@ -874,12 +961,14 @@ export const layerConfig = [
         titleKey : "layer.Leipzig",
         description : 'Stadtplan des Brandversicherungsinspektor Carl Robert Friedrich Kanitz (1811-1893), Stadtarchiv Leipzig, (dl-de/by-2-0)',
         source : {
-            tiles : ["https://tiles.historic.place/city/Leipzig_1850-1892/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Leipzig_1850-1892/{z}/{x}/{y}.png"],
+            minZoom : 15,
+            maxZoom : 21
         },
         shape : { url : "./shape/Leipzig.json" },
         display : {
             overview : { minZoom : 12 },
-            detail   : { minZoom : 15 }
+            //detail   : { minZoom : 15 }
         },
         credit : ' Carl Robert Friedrich Kanitz, <a href="https://opendata.leipzig.de/" target="_blank">Open Data Stadtarchiv Leipzig</a>, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">(dl-de/by-2-0)</a>'
     },
@@ -895,12 +984,14 @@ export const layerConfig = [
         titleKey : "layer.Japan_1890",
         description : 'Vegetationsgebiete der Japanischen Inseln: Fesca, Max, ETH-Bibliothek Zürich, Public Domain Mark',
         source : {
-            tiles : ["https://tiles.historic.place/region/Japan_1890/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Japan_1890/{z}/{x}/{y}.png"],
+            minZoom : 6,
+            maxZoom : 10
         },
         shape : { url : "./shape/Japan_1890.json" },
         display : {
             overview : { minZoom : 3 },
-            detail   : { minZoom : 6 }
+            //detail   : { minZoom : 6 }
         },
         credit : 'Fesca, Max: Vegetationsgebiete der Japanischen Inseln, <a href="https://dx.doi.org/10.3931/e-rara-39312" target="_blank">ETH-Bibliothek Zürich, Rar K 236</a>, <a href="https://creativecommons.org/publicdomain/mark/1.0//deed.de" target="_blank">Public Domain Mark</a>'
     },
@@ -912,12 +1003,14 @@ export const layerConfig = [
         titleKey : "layer.Hokkaido",
         description : 'Full map of Hokkaido, City map of Sapporo, City map of Hakodate, Taikichi Tanaka (Tokyo, author and editor), Magokichi Matsumura (Tokyo, printer), Sanshodo (Tokyo, editor), International Research Center for Japanese Culture',
         source : {
-            tiles : ["https://tiles.historic.place/region/Hokkaido/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Hokkaido/{z}/{x}/{y}.png"],
+            minZoom : 7,
+            maxZoom : 12
         },
         shape : { url : "./shape/Hokkaido.json" },
         display : {
             overview : { minZoom : 4 },
-            detail   : { minZoom : 7 }
+            //detail   : { minZoom : 7 }
         },
         credit : 'Full map of Hokkaido, <a href="https://lapis.nichibun.ac.jp/chizu/map_detail.php?id=002409852" target="_blank">(from the collection of the International Research Center for Japanese Studies)</a>'
     },
@@ -946,7 +1039,7 @@ export const layerConfig = [
         titleKey : "layer.Tel_Aviv_1936",
         description : 'Tel Aviv 1936 from NYPL Map Warper',
         source : {
-            tiles : ["https://tiles.historic.place/https://mapwarper.net/mosaics/tile/596/{z}/{x}/{y}.png"]
+            tiles : ["https://mapwarper.net/mosaics/tile/596/{z}/{x}/{y}.png"]
         },
         shape : { url : "./shape/Tel_Aviv_1936.json" },
         display : {
@@ -963,12 +1056,14 @@ export const layerConfig = [
         titleKey : "layer.Grossherzogtum_Baden",
         description : 'Topographische Karte über das Grossherzogthum Baden 1839',
         source : {
-            tiles : ["https://tiles.historic.place/region/Herzogtum_Baden/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Herzogtum_Baden/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 15
         },
         shape : { url : "./shape/Grossherzogtum_Baden.json" },
         display : {
             overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
+            //detail   : { minZoom : 13 }
         },
         credit : 'Grossherzogthum Baden 1839, <a href="https://digi.ub.uni-heidelberg.de/sammlungen/karten/rothe/" target="_blank">Universitätsbibliothek Heidelberg Ministerium für Wissenschaft, Forschung und Kunst Baden-Württemberg</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/de/deed.en" target="_blank">(CC BY-SA 3.0 DE)</a>'
     },
@@ -980,12 +1075,14 @@ export const layerConfig = [
         titleKey : "layer.Rheinland_1803-1820",
         description : 'Kartenaufnahme der Rheinlande durch Tranchot und von Müffling (1803 - 1820), Landesamt für Vermessung und Geobasisinformation (LVermGeo) Rheinland-Pfalz',
         source : {
-            tiles : ["https://tiles.historic.place/region/Rheinland_1803-1820/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Rheinland_1803-1820/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 16
         },
         shape : { url : "./shape/Rheinland_1803-1820.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Karte der Rheinlande von Tranchot und v. Müffling 1803-1820 , <a href="https://www.lvermgeo.rlp.de" target="_blank">©GeoBasis-DE / LVermGeoRP (2016)</a>'
     },
@@ -997,12 +1094,14 @@ export const layerConfig = [
         titleKey : "layer.Tirol",
         description : 'Atlas Tyrolensis des Peter Anich und des Blasius Hueber aus dem Jahre 1774 ',
         source : {
-            tiles : ["https://tiles.historic.place/region/Atlas_Tyrolensis/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Atlas_Tyrolensis/{z}/{x}/{y}.png"],
+            minZoom : 11,
+            maxZoom : 14
         },
         shape : { url : "./shape/Tirol.json" },
         display : {
             overview : { minZoom : 8 },
-            detail   : { minZoom : 11 }
+            //detail   : { minZoom : 11 }
         },
         credit : 'Atlas Tyrolensis, <a href="https://commons.wikimedia.org/wiki/File:Atlas_Tyrolensis-small.jpg" target="_blank">Wikimedia Commons</a>, <a href="https://www.tirol.gv.at/kunst-kultur/landesarchiv/archiv-und-quelle/24/" target="_blank">Tiroler Landesarchiv -Historische Kartenwerke Tirol-</a>, <a href="https://en.wikipedia.org/wiki/Public_domain" target="_blank">Public domain</a>'
     },
@@ -1014,12 +1113,14 @@ export const layerConfig = [
         titleKey : "layer.Magdeburg",
         description : 'Ravensteins Spezialkarte des Deutschen Reichs, Regierungsbezirk Magdeburg Karte Nr. 37, 1:300000',
         source : {
-            tiles : ["https://tiles.historic.place/region/Verkehrskarte_Magdeburg_1922/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Verkehrskarte_Magdeburg_1922/{z}/{x}/{y}.png"],
+            minZoom : 11,
+            maxZoom : 14
         },
         shape : { url : "./shape/Magdeburg.json" },
         display : {
             overview : { minZoom : 8 },
-            detail   : { minZoom : 11 }
+            //detail   : { minZoom : 11 }
         },
         credit : 'Verkehrskarte Magdeburg von Hans Ravenstein, Ravensteins Geographische Verlagsanstalt <a href="https://commons.wikimedia.org/wiki/File:Neue Spezial- und Verkehrskarte für den Regierungsbezirk Magdeburg.jpg" target="_blank">Wikimedia Commons</a>, <a href="https://en.wikipedia.org/wiki/Public_domain" target="_blank">Public domain</a>'
     },
@@ -1048,12 +1149,14 @@ export const layerConfig = [
         titleKey : "layer.posteisen-1859",
         description : 'Post und Eisenbahn-Reisekarte Deutschland 1859, Bayerische Staatsbibliothek München',
         source : {
-            tiles : ["https://tiles.historic.place/region/Reisekarte_Deutschland_1856/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Reisekarte_Deutschland_1856/{z}/{x}/{y}.png"],
+            minZoom : 7,
+            maxZoom : 11
         },
         shape : { url : "./shape/posteisenbahn-1859.json" },
         display : {
             overview : { minZoom : 4 },
-            detail   : { minZoom : 6 }
+            //detail   : { minZoom : 6 }
         },
         credit : 'Post und Eisenbahn-Reisekarte Deutschland 1859 , <a href="https://www.bsb-muenchen.de" target="_blank">© Bayerische Staatsbibliothek München, urn:nbn:de:bvb:12-bsb00112332-6</a>, <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>'
     },
@@ -1065,12 +1168,14 @@ export const layerConfig = [
         titleKey : "layer.Eupen-grenz-1873",
         description : 'National Geographic Institute www.ign.be',
         source : {
-            tiles : ["https://tiles.historic.place/loc/Ostbelgien-Grenze/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/loc/Ostbelgien-Grenze/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 16
         },
         shape : { url : "./shape/Eupen-grenz.json" },
         display : {
             overview : { minZoom : 7 },
-            detail   : { minZoom : 10 }
+            //detail   : { minZoom : 10 }
         },
         credit : 'Extract from IGN maps with the authorization A3647 Of the National Geographic Institute <a href="https://www.ign.be" target="_blank">www.ign.be" <img src="../../../i/ign.png" width="131px" hight="31px"></a>'
     },
@@ -1082,12 +1187,14 @@ export const layerConfig = [
         titleKey : "layer.Eupen-grenz-1936",
         description : 'National Geographic Institute www.ign.be',
         source : {
-            tiles : ["https://tiles.historic.place/loc/Ostbelgien-Grenze-1936/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/loc/Ostbelgien-Grenze-1936/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 16
         },
         shape : { url : "./shape/Eupen-grenz.json" },
         display : {
             overview : { minZoom : 7 },
-            detail   : { minZoom : 10 }
+            //detail   : { minZoom : 10 }
         },
         credit : 'Extract from IGN maps with the authorization A3647 Of the National Geographic Institute <a href="https://www.ign.be" target="_blank">www.ign.be" <img src="../../../i/ign.png" width="131px" hight="31px"></a>'
     },
@@ -1099,12 +1206,14 @@ export const layerConfig = [
         titleKey : "layer.Westruss",
         description : 'Westrussland aus der David Rumsey Map Collection',
         source : {
-            tiles : ["https://tiles.historic.place/region/Westrussland/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Westrussland/{z}/{x}/{y}.png"],
+            minZoom : 8,
+            maxZoom : 11
         },
         shape : { url : "./shape/Westruss.json" },
         display : {
             overview : { minZoom : 4 },
-            detail   : { minZoom : 7 }
+            //detail   : { minZoom : 7 }
         },
         credit : '<a href="http://www.davidrumsey.com" target="_blank">David Rumsey Map Collection</a>, Andrees Allgemeiner Handatlas-Authors Richard Andree and Albert Scobel'
     },
@@ -1116,12 +1225,14 @@ export const layerConfig = [
         titleKey : "layer.Schmettau-1787",
         description : 'Quelle © Staatsbibliothek zu Berlin – Preußischer Kulturbesitz',
         source : {
-            tiles : ["https://tiles.historic.place/region/Schmettau-1787/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Schmettau-1787/{z}/{x}/{y}.png"],
+            minZoom : 11,
+            maxZoom : 14
         },
         shape : { url : "./shape/Schmettau-1787.json" },
         display : {
             overview : { minZoom : 8 },
-            detail   : { minZoom : 11 }
+            //detail   : { minZoom : 11 }
         },
         credit : '<a href="https://geobasis-bb.de/lgb/de/geodaten/historische-karten/schmettausches-kartenwerk-%281767-1787%29/" target="_blank">Landesvermessung und Geobasisinformation Brandenburg (LGB) </a> Quelle © Staatsbibliothek zu Berlin – Preußischer Kulturbesitz, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">dl-de-by-2.0 (Daten geändert)</a>'
     },
@@ -1133,12 +1244,14 @@ export const layerConfig = [
         titleKey : "layer.sachsen-1857",
         description : 'Wandkarte vom Königreiche Sachsen 1857, Leibniz-Institut für Länderkunde e.V.',
         source : {
-            tiles : ["https://tiles.historic.place/region/Sachsen_1857/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Sachsen_1857/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 13
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
             overview : { minZoom : 7 },
-            detail   : { minZoom : 10 }
+            //detail   : { minZoom : 10 }
         },
         credit : 'Wandkarte vom Königreiche Sachsen 1857 ,<a href="https://leibniz-ifl.de/" target="_blank">Leibniz-Institut für Länderkunde e.V., Leipzig</a>, <a href="https://commons.wikimedia.org/wiki/Category:1857_maps_of_Saxony" target="_blank">Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank">(CC0 1.0) Public Domain Dedication</a>'
     },
@@ -1150,12 +1263,14 @@ export const layerConfig = [
         titleKey : "layer.sachsen-1781",
         description : 'Meilenblätter von Sachsen,Berliner Exemplar aufgenommen vom Sächs. Ing.-Korps 1780 - 1806 unter Ltg. von Friedrich Ludwig Aster',
         source : {
-            tiles : ["https://tiles.historic.place/region/SMB/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/SMB/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 16
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
             overview : { minZoom : 7 },
-            detail   : { minZoom : 10 }
+            //detail   : { minZoom : 10 }
         },
         credit : 'Meilenblätter von Sachsen, Sächs. Ing.-Korps unter Ltg. von Friedrich Ludwig Aster, <a href="https://www.deutschefotothek.de/cms/kartenforum-sachsen-meilenblaetter-berlin.xml" target="_blank">SLUB / Deutsche Fotothek</a>, <a href="https://commons.wikimedia.org/wiki/Category:Meilenbl%C3%A4tter" target="_blank">Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank">(CC0 1.0) Public Domain Dedication</a>'
     },
@@ -1168,12 +1283,13 @@ export const layerConfig = [
         description : 'Sächsische Kantoneinteilung (1814)',
         source : {
             tiles : ["https://tiles.historic.place/region/Saechsische_Kantoneinteilung_(1814)/{z}/{x}/{y}.png"],
+            minZoom : 8,
             maxZoom : 10
         },
         shape : { url : "./shape/sachsen.json" },
         display : {
             overview : { minZoom : 7 },
-            detail   : { minZoom : 8 }
+            //detail   : { minZoom : 8 }
         },
         credit : 'Richard Andree (1835–1912): Geschichte des Corps Lusatia zu Leipzig. Leipzig 1899, Erich Bauer, Jahrbuch des Vereins für corpsstudentische Geschichtsforschung, Sonderheft 1967, Public domain, <a href="https://commons.wikimedia.org/wiki/File:Sächsische_Kantoneinteilung_(1814).JPG" target="_blank">Wikimedia Commons</a>'
     },
@@ -1185,12 +1301,14 @@ export const layerConfig = [
         titleKey : "layer.sitzenroda",
         description : 'Karte vom Sitzenroder Forstrevier, Handzeichnung, 1780',
         source : {
-            tiles : ["https://tiles.historic.place/region/Sitzenrodaer-Forst_1780/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Sitzenrodaer-Forst_1780/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 16
         },
         shape : { url : "./shape/sitzenroda.json" },
         display : {
             overview : { minZoom : 8 },
-            detail   : { minZoom : 11 }
+            //detail   : { minZoom : 11 }
         },
         credit : 'Karte vom Sitzenroder Forstrevier 1780 ,<a href="http://www.deutschefotothek.de/documents/obj/70400358" target="_blank"> Pönisch, Carl Ernst, Sächsische Landesbibliothek - Staats- und Universitätsbibliothek Dresden (SLUB)</a>, <a href="https://creativecommons.org/publicdomain/mark/1.0/deed.en" target="_blank">(CC0 1.0) Public Domain</a>'
     },
@@ -1202,12 +1320,14 @@ export const layerConfig = [
         titleKey : "layer.MTB35xx-SB-StJ",
         description : 'MTB35xx Saarbrücken/St. Johann 1882-87',
         source : {
-            tiles : ["https://tiles.historic.place/city/MTB35xx-SB-StJ/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/MTB35xx-SB-StJ/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 16
         },
         shape : { url : "./shape/MTB35xx-SB-StJ.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : 'Landesarchiv Saarbrücken, Bestand K Hellwig, Nr. 0315 / CC-BY-SA 3.0 DE'
     },
@@ -1219,12 +1339,14 @@ export const layerConfig = [
         titleKey : "layer.GeoFR161",
         description : 'Carte GeoFR 161 Pfalz 1770',
         source : {
-            tiles : ["https://tiles.historic.place/region/GeoFR161-Pfalz-1770/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/GeoFR161-Pfalz-1770/{z}/{x}/{y}.png"],
+            minZoom : 11,
+            maxZoom : 15
         },
         shape : { url : "./shape/GeoFR161.json" },
         display : {
             overview : { minZoom : 8 },
-            detail   : { minZoom : 11 }
+            //detail   : { minZoom : 11 }
         },
         credit : 'Landesarchiv Saarbrücken, Bestand K Hellwig, Nr. 0261, Urheber César-Francois Cassini de Thury (1714-1784) / CC-BY-SA 3.0 DE'
     },
@@ -1236,12 +1358,14 @@ export const layerConfig = [
         titleKey : "layer.OstFR-Vogesen-1892",
         description : 'Ostfrankreich-Vogesen Hachette 1892',
         source : {
-            tiles : ["https://tiles.historic.place/region/OstFR-Vogesen-1892/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/OstFR-Vogesen-1892/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 15
         },
         shape : { url : "./shape/OstFR-Vogesen-1892.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : 'Landesarchiv Saarbrücken, Bestand K Hellwig, Nr. 959-972, Urheber Librairie Hachette et Cie. / CC-BY-SA 3.0 DE'
     },
@@ -1253,12 +1377,14 @@ export const layerConfig = [
         titleKey : "layer.Puettl-Tractus-1784",
         description : 'Püttlingen Tractus 1784',
         source : {
-            tiles : ["https://tiles.historic.place/city/Puettlingen/Tractus_1784/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Puettlingen/Tractus_1784/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 19
         },
         shape : { url : "./shape/Puettl-Tractus-1784.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Stadtarchiv Püttlingen'
     },
@@ -1270,12 +1396,14 @@ export const layerConfig = [
         titleKey : "layer.Puettl-Nassau-1822",
         description : 'Püttlingen Nassau SB 1822',
         source : {
-            tiles : ["https://tiles.historic.place/city/Puettlingen/Nassau_1822/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Puettlingen/Nassau_1822/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 19
         },
         shape : { url : "./shape/Puettl-Nassau-1822.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : 'Saarländisches Landesarchiv'
     },
@@ -1287,12 +1415,14 @@ export const layerConfig = [
         titleKey : "layer.Rittenhofen-Coelln-Engelfangen_1759",
         description : 'Rittenhofen/Coelln/Engelfangen 1759',
         source : {
-            tiles : ["https://tiles.historic.place/city/Puettlingen/RittCoEng_1759/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Puettlingen/RittCoEng_1759/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 19
         },
         shape : { url : "./shape/Rittenhofen-Coelln-Engelfangen_1759.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Saarländisches Landesarchiv'
     },
@@ -1304,12 +1434,14 @@ export const layerConfig = [
         titleKey : "layer.Herchenbach_1807",
         description : 'Herchenbach Tractus 1807',
         source : {
-            tiles : ["https://tiles.historic.place/city/Puettlingen/Herchenbach_1807/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Puettlingen/Herchenbach_1807/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 19
         },
         shape : { url : "./shape/Herchenbach_1807.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Stadtarchiv Püttlingen, Bestand D1.1-8167 bis D1.1-8170'
     },
@@ -1321,12 +1453,14 @@ export const layerConfig = [
         titleKey : "layer.Wehrden_1755",
         description : 'Wehrden Tractus 1755',
         source : {
-            tiles : ["https://tiles.historic.place/city/Voelklingen/Wehrden_1755/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Voelklingen/Wehrden_1755/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 19
         },
         shape : { url : "./shape/Wehrden_1755.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Stadtarchiv Völklingen D1/691'
     },
@@ -1338,12 +1472,14 @@ export const layerConfig = [
         titleKey : "layer.Geislautern",
         description : 'Geislautern Tractus 1822-1825',
         source : {
-            tiles : ["https://tiles.historic.place/city/Voelklingen/Geislautern/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Voelklingen/Geislautern/{z}/{x}/{y}.png"],
+            minZoom : 15,
+            maxZoom : 19
         },
         shape : { url : "./shape/Geislautern.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Landesarchiv Saarland K Kat 434: Geislautern, gemeinfrei'
     },
@@ -1355,12 +1491,14 @@ export const layerConfig = [
         titleKey : "layer.Fuerstenhausen",
         description : 'Fürstenhausen Tractus 1822-1825',
         source : {
-            tiles : ["https://tiles.historic.place/city/Voelklingen/Fuerstenhausen/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Voelklingen/Fuerstenhausen/{z}/{x}/{y}.png"],
+            minZoom : 15,
+            maxZoom : 19
         },
         shape : { url : "./shape/Fuerstenhausen.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Landesarchiv Saarland K Kat 370: Geislautern, gemeinfrei'
     },
@@ -1372,12 +1510,14 @@ export const layerConfig = [
         titleKey : "layer.Voelklingen_1823",
         description : 'Völklingen Tractus 1823',
         source : {
-            tiles : ["https://tiles.historic.place/city/Voelklingen/Voelklingen_1823/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/city/Voelklingen/Voelklingen_1823/{z}/{x}/{y}.png"],
+            minZoom : 14,
+            maxZoom : 19
         },
         shape : { url : "./shape/Voelklingen_1823.json" },
         display : {
             overview : { minZoom : 11 },
-            detail   : { minZoom : 14 }
+            //detail   : { minZoom : 14 }
         },
         credit : 'Stadtarchiv Völklingen D1/597'
     },
@@ -1389,12 +1529,14 @@ export const layerConfig = [
         titleKey : "layer.Saar-PreussUr-1850",
         description : 'Preußische Uraufnahme 1850',
         source : {
-            tiles : ["https://tiles.historic.place/region/Saar-PreussUr-1850/{z}/{x}/{y}.png"]
+            tiles : ["https://tiles.historic.place/region/Saar-PreussUr-1850/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 17
         },
         shape : { url : "./shape/Saar-PreussUr-1850.json" },
         display : {
             overview : { minZoom : 9 },
-            detail   : { minZoom : 12 }
+            //detail   : { minZoom : 12 }
         },
         credit : 'Staatsbibliothek Berlin / LVGL Saarland'
     },
