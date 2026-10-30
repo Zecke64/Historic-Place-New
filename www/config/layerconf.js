@@ -1016,21 +1016,23 @@ export const layerConfig = [
     },
 
     // ################################   Former Yugoslavia   ################################
-    {
+   /* {
         id : "Yugoslavia",
         template : "ovl-raster-template",
         titleKey : "layer.Yugoslavia",
         description : 'Former Yugoslavia Topographic Maps 1:50,000, Series M709, The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from OpenStreetMap Hrvatska',
         source : {
-            tiles : ["https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png"]
+            tiles : ["https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png"],
+            minZoom : 5,
+            maxZoom : 13
         },
         shape : { url : "./shape/Yugoslavia.json" },
         display : {
             overview : { minZoom : 4 },
-            detail   : { minZoom : 7 }
+            //detail   : { minZoom : 7 }
         },
         credit : '<a href="https://www.lib.utexas.edu/maps/topo/former_yugoslavia/" target="_blank">The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from <a href="https://osm-hr.org/openstreetmap-hrvatska/"                                                                                                                                                                target="_blank">OpenStreetMap Hrvatska</a>'
-    },
+    },*/
 
     // ################################   Tel Aviv 1936   ################################
     {
@@ -1039,12 +1041,14 @@ export const layerConfig = [
         titleKey : "layer.Tel_Aviv_1936",
         description : 'Tel Aviv 1936 from NYPL Map Warper',
         source : {
-            tiles : ["https://mapwarper.net/mosaics/tile/596/{z}/{x}/{y}.png"]
+            tiles : ["https://mapwarper.net/mosaics/tile/596/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
         },
         shape : { url : "./shape/Tel_Aviv_1936.json" },
         display : {
-            overview : { minZoom : 12 },
-            detail   : { minZoom : 15 }
+            overview : { minZoom : 10 },
+            //detail   : { minZoom : 15 }
         },
         credit : 'Survey of Palestine, "Jaffa : Survey of Palestine, 1936" <a href="https://mapwarper.net/layers/596" target="_blank">NYPL Map Warper</a>'
     },
