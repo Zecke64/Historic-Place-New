@@ -2116,6 +2116,7 @@ export const iconRules = [
 {
     condition: AND(
         OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["disused", "*"], ["abandoned", "*"]),
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"]),
         OR(["resource", "*"]),
     ),
@@ -2159,6 +2160,7 @@ export const iconRules = [
 {
     condition: AND(
         OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["disused", "*"], ["abandoned", "*"]),
         OR(["resource", "*"]),
     ),
     minZoom : 12,
@@ -2201,7 +2203,7 @@ export const iconRules = [
     // Bergbaustollen
 {
     condition: AND(
-        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["man_made", "adit"]),
         OR(["resource", "*"]),
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"]),
     ),
@@ -2244,7 +2246,7 @@ export const iconRules = [
 },
 {
     condition: AND(
-        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["man_made", "adit"]),
         OR(["resource", "*"])
     ),
     minZoom : 12,
