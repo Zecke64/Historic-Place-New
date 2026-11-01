@@ -983,6 +983,7 @@ export const layerConfig = [
         credit : ' Carl Robert Friedrich Kanitz, <a href="https://opendata.leipzig.de/" target="_blank">Open Data Stadtarchiv Leipzig</a>, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">(dl-de/by-2-0)</a>'
     },
 
+    // ################################   Japan 1890   ################################
     {
         id : "Japan_1890",
         template : "ovl-raster-template",
@@ -1495,6 +1496,25 @@ export const layerConfig = [
         credit : 'Staatsbibliothek Berlin / LVGL Saarland'
     },
 
+    // ################################   Topographische Uebersichtskarte Deutschland   ################################
+    {
+        id : "Übersicht-Deutschland_2017",
+        template : "ovl-raster-template",
+        titleKey : "layer.übersicht_deutschland_2017",
+        description : 'Topographische Uebersichtskarte Deutschland 2017',
+        source : {
+            tiles : ["https://tiles.historic.place/DTK200-V/{z}/{x}/{y}.png "],
+            minZoom : 9,
+            maxZoom : 12
+        },
+        shape : { url : "./shape/deutschland.json" },
+        display : {
+            overview : { minZoom : 6 },
+            //detail   : { minZoom : 12 }
+        },
+        credit : '<a href="http://www.bkg.bund.de" target="_blank">© GeoBasis-DE / BKG 2017</a>'
+    },
+
     // #################################################################################
     // #################################################################################
     // #################################################################################
@@ -1601,8 +1621,6 @@ export const layerConfig = [
         },
         credit : 'Ireland British War Office 1:25k GSGS 3906, <a href="https://www.tcd.ie/library/map-library/" target="_blank">Glucksman Map Library, Trinity College Dublin</a>, Tiles from <a href="http://mapwarper.net/layers/101" target="_blank">Map Warper</a>'
     },
-
-    // ################################   Japan 1890   ################################
 
 
     // #################################################################################

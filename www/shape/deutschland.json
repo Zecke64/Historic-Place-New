@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "deutschland",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{"type":"Feature","properties":{"id":94992},"geometry":{"type":"MultiPolygon","coordinates":[[[[5.713425802339585,55.324076651441786],[15.109519804360124,55.238989124903433],[15.255384135568722,46.645148944530185],[5.737736524207685,46.669459666398289],[5.713425802339585,55.324076651441786]]]]}}
+]
+}
