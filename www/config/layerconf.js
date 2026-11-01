@@ -1570,7 +1570,7 @@ export const layerConfig = [
         titleKey : "layer.Irland_1901",
         description : 'Memorial Atlas of Ireland 1901, Tiles from Map Warper',
         source : {
-            tiles : ["https://mapwarper.net/layers/tile/295/{z}/{x}/{y}.png "],
+            tiles : ["https://mapwarper.net/layers/tile/295/{z}/{x}/{y}.png"],
             minZoom : 10,
             maxZoom : 13
         },
@@ -1581,7 +1581,26 @@ export const layerConfig = [
         },
         credit : 'Irland 1901, L.J. Richards & Co, <a href="http://archives.library.nuigalway.ie/memorial/memorial-atlas.html" target="_blank">James Hardiman Library, NUIG</a>, Tiles from <a href="http://mapwarper.net/layers/295" target="_blank">Map Warper</a>'
     },
+
     // ################################   Ireland British War Office 1:25k GSGS 3906   ################################
+
+    {
+        id : "Irland 1910",
+        template : "ovl-raster-template",
+        titleKey : "layer.Irland_1910",
+        description : 'Ireland British War Office 1:25k GSGS 3906, Tiles from Map Warper',
+        source : {
+            tiles : ["https://mapwarper.net/layers/tile/101/{z}/{x}/{y}.png"],
+            minZoom : 10,
+            maxZoom : 17
+        },
+        shape : { url : "./shape/Irland.json" },
+        display : {
+            overview : { minZoom : 5 },
+            //detail   : { minZoom : 10 }
+        },
+        credit : 'Ireland British War Office 1:25k GSGS 3906, <a href="https://www.tcd.ie/library/map-library/" target="_blank">Glucksman Map Library, Trinity College Dublin</a>, Tiles from <a href="http://mapwarper.net/layers/101" target="_blank">Map Warper</a>'
+    },
 
     // ################################   Japan 1890   ################################
 
