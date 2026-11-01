@@ -98,8 +98,18 @@ export const layerConfig = [
     //
     // #################################################################################
 
+    // #################################################################################
+    // #################################################################################
+    // #################################################################################
+    //
+    //  Historic.Place-Layer
+    //
+    // #################################################################################
+    // #################################################################################
+    // #################################################################################
 
     // ################################   Deutsches Reich 1893   ################################
+
     {
         id : "kdr1893",
         template : "ovl-raster-template",
@@ -973,11 +983,6 @@ export const layerConfig = [
         credit : ' Carl Robert Friedrich Kanitz, <a href="https://opendata.leipzig.de/" target="_blank">Open Data Stadtarchiv Leipzig</a>, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">(dl-de/by-2-0)</a>'
     },
 
-    // ################################   Memorial Atlas of Ireland 1901   ################################
-
-    // ################################   Ireland British War Office 1:25k GSGS 3906   ################################
-
-    // ################################   Japan 1890   ################################
     {
         id : "Japan_1890",
         template : "ovl-raster-template",
@@ -1013,44 +1018,6 @@ export const layerConfig = [
             //detail   : { minZoom : 7 }
         },
         credit : 'Full map of Hokkaido, <a href="https://lapis.nichibun.ac.jp/chizu/map_detail.php?id=002409852" target="_blank">(from the collection of the International Research Center for Japanese Studies)</a>'
-    },
-
-    // ################################   Former Yugoslavia   ################################
-   /* {
-        id : "Yugoslavia",
-        template : "ovl-raster-template",
-        titleKey : "layer.Yugoslavia",
-        description : 'Former Yugoslavia Topographic Maps 1:50,000, Series M709, The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from OpenStreetMap Hrvatska',
-        source : {
-            tiles : ["https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png"],
-            minZoom : 5,
-            maxZoom : 13
-        },
-        shape : { url : "./shape/Yugoslavia.json" },
-        display : {
-            overview : { minZoom : 4 },
-            //detail   : { minZoom : 7 }
-        },
-        credit : '<a href="https://www.lib.utexas.edu/maps/topo/former_yugoslavia/" target="_blank">The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from <a href="https://osm-hr.org/openstreetmap-hrvatska/"                                                                                                                                                                target="_blank">OpenStreetMap Hrvatska</a>'
-    },*/
-
-    // ################################   Tel Aviv 1936   ################################
-    {
-        id : "Tel_Aviv_1936",
-        template : "ovl-raster-template",
-        titleKey : "layer.Tel_Aviv_1936",
-        description : 'Tel Aviv 1936 from NYPL Map Warper',
-        source : {
-            tiles : ["https://mapwarper.net/mosaics/tile/596/{z}/{x}/{y}.png"],
-            minZoom : 13,
-            maxZoom : 18
-        },
-        shape : { url : "./shape/Tel_Aviv_1936.json" },
-        display : {
-            overview : { minZoom : 10 },
-            //detail   : { minZoom : 15 }
-        },
-        credit : 'Survey of Palestine, "Jaffa : Survey of Palestine, 1936" <a href="https://mapwarper.net/layers/596" target="_blank">NYPL Map Warper</a>'
     },
 
     // ################################   Grossherzogthum Baden 1839   ################################
@@ -1127,23 +1094,6 @@ export const layerConfig = [
             //detail   : { minZoom : 11 }
         },
         credit : 'Verkehrskarte Magdeburg von Hans Ravenstein, Ravensteins Geographische Verlagsanstalt <a href="https://commons.wikimedia.org/wiki/File:Neue Spezial- und Verkehrskarte für den Regierungsbezirk Magdeburg.jpg" target="_blank">Wikimedia Commons</a>, <a href="https://en.wikipedia.org/wiki/Public_domain" target="_blank">Public domain</a>'
-    },
-
-    // #######################   Carte industrielle de la région parisienne 1927   #######################
-    {
-        id : "Paris",
-        template : "ovl-raster-template",
-        titleKey : "layer.Paris",
-        description : 'Carte industrielle de la région parisienne 1927, Bibliothèque nationale de France, Tiles from Map Warper',
-        source : {
-            tiles : ["https://mapwarper.net/mosaics/tile/867/{z}/{x}/{y}.png"]
-        },
-        shape : { url : "./shape/Paris.json" },
-        display : {
-            overview : { minZoom : 10 },
-            detail   : { minZoom : 13 }
-        },
-        credit : 'Carte industrielle de la région parisienne, <a href="https://catalogue.bnf.fr/ark:/12148/cb40712638q" target="_blank">gallica.bnf.fr / Bibliothèque nationale de France</a>, Tiles from <a href="https://mapwarper.net/layers/867" target="_blank">Map Warper</a>'
     },
 
     // ########################   Post und Eisenbahn-Reisekarte Deutschland 1859   #######################
@@ -1544,6 +1494,96 @@ export const layerConfig = [
         },
         credit : 'Staatsbibliothek Berlin / LVGL Saarland'
     },
+
+    // #################################################################################
+    // #################################################################################
+    // #################################################################################
+    //
+    //  WMTS-Layer
+    //
+    // #################################################################################
+    // #################################################################################
+    // #################################################################################
+
+
+    // ################################   Former Yugoslavia   ################################
+   /* {
+        id : "Yugoslavia",
+        template : "ovl-raster-template",
+        titleKey : "layer.Yugoslavia",
+        description : 'Former Yugoslavia Topographic Maps 1:50,000, Series M709, The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from OpenStreetMap Hrvatska',
+        source : {
+            tiles : ["https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png"],
+            minZoom : 5,
+            maxZoom : 13
+        },
+        shape : { url : "./shape/Yugoslavia.json" },
+        display : {
+            overview : { minZoom : 4 },
+            //detail   : { minZoom : 7 }
+        },
+        credit : '<a href="https://www.lib.utexas.edu/maps/topo/former_yugoslavia/" target="_blank">The University of Texas Libraries at Austin, U.S. Defense Mapping Agency, Tiles from <a href="https://osm-hr.org/openstreetmap-hrvatska/"                                                                                                                                                                target="_blank">OpenStreetMap Hrvatska</a>'
+    },*/
+
+    // ################################   Tel Aviv 1936   ################################
+    {
+        id : "Tel_Aviv_1936",
+        template : "ovl-raster-template",
+        titleKey : "layer.Tel_Aviv_1936",
+        description : 'Tel Aviv 1936 from NYPL Map Warper',
+        source : {
+            tiles : ["https://mapwarper.net/mosaics/tile/596/{z}/{x}/{y}.png"],
+            minZoom : 13,
+            maxZoom : 18
+        },
+        shape : { url : "./shape/Tel_Aviv_1936.json" },
+        display : {
+            overview : { minZoom : 10 },
+            //detail   : { minZoom : 15 }
+        },
+        credit : 'Survey of Palestine, "Jaffa : Survey of Palestine, 1936" <a href="https://mapwarper.net/layers/596" target="_blank">NYPL Map Warper</a>'
+    },
+
+    // #######################   Carte industrielle de la région parisienne 1927   #######################
+    {
+        id : "Paris",
+        template : "ovl-raster-template",
+        titleKey : "layer.Paris",
+        description : 'Carte industrielle de la région parisienne 1927, Bibliothèque nationale de France, Tiles from Map Warper',
+        source : {
+            tiles : ["https://mapwarper.net/mosaics/tile/867/{z}/{x}/{y}.png"],
+            minZoom : 12,
+            maxZoom : 16
+        },
+        shape : { url : "./shape/Paris.json" },
+        display : {
+            overview : { minZoom : 8 },
+            //detail   : { minZoom : 13 }
+        },
+        credit : 'Carte industrielle de la région parisienne, <a href="https://catalogue.bnf.fr/ark:/12148/cb40712638q" target="_blank">gallica.bnf.fr / Bibliothèque nationale de France</a>, Tiles from <a href="https://mapwarper.net/layers/867" target="_blank">Map Warper</a>'
+    },
+
+    // ################################   Memorial Atlas of Ireland 1901   ################################
+    {
+        id : "Irland 1901",
+        template : "ovl-raster-template",
+        titleKey : "layer.Irland_1901",
+        description : 'Memorial Atlas of Ireland 1901, Tiles from Map Warper',
+        source : {
+            tiles : ["https://mapwarper.net/layers/tile/295/{z}/{x}/{y}.png "],
+            minZoom : 10,
+            maxZoom : 13
+        },
+        shape : { url : "./shape/Irland.json" },
+        display : {
+            overview : { minZoom : 5 },
+            //detail   : { minZoom : 10 }
+        },
+        credit : 'Irland 1901, L.J. Richards & Co, <a href="http://archives.library.nuigalway.ie/memorial/memorial-atlas.html" target="_blank">James Hardiman Library, NUIG</a>, Tiles from <a href="http://mapwarper.net/layers/295" target="_blank">Map Warper</a>'
+    },
+    // ################################   Ireland British War Office 1:25k GSGS 3906   ################################
+
+    // ################################   Japan 1890   ################################
 
 
     // #################################################################################
