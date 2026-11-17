@@ -166,6 +166,7 @@ export const zoomClasses = [
                 ["historic", "farm"],
                 ["historic", "gallows"],
                 ["historic", "quarry"],
+                ["historic", "mine_adit"],
             ],
         }
     ]

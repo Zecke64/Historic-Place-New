@@ -2115,7 +2115,7 @@ export const iconRules = [
     // Bergbaustollen geschlossen
 {
     condition: AND(
-        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"], ["historic", "mine_adit"]),
         OR(["disused", "*"], ["abandoned", "*"]),
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"]),
         OR(["resource", "*"]),
@@ -2159,7 +2159,7 @@ export const iconRules = [
 },
 {
     condition: AND(
-        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"], ["historic", "mine_adit"]),
         OR(["disused", "*"], ["abandoned", "*"]),
         OR(["resource", "*"]),
     ),
@@ -2203,7 +2203,7 @@ export const iconRules = [
     // Bergbaustollen
 {
     condition: AND(
-        OR(["man_made", "adit"]),
+        OR(["man_made", "adit"], ["historic", "mine_adit"]),
         OR(["resource", "*"]),
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"]),
     ),
@@ -2246,7 +2246,7 @@ export const iconRules = [
 },
 {
     condition: AND(
-        OR(["man_made", "adit"]),
+        OR(["man_made", "adit"], ["historic", "mine_adit"]),
         OR(["resource", "*"])
     ),
     minZoom : 12,
@@ -2289,7 +2289,7 @@ export const iconRules = [
     // Stollen allgemein
 {
     condition: AND(
-        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"], ["historic", "mine_adit"]),
         OR(["image", "*"], ["wikipedia", "*"], ["wikidata", "*"], ["website", "*"], ["wikimedia_commons", "*"]),
     ),
     minZoom : 12,
@@ -2299,7 +2299,7 @@ export const iconRules = [
 },
 {
     condition: AND(
-        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"]),
+        OR(["man_made", "adit"], ["abandoned:man_made", "adit"], ["disused:man_made", "adit"], ["historic", "mine_adit"]),
     ),
     minZoom : 12,
     icon: "stollen2",
