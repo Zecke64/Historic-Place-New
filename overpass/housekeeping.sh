@@ -19,3 +19,5 @@ for dir in $(find /opt/overpass -name "20*" -type d -mtime +3); do
     rm -rf "$dir"
 done
 
+# cleanup docker network resources
+docker network prune
