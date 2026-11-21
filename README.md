@@ -1,43 +1,49 @@
-## Allgemeine Informationen
+## General information
 ***
-Kartenanwendung [Historic.Place](https://www.historic.place/) auf Basis von MapLibre.
+Map application [Historic.Place](https://www.historic.place/) based on MapLibre.
 
-* Anzeige von POIs mit Popup und Verlinkung zu weiteren Infos.
-* Einblenden historischer Karten als Overlay.
+* Display of POIs with pop-up and link to further information.
+* Display historical maps as an overlay.
 
-### Grundlayer
+### Base layer
 ***
-* [OpenStreetMap](https://karte.openstreetmap.de/#map=5/51.5/11)
+* [OpenStreetMap](https://www.openstreetmap.org/about)
 * [OpenTopoMap](https://opentopomap.org/about)
 
 ### Screenshot
 ***
 ![Startseite](./Screenshots/Historic-Place.png)
 
-### Technologien
+### Technologies
 ***
-* [Maplibre](https://maplibre.org/): Open-Source-Mapping-Bibliotheken
-* [Javascript](https://de.wikipedia.org/wiki/JavaScript):  Skriptsprache
-* [PHP](https://de.wikipedia.org/wiki/PHP): Skriptsprache
-* [HTML](https://de.wikipedia.org/wiki/Hypertext_Markup_Language): Hypertext-Auszeichnungssprache
-* [CSS](https://wiki.selfhtml.org/wiki/CSS): Formatierungssprache für HTML
+* [Maplibre](https://maplibre.org/): Open source mapping libraries
+* [Javascript](https://en.wikipedia.org/wiki/JavaScript):  Scripting language
+* [PHP](https://en.wikipedia.org/wiki/PHP): Scripting language
+* [HTML](https://en.wikipedia.org/wiki/Hypertext_Markup_Language): Hypertext markup language
+* [CSS](https://en.wikipedia.org/wiki/CSS): Formatting language for HTML
+* [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API): A database engine to query the OpenStreetMap data 
 
-Nutzt für die Suche:
+Use for search:
 
-* [Nominatim](https://nominatim.org/): Open-Source-Geokodierung mit OpenStreetMap-Daten
+* [Nominatim](https://nominatim.org/): Open source geocoding with OpenStreetMap data
 
 
-### Datenquellen
+### Data sources
 ***
-Für [POIs](https://de.wikipedia.org/wiki/Point_of_Interest):
+Für [POIs](https://en.wikipedia.org/wiki/Point_of_Interest):
 
 * [OpenStreetMap](https://www.openstreetmap.org/about): Lizenz [ODBL](https://osmfoundation.org/wiki/Licence)
 
-Nutzt Daten von:
+Uses data from:
 
-* [Wikipedia](https://de.wikipedia.org/wiki/Wikipedia:Hauptseite): [Lizenz](https://de.wikipedia.org/wiki/Wikipedia:Lizenzbestimmungen)
-* [Wikimedia Commons](https://commons.wikimedia.org/w/index.php?title=Main_Page&uselang=de): [Lizenzen](https://commons.wikimedia.org/wiki/Commons:Licensing/de)
-* [Wikidata](https://www.wikidata.org/wiki/Wikidata:Main_Page): Lizenz [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.de)
+* [Wikipedia](https://en.wikipedia.org/wiki/Wikipedia:Main_Page)
+* [Wikimedia Commons](https://commons.wikimedia.org/w/index.php?title=Main_Page&uselang=en)
+* [Wikidata](https://www.wikidata.org/wiki/Wikidata:Main_Page)
 
-### TODO
+### Special maps
 ***
+* [Special maps](https://www.historic.place/themes/sonderkarten/Maplibre/historic.html) only for Germany [Github](https://github.com/lutzto/Historic-Place-Sonderkarten)
+
+### Wiki
+***
+* [Historic.Place Wiki](https://wiki.historic.place/doku.php?id=en:start-en)
